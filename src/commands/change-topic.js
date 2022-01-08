@@ -43,7 +43,7 @@ module.exports = class TopicCommand extends Command {
                         .setDescription(
                             "Please use this command in the ticket channel you want to change the topic of."
                         )
-                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                        .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });
@@ -75,7 +75,7 @@ module.exports = class TopicCommand extends Command {
                     })
                     .setDescription(description)
                     .addField("Topic", topic)
-                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                    .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
             ],
             ephemeral: true
         });
@@ -90,7 +90,7 @@ module.exports = class TopicCommand extends Command {
                     })
                     .setTitle("Topic changed")
                     .setDescription("The topic of this ticket has been changed.")
-                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                    .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
             ],
             ephemeral: true
         });

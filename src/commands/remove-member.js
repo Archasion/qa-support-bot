@@ -45,7 +45,7 @@ module.exports = class RemoveCommand extends Command {
                         .setDescription(
                             "Please use this command in the ticket channel, or mention the channel."
                         )
-                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                        .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });
@@ -58,7 +58,7 @@ module.exports = class RemoveCommand extends Command {
                         .setColor(config.colors.error_color)
                         .setTitle("Unknown member")
                         .setDescription("Please mention the member you want to add.")
-                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                        .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });
@@ -74,7 +74,7 @@ module.exports = class RemoveCommand extends Command {
                     })
                     .setTitle("Member removed")
                     .setDescription(`${member.toString()} has been removed from ${channel.toString()}`)
-                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                    .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
             ],
             ephemeral: true
         });
@@ -91,7 +91,7 @@ module.exports = class RemoveCommand extends Command {
                     .setDescription(
                         `${member.toString()} has been removed by ${interaction.user.toString()}`
                     )
-                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                    .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
             ]
         });
 

@@ -54,7 +54,7 @@ module.exports = class CloseCommand extends Command {
                             .setTitle("Insufficient Permissions")
                             .setDescription("You are not a staff member or the ticket creator.")
                             .setFooter({
-                                name: config.text.footer,
+                                text: config.text.footer,
                                 iconURL: interaction.guild.iconURL()
                             })
                     ],
@@ -72,7 +72,7 @@ module.exports = class CloseCommand extends Command {
                             .setTitle("Invalid time")
                             .setDescription("The time period provided could not be parsed.")
                             .setFooter({
-                                name: config.text.footer,
+                                text: config.text.footer,
                                 iconURL: interaction.guild.iconURL()
                             })
                     ],
@@ -98,7 +98,7 @@ module.exports = class CloseCommand extends Command {
                                 "No tickets have been found that have been inactive for the specified time."
                             )
                             .setFooter({
-                                name: config.text.footer,
+                                text: config.text.footer,
                                 iconURL: interaction.guild.iconURL()
                             })
                     ],
@@ -131,7 +131,7 @@ module.exports = class CloseCommand extends Command {
                                 `You are about to close ${count} ticket${count === 1 ? "" : "s"}.`
                             )
                             .setFooter({
-                                name: `${config.text.footer} • Expires in 30 seconds`,
+                                text: `${config.text.footer} • Expires in 30 seconds`,
                                 iconURL: interaction.guild.iconURL()
                             })
                     ],
@@ -177,7 +177,7 @@ module.exports = class CloseCommand extends Command {
                                         } been closed.`
                                     )
                                     .setFooter({
-                                        name: config.text.footer,
+                                        text: config.text.footer,
                                         iconURL: interaction.guild.iconURL()
                                     })
                             ],
@@ -192,7 +192,7 @@ module.exports = class CloseCommand extends Command {
                                     .setTitle("Cancelled")
                                     .setDescription("The operation has been cancelled.")
                                     .setFooter({
-                                        name: config.text.footer,
+                                        text: config.text.footer,
                                         iconURL: interaction.guild.iconURL()
                                     })
                             ],
@@ -219,7 +219,7 @@ module.exports = class CloseCommand extends Command {
                                         "You did not respond in time. The operation has been cancelled."
                                     )
                                     .setFooter({
-                                        name: config.text.footer,
+                                        text: config.text.footer,
                                         iconURL: interaction.guild.iconURL()
                                     })
                             ],
@@ -244,7 +244,7 @@ module.exports = class CloseCommand extends Command {
                                     `${ticket} could not be resolved to a ticket. Please provide the ticket ID/mention or number.`
                                 )
                                 .setFooter({
-                                    name: config.text.footer,
+                                    text: config.text.footer,
                                     iconURL: interaction.guild.iconURL()
                                 })
                         ],
@@ -266,7 +266,7 @@ module.exports = class CloseCommand extends Command {
                                     "Please use this command in a ticket channel or use the ticket flag.\nType `/help close` for more information."
                                 )
                                 .setFooter({
-                                    name: config.text.footer,
+                                    text: config.text.footer,
                                     iconURL: interaction.guild.iconURL()
                                 })
                         ],
@@ -316,7 +316,7 @@ module.exports = class CloseCommand extends Command {
                         .setTitle("Are you sure?")
                         .setDescription("Please confirm your decision.")
                         .setFooter({
-                            name: `${config.text.footer} • Expires in 30 seconds`,
+                            text: `${config.text.footer} • Expires in 30 seconds`,
                             iconURL: interaction.guild.iconURL()
                         })
                 ],
@@ -356,7 +356,7 @@ module.exports = class CloseCommand extends Command {
                                 .setTitle("Ticket Closed")
                                 .setDescription(`Ticket ${ticket_channel.number} has been closed.`)
                                 .setFooter({
-                                    name: config.text.footer,
+                                    text: config.text.footer,
                                     iconURL: interaction.guild.iconURL()
                                 })
                         ],
@@ -371,7 +371,7 @@ module.exports = class CloseCommand extends Command {
                                 .setTitle("Cancelled")
                                 .setDescription("The operation has been cancelled.")
                                 .setFooter({
-                                    name: config.text.footer,
+                                    text: config.text.footer,
                                     iconURL: interaction.guild.iconURL()
                                 })
                         ],
@@ -398,7 +398,7 @@ module.exports = class CloseCommand extends Command {
                                     "You did not respond in time. The operation has been cancelled."
                                 )
                                 .setFooter({
-                                    name: config.text.footer,
+                                    text: config.text.footer,
                                     iconURL: interaction.guild.iconURL()
                                 })
                         ],

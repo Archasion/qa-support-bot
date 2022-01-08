@@ -62,7 +62,7 @@ module.exports = class TagCommand extends Command {
                         .setColor(config.colors.default_color)
                         .setTitle("Tag List")
                         .setDescription(list.join("\n"))
-                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
+                        .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });

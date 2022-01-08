@@ -23,7 +23,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
                 .setColor(config.colors.default_color)
                 .setDescription(`${message.author} has been flagged.`)
                 .setFooter({
-                    name: `ID: ${message.author.id}`,
+                    text: `ID: ${message.author.id}`,
                     iconURL: message.author.displayAvatarURL({ dynamic: true })
                 })
                 .addField("Reason", "Potentially Underage")
@@ -51,7 +51,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
                 .setColor(config.colors.default_color)
                 .setDescription(`${message.author} has been flagged.`)
                 .setFooter({
-                    name: `ID: ${message.author.id}`,
+                    text: `ID: ${message.author.id}`,
                     iconURL: message.author.displayAvatarURL({ dynamic: true })
                 })
                 .addField("Reason", "Potentially Underage for NDA")
@@ -78,7 +78,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
                 .setColor(config.colors.default_color)
                 .setDescription(`${message.author} has been flagged.`)
                 .setFooter({
-                    name: `ID: ${message.author.id}`,
+                    text: `ID: ${message.author.id}`,
                     iconURL: message.author.displayAvatarURL({ dynamic: true })
                 })
                 .addField("Reason", "Leaking the NDA application")
@@ -136,7 +136,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
                                 .setTitle("Tag List")
                                 .setDescription(list.join("\n"))
                                 .setFooter({
-                                    name: config.text.footer,
+                                    text: config.text.footer,
                                     iconURL: message.guild.iconURL()
                                 })
                         ],

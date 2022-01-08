@@ -138,7 +138,7 @@ module.exports = class RobloxInfoCommand extends Command {
                     { name: "Creation Date", value: `<t:${accountCreationTimestamp}:d>`, inline: true },
                     { name: "Created", value: `<t:${accountCreationTimestamp}:R>`, inline: true }
                 ])
-                .setFooter({ name: `ID: ${ID}` })
+                .setFooter({ text: `ID: ${ID}` })
                 .setTimestamp();
 
             // Add a description to a field (if there is one)
