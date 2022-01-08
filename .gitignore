@@ -1,0 +1,10 @@
+# directories
+.vscode/
+node_modules/
+logs/
+site/
+
+# files
+.env
+version
+database.sqlite

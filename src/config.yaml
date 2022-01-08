@@ -1,0 +1,58 @@
+reboot_interval: 30
+max_listeners: 10
+debugging: false
+
+colors:
+  default_color: "#E0DBEE"
+  success_color: "#84F584"
+  error_color: "#202020"
+
+images:
+  avatar: "avatar.png"
+  avatar_dev: "avatar_dev.png"
+
+urls:
+  avatar: "./src/media/avatar.png"
+  avatar_dev: "./src/media/avatar_dev.png"
+
+ids:
+  channels:
+    public_no_mic: "920624159690735647"
+    nda_no_mic: "920624159690735647"
+    information: "922957941395570748"
+    staff: "920624159690735647"
+    logs: "922957941395570748"
+    faq: "922957941395570748"
+
+  voice_channels:
+    public_chat: "928721215034646548"
+    public_testing: "928721215034646548"
+    nda_chat: "928721215034646548"
+    nda_testing: "928721215034646548"
+
+  roles:
+    qa_lead: "914625617318801428"
+    server_administrator: "914625617318801428"
+    manager: "914625617318801428"
+    server_moderator: "914625617318801428"
+    moderator: "914625617318801428"
+    nda_verified: "914628469105782824"
+    public: "914628469105782824"
+
+  users:
+    developers: ["556206370429599755", "180803410306662401", "697765709580599406"]
+
+text:
+  opening_message: "Hello {name}, thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#922957941395570748> and the <#922957941395570748> channels to see if they answer your question."
+  ticket_name: "ticket-{number}"
+  footer: "Roblox QA Team"
+
+presence:
+  randomise: true
+  duration: 60
+  options:
+    [
+      { activity: "/new-ticket", type: "PLAYING" },
+      { activity: "with tickets", type: "PLAYING" },
+      { activity: "tickets", type: "WATCHING" },
+    ]
