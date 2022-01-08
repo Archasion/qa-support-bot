@@ -1,27 +1,27 @@
-const { Interaction, MessageEmbed, MessageAttachment } = require("discord.js");
+const { MessageEmbed, MessageAttachment } = require("discord.js");
 const Command = require("../modules/commands/command");
 
 const file = new MessageAttachment(config.urls.avatar, config.images.avatar);
 
 module.exports = class PanelCommand extends Command {
-    constructor(client) {
-        super(client, {
-            name: "panel",
-            description: "The ticket panel",
-            permissions: ["MANAGE_CHANNELS"],
-            staff_only: true,
-            dev_only: false,
-            internal: true,
-            options: []
-        });
-    }
+	constructor(client) {
+		super(client, {
+			name: "panel",
+			description: "The ticket panel",
+			permissions: ["MANAGE_CHANNELS"],
+			staff_only: true,
+			dev_only: false,
+			internal: true,
+			options: []
+		});
+	}
 
-    /**
-     * @param {Interaction} interaction
-     * @returns {Promise<void|any>}
-     */
-    async execute(interaction) {
-        const description = `Please read the following before creating a ticket
+	/**
+	 * @param {Interaction} interaction
+	 * @returns {Promise<void|any>}
+	 */
+	async execute(interaction) {
+		const description = `Please read the following before creating a ticket
 		
 		**We're not Roblox Support**
 		We cannot help you with any issues or reports related to Roblox, please contact Roblox Support instead
@@ -34,40 +34,38 @@ module.exports = class PanelCommand extends Command {
 		
 		\`/new-ticket (a brief description of your issue)\``;
 
-        var panel_channel;
+		const panel_channel = await interaction.guild.channels.create("create-a-ticket", {
+			position: 1,
+			reason: `${interaction.user.tag} created a new panel`,
+			type: "GUILD_TEXT",
+			permissionOverwrites: [
+				{
+					allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY"],
+					deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
+					id: interaction.guild.roles.everyone
+				},
+				{
+					allow: ["SEND_MESSAGES", "EMBED_LINKS", "ADD_REACTIONS"],
+					id: this.client.user.id
+				}
+			]
+		});
 
-        panel_channel = await interaction.guild.channels.create("create-a-ticket", {
-            position: 1,
-            reason: `${interaction.user.tag} created a new panel`,
-            type: "GUILD_TEXT",
-            permissionOverwrites: [
-                {
-                    allow: ["VIEW_CHANNEL", "READ_MESSAGE_HISTORY"],
-                    deny: ["SEND_MESSAGES", "ADD_REACTIONS"],
-                    id: interaction.guild.roles.everyone
-                },
-                {
-                    allow: ["SEND_MESSAGES", "EMBED_LINKS", "ADD_REACTIONS"],
-                    id: this.client.user.id
-                }
-            ]
-        });
+		panel_channel.send({
+			embeds: [
+				new MessageEmbed()
+					.setColor(config.colors.default_color)
+					.setTitle("Create Ticket")
+					.setDescription(description)
+					.setThumbnail(`attachment://${config.images.avatar}`)
+					.setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
+			],
+			files: [file]
+		});
 
-        panel_channel.send({
-            embeds: [
-                new MessageEmbed()
-                    .setColor(config.colors.default_color)
-                    .setTitle("Create Ticket")
-                    .setDescription(description)
-                    .setThumbnail(`attachment://${config.images.avatar}`)
-                    .setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
-            ],
-            files: [file]
-        });
-
-        await interaction.reply({
-            content: panel_channel.toString(),
-            ephemeral: true
-        });
-    }
+		await interaction.reply({
+			content: panel_channel.toString(),
+			ephemeral: true
+		});
+	}
 };

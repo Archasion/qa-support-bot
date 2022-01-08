@@ -1,0 +1,33 @@
+env:
+  browser: true
+  es2021: true
+extends:
+  - xo
+parserOptions:
+  ecmaVersion: 13
+  sourceType: module
+globals:
+  config: readonly
+  utils: readonly
+  cryptr: readonly
+  db: readonly
+  tickets: readonly
+  action: readonly
+  log: readonly
+rules:
+  no-negated-condition: off
+  operator-linebreak: off
+  no-useless-return: off
+  no-await-in-loop: off
+  comma-dangle: off
+  default-case: off
+  complexity: off
+  camelcase: off
+  no-eval: off
+  radix: off
+  quotes:
+    - error
+    - double
+  object-curly-spacing:
+    - error
+    - always
