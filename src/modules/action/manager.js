@@ -41,7 +41,7 @@ module.exports = class LoggingManager extends EventEmitter {
             })
             .setDescription(sb.join(""))
             .addField("Topic", `\`\`\`${topic}\`\`\``, false)
-            .setFooter(`ID: ${creator.id}`)
+            .setFooter({ name: `ID: ${creator.id}` })
             .setTimestamp();
 
         loggingChannel.send({ embeds: [embed] });
@@ -72,7 +72,7 @@ module.exports = class LoggingManager extends EventEmitter {
                 iconURL: creator.displayAvatarURL()
             })
             .setDescription(sb.join(""))
-            .setFooter(`ID: ${creator.id}`)
+            .setFooter({ name: `ID: ${creator.id}` })
             .setTimestamp();
 
         if (reason != null) embed.addField("Reason", `\`\`\`${reason}\`\`\``, false);
@@ -128,7 +128,7 @@ module.exports = class LoggingManager extends EventEmitter {
             })
             .setDescription(sb.join(""))
             .addField("New Topic", `\`\`\`${topic}\`\`\``, false)
-            .setFooter(`ID: ${creator.id}`)
+            .setFooter({ name: `ID: ${creator.id}` })
             .setTimestamp();
 
         loggingChannel.send({ embeds: [embed] });
@@ -158,7 +158,7 @@ module.exports = class LoggingManager extends EventEmitter {
             })
             .setDescription(sb.join(""))
             .addField("Added Member", `${member.tag} (\`${member.id}\`)`, false)
-            .setFooter(`ID: ${creator.id}`)
+            .setFooter({ name: `ID: ${creator.id}` })
             .setTimestamp();
 
         loggingChannel.send({ embeds: [embed] });
@@ -188,7 +188,7 @@ module.exports = class LoggingManager extends EventEmitter {
             })
             .setDescription(sb.join(""))
             .addField("Removed Member", `${member.tag} (\`${member.id}\`)`, false)
-            .setFooter(`ID: ${creator.id}`)
+            .setFooter({ name: `ID: ${creator.id}` })
             .setTimestamp();
 
         loggingChannel.send({ embeds: [embed] });

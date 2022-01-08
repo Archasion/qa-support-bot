@@ -91,7 +91,7 @@ module.exports = class TicketManager extends EventEmitter {
                 .setColor(config.colors.default_color)
                 .setAuthor({ name: creator.user.username, iconURL: creator.displayAvatarURL() })
                 .setDescription(description)
-                .setFooter(config.text.footer, guild.iconURL());
+                .setFooter({ name: config.text.footer, iconURL: guild.iconURL() });
 
             if (topic) embed.addField("Topic", topic);
 
@@ -151,10 +151,10 @@ module.exports = class TicketManager extends EventEmitter {
                             .setDescription(
                                 "Please briefly state what this ticket is about in a a few words."
                             )
-                            .setFooter(
-                                utils.footer(config.text.footer, "Expires in 120 seconds"),
-                                guild.iconURL()
-                            )
+                            .setFooter({
+                                name: `${config.text.footer} • Expires in 120 seconds`,
+                                iconURL: guild.iconURL()
+                            })
                     ]
                 });
 
@@ -176,7 +176,7 @@ module.exports = class TicketManager extends EventEmitter {
                             })
                             .setDescription(description)
                             .addField("Topic", topic)
-                            .setFooter(config.text.footer, guild.iconURL())
+                            .setFooter({ name: config.text.footer, iconURL: guild.iconURL() })
                     );
                     await message.react("");
                     collector.stop();
@@ -242,7 +242,7 @@ module.exports = class TicketManager extends EventEmitter {
                             })
                             .setTitle("Ticket Closed")
                             .setDescription(description)
-                            .setFooter(config.text.footer, guild.iconURL())
+                            .setFooter({ name: config.text.footer, iconURL: guild.iconURL() })
                     ]
                 });
 
@@ -266,7 +266,7 @@ module.exports = class TicketManager extends EventEmitter {
                             .setColor(config.colors.success_color)
                             .setTitle("Ticket Closed")
                             .setDescription(description)
-                            .setFooter(config.text.footer, guild.iconURL())
+                            .setFooter({ name: config.text.footer, iconURL: guild.iconURL() })
                     ]
                 });
 

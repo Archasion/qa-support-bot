@@ -54,7 +54,7 @@ module.exports = class ReminderInfoCommand extends Command {
                 { name: "Alert On", value: `<t:${reminder.after}:f>`, inline: true },
                 { name: "Reminder", value: reminder.message, inline: false }
             ])
-            .setFooter(`Reminder ID: ${reminder.reminder_id}`);
+            .setFooter({ name: `Reminder ID: ${reminder.reminder_id}` });
 
         await interaction.reply({
             embeds: [embed],

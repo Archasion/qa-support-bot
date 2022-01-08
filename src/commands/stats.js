@@ -56,7 +56,7 @@ module.exports = class StatsCommand extends Command {
             )
             .addField("Tickets", String(stats.tickets), true)
             .addField("Avg. response time", `${stats.response_time} minutes`, true)
-            .setFooter(config.text.footer, interaction.guild.iconURL());
+            .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() });
 
         if (stats.messages) guild_embed.addField("Messages", String(stats.messages), true);
 
@@ -95,7 +95,7 @@ module.exports = class StatsCommand extends Command {
                 )
                 .addField("Tickets", String(global.tickets), true)
                 .addField("Avg. response time", `${global.response_time} minutes`, true)
-                .setFooter(config.text.footer, interaction.guild.iconURL());
+                .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() });
 
             if (stats.messages) global_embed.addField("Messages", String(global.messages), true);
 

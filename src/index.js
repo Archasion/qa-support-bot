@@ -35,10 +35,8 @@ require("./utils/functions")();
 const { version } = require("../package.json");
 
 process.on("unhandledRejection", error => {
-    log.notice(`QA Support v${version}, Node v${process.versions.node} on ${process.platform}`);
-    log.warn("An error was not caught");
-    if (error instanceof Error) log.warn(`Uncaught ${error.name}`);
-    log.error(error);
+    if (error instanceof Error) log.warn(`Uncaught ${error.name} (${error.message})`);
+    if (error.message !== "Missing Access") log.error(error);
 });
 
 const ListenerLoader = require("./modules/listeners/loader");

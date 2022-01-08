@@ -60,7 +60,7 @@ module.exports = class PanelCommand extends Command {
                     .setTitle("Create Ticket")
                     .setDescription(description)
                     .setThumbnail(`attachment://${config.images.avatar}`)
-                    .setFooter(config.text.footer, interaction.guild.iconURL())
+                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
             ],
             files: [file]
         });

@@ -397,7 +397,7 @@ module.exports = class EmbedCommand extends Command {
         if (field_name_2 && field_value_2) embed.addField(field_name_2, field_value_2, field_inline_2);
         if (field_name_3 && field_value_3) embed.addField(field_name_3, field_value_3, field_inline_3);
 
-        if (footer) embed.setFooter(footer, footer_icon);
+        if (footer) embed.setFooter({ name: footer, iconURL: footer_icon });
         if (timestamp) embed.setTimestamp();
 
         await interaction.reply({

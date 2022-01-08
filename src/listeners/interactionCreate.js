@@ -65,7 +65,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                 .setDescription(
                                     `You already have an existing ticket: ${ticket_channels.rows[0].id}.`
                                 )
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     });
@@ -97,7 +100,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                         "\n"
                                     )}`
                                 )
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     });
@@ -119,7 +125,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                 })
                                 .setTitle("Ticket created")
                                 .setDescription(`Your ticket has been created: <#${ticket_row.id}>.`)
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     });
@@ -135,7 +144,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                 })
                                 .setTitle("Error")
                                 .setDescription(error.message)
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     });
@@ -189,7 +201,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                             })
                             .setTitle("Ticket Claimed")
                             .setDescription(`${interaction.member.toString()} has claimed this ticket.`)
-                            .setFooter(config.text.footer, interaction.guild.iconURL())
+                            .setFooter({
+                                name: config.text.footer,
+                                iconURL: interaction.guild.iconURL()
+                            })
                     ]
                 });
 
@@ -255,7 +270,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                             })
                             .setTitle("Ticket Released")
                             .setDescription(`${interaction.member.toString()} has released this ticket.`)
-                            .setFooter(config.text.footer, interaction.guild.iconURL())
+                            .setFooter({
+                                name: config.text.footer,
+                                iconURL: interaction.guild.iconURL()
+                            })
                     ]
                 });
 
@@ -308,10 +326,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                             .setColor(config.colors.default_color)
                             .setTitle("Are you sure?")
                             .setDescription("Please confirm your decision")
-                            .setFooter(
-                                utils.footer(config.text.footer, sprintf("Expires in %d seconds", 30)),
-                                interaction.guild.iconURL()
-                            )
+                            .setFooter({
+                                name: `${config.text.footer} • Expires in 30 seconds`,
+                                iconURL: interaction.guild.iconURL()
+                            })
                     ],
                     ephemeral: true
                 });
@@ -336,7 +354,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                     .setColor(config.colors.success_color)
                                     .setTitle("Ticket Closed")
                                     .setDescription(`Ticket ${ticket_row.number} has been closed`)
-                                    .setFooter(config.text.footer, interaction.guild.iconURL())
+                                    .setFooter({
+                                        name: config.text.footer,
+                                        iconURL: interaction.guild.iconURL()
+                                    })
                             ],
                             ephemeral: true
                         });
@@ -348,7 +369,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                     .setColor(config.colors.error_color)
                                     .setTitle("Cancelled")
                                     .setDescription("The operation has been cancelled.")
-                                    .setFooter(config.text.footer, interaction.guild.iconURL())
+                                    .setFooter({
+                                        name: config.text.footer,
+                                        iconURL: interaction.guild.iconURL()
+                                    })
                             ],
                             ephemeral: true
                         });
@@ -372,7 +396,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
                                     .setDescription(
                                         "You did not respond in time. The operation has been cancelled."
                                     )
-                                    .setFooter(config.text.footer, interaction.guild.iconURL())
+                                    .setFooter({
+                                        name: config.text.footer,
+                                        iconURL: interaction.guild.iconURL()
+                                    })
                             ],
                             ephemeral: true
                         });

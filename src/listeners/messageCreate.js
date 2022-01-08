@@ -1,5 +1,5 @@
 const EventListener = require("../modules/listeners/listener");
-const fetch = require("node-fetch");
+const fetch = import("node-fetch");
 const { MessageAttachment, MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 
 module.exports = class MessageCreateEventListener extends EventListener {
@@ -22,10 +22,10 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
                 .setColor(config.colors.default_color)
                 .setDescription(`${message.author} has been flagged.`)
-                .setFooter(
-                    `ID: ${message.author.id}`,
-                    message.author.displayAvatarURL({ dynamic: true })
-                )
+                .setFooter({
+                    name: `ID: ${message.author.id}`,
+                    iconURL: message.author.displayAvatarURL({ dynamic: true })
+                })
                 .addField("Reason", "Potentially Underage")
                 .addField("Message Content", `\`\`\`${message.content}\`\`\``)
                 .setTimestamp();
@@ -50,10 +50,10 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
                 .setColor(config.colors.default_color)
                 .setDescription(`${message.author} has been flagged.`)
-                .setFooter(
-                    `ID: ${message.author.id}`,
-                    message.author.displayAvatarURL({ dynamic: true })
-                )
+                .setFooter({
+                    name: `ID: ${message.author.id}`,
+                    iconURL: message.author.displayAvatarURL({ dynamic: true })
+                })
                 .addField("Reason", "Potentially Underage for NDA")
                 .addField("Message Content", `\`\`\`${message.content}\`\`\``)
                 .setTimestamp();
@@ -77,10 +77,10 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
                 .setColor(config.colors.default_color)
                 .setDescription(`${message.author} has been flagged.`)
-                .setFooter(
-                    `ID: ${message.author.id}`,
-                    message.author.displayAvatarURL({ dynamic: true })
-                )
+                .setFooter({
+                    name: `ID: ${message.author.id}`,
+                    iconURL: message.author.displayAvatarURL({ dynamic: true })
+                })
                 .addField("Reason", "Leaking the NDA application")
                 .addField("Message Content", `\`\`\`${message.content}\`\`\``)
                 .setTimestamp();
@@ -135,7 +135,10 @@ module.exports = class MessageCreateEventListener extends EventListener {
                                 .setColor(config.colors.default_color)
                                 .setTitle("Tag List")
                                 .setDescription(list.join("\n"))
-                                .setFooter(config.text.footer, message.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: message.guild.iconURL()
+                                })
                         ],
                         files: [attachment]
                     });

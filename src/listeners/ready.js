@@ -47,7 +47,7 @@ module.exports = class ReadyEventListener extends EventListener {
                                 `You asked me to give you a reminder <t:${reminder.before}:R> (<t:${reminder.before}:f>)`
                             )
                             .addField("Reminder", reminder.message)
-                            .setFooter(`${now - after}ms late`)
+                            .setFooter({ name: `${now - after}ms late` })
                     ]
                 });
 

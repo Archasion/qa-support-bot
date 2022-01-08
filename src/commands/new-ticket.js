@@ -52,7 +52,10 @@ module.exports = class NewCommand extends Command {
                                 .setDescription(
                                     `Please use your existing ticket (<#${ticket_channels.rows[0].id}>) or close it before creating another.`
                                 )
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     };
@@ -90,7 +93,10 @@ module.exports = class NewCommand extends Command {
                                         "\n"
                                     )}`
                                 )
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     };
@@ -119,7 +125,10 @@ module.exports = class NewCommand extends Command {
                                 })
                                 .setTitle("Ticket created")
                                 .setDescription(`Your ticket has been created: <#${ticket.id}>.`)
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     };
@@ -140,7 +149,10 @@ module.exports = class NewCommand extends Command {
                                 })
                                 .setTitle("Error")
                                 .setDescription(error.message)
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     };
@@ -169,7 +181,7 @@ module.exports = class NewCommand extends Command {
                         .setDescription(
                             "A server administrator must create at least one ticket category before a new ticket can be opened."
                         )
-                        .setFooter(config.text.footer, interaction.guild.iconURL())
+                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });
@@ -199,13 +211,10 @@ module.exports = class NewCommand extends Command {
                         })
                         .setTitle("Please select the ticket category")
                         .setDescription("Select the category most relevant to your ticket's topic.")
-                        .setFooter(
-                            utils.footer(
-                                config.text.footer,
-                                "Expires in 30 seconds",
-                                interaction.guild.iconURL()
-                            )
-                        )
+                        .setFooter({
+                            name: `${config.text.footer} • Expires in 30 seconds`,
+                            iconURL: interaction.guild.iconURL()
+                        })
                 ],
                 ephemeral: true
             });
@@ -240,7 +249,10 @@ module.exports = class NewCommand extends Command {
                                 })
                                 .setTitle("Interaction time expired")
                                 .setDescription("You took too long to select the ticket category.")
-                                .setFooter(config.text.footer, interaction.guild.iconURL())
+                                .setFooter({
+                                    name: config.text.footer,
+                                    iconURL: interaction.guild.iconURL()
+                                })
                         ],
                         ephemeral: true
                     });

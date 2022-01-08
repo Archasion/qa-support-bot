@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 const roblox = require("noblox.js");
-const fetch = require("node-fetch");
+const fetch = import("node-fetch");
 
 const { MessageEmbed } = require("discord.js");
 
@@ -138,7 +138,7 @@ module.exports = class RobloxInfoCommand extends Command {
                     { name: "Creation Date", value: `<t:${accountCreationTimestamp}:d>`, inline: true },
                     { name: "Created", value: `<t:${accountCreationTimestamp}:R>`, inline: true }
                 ])
-                .setFooter(`ID: ${ID}`)
+                .setFooter({ name: `ID: ${ID}` })
                 .setTimestamp();
 
             // Add a description to a field (if there is one)

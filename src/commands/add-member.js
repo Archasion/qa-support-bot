@@ -46,7 +46,7 @@ module.exports = class AddCommand extends Command {
                         .setDescription(
                             "Please use this command in the ticket channel, or mention the channel."
                         )
-                        .setFooter(config.text.footer, interaction.guild.iconURL())
+                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });
@@ -59,7 +59,7 @@ module.exports = class AddCommand extends Command {
                         .setColor(config.colors.error_color)
                         .setTitle("Unknown member")
                         .setDescription("Please mention the member you want to add.")
-                        .setFooter(config.text.footer, interaction.guild.iconURL())
+                        .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
                 ],
                 ephemeral: true
             });
@@ -76,7 +76,7 @@ module.exports = class AddCommand extends Command {
                     })
                     .setTitle("Member added")
                     .setDescription(`${member.toString()} has been added to ${channel.toString()}`)
-                    .setFooter(config.text.footer, interaction.guild.iconURL())
+                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
             ],
             ephemeral: true
         });
@@ -94,7 +94,7 @@ module.exports = class AddCommand extends Command {
                     .setDescription(
                         `${member.toString()} has been added by ${interaction.user.toString()}`
                     )
-                    .setFooter(config.text.footer, interaction.guild.iconURL())
+                    .setFooter({ name: config.text.footer, iconURL: interaction.guild.iconURL() })
             ]
         });
 
