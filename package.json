@@ -2,6 +2,7 @@
   "name": "@archasion/qa-support",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "description": "QA Support",
   "main": "src/index.js",
   "scripts": {
