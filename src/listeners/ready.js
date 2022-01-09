@@ -24,13 +24,6 @@ module.exports = class ReadyEventListener extends EventListener {
 			}, config.presence.duration * 1000);
 		}
 
-		setInterval(async () => {
-			log.info("Rebooting...");
-			await this.client.destroy();
-			await this.client.login(process.env.DISCORD_TOKEN);
-			log.info("Rebooted Successfully!");
-		}, config.reboot_interval * 60000);
-
 		const reminders = await db.models.Reminder.findAll();
 		await reminders.forEach(async reminder => {
 			const after = reminder.after * 1000;

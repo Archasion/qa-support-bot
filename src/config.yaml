@@ -1,4 +1,3 @@
-reboot_interval: 30
 max_listeners: 10
 debugging: false
 
