@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 const Command = require("../modules/commands/command");
 const roblox = require("noblox.js");
-import fetch from "node-fetch";
+const fetch = require("node-fetch");
 
 const { MessageEmbed } = require("discord.js");
 

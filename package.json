@@ -2,7 +2,6 @@
   "name": "@archasion/qa-support",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
   "description": "QA Support",
   "main": "src/index.js",
   "scripts": {
@@ -29,7 +28,7 @@
     "leekslazylogger": "^3.0.2",
     "ms": "^2.1.3",
     "noblox.js": "^4.12.0",
-    "node-fetch": "^3.1.0",
+    "node-fetch": "^2.6.6",
     "sequelize": "^6.12.5",
     "sqlite": "^4.0.23"
   },

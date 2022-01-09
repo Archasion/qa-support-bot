@@ -1,5 +1,5 @@
 const EventListener = require("../modules/listeners/listener");
-const fetch = import("node-fetch");
+const fetch = require("node-fetch");
 const { MessageAttachment, MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 
 module.exports = class MessageCreateEventListener extends EventListener {
