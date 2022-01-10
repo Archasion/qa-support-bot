@@ -25,7 +25,12 @@ module.exports = class DiscordUtils {
 	 * @returns {boolean}
 	 */
 	async isStaff(member) {
-		return member.roles.cache.has(config.ids.roles.moderator);
+		return member.roles.cache.some(
+			role =>
+				role.id === config.ids.roles.moderator ||
+				role.id === config.ids.roles.manager ||
+				role.id === config.ids.roles.qa_lead
+		);
 	}
 
 	/**

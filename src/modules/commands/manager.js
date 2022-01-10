@@ -82,6 +82,7 @@ module.exports = class CommandManager {
 			const permissions = [];
 			const settings = await utils.getSettings(guild.id);
 			const blacklist = [];
+
 			settings.blacklist.users?.forEach(userId => {
 				blacklist.push({
 					id: userId,
@@ -89,6 +90,7 @@ module.exports = class CommandManager {
 					type: "USER"
 				});
 			});
+
 			settings.blacklist.roles?.forEach(roleId => {
 				blacklist.push({
 					id: roleId,
@@ -97,7 +99,12 @@ module.exports = class CommandManager {
 				});
 			});
 
-			const staff_roles = ["914625617318801428"];
+			const staff_roles = [
+				config.ids.roles.moderator,
+				config.ids.roles.manager,
+				config.ids.roles.qa_lead
+			];
+
 			const { developers } = config.ids.users;
 
 			commands.forEach(async g_cmd => {

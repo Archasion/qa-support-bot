@@ -1,50 +1,78 @@
 max_listeners: 10
 debugging: false
 
+
 colors:
   default_color: "#E0DBEE"
   success_color: "#84F584"
   error_color: "#202020"
 
+
 images:
   avatar: "avatar.png"
   avatar_dev: "avatar_dev.png"
+
 
 urls:
   avatar: "./src/media/avatar.png"
   avatar_dev: "./src/media/avatar_dev.png"
 
+
 ids:
   channels:
-    public_no_mic: "920624159690735647"
-    nda_no_mic: "920624159690735647"
-    information: "922957941395570748"
-    staff: "920624159690735647"
-    logs: "922957941395570748"
-    faq: "922957941395570748"
+    information: "930174084992626708"
+    faq: "930174011613270016"
+
+    public: "930164679555305482"
+    nda: "930163981660848188"
+    accelerator: "930178455721607210"
+
+    public_no_mic: "930159969775538217"
+    nda_no_mic: "930163993589456896"
+
+    public_sessions: "930165256473440297"
+    nda_sessions: "930164246476627978"
+    accel_sessions: "930172872805212240"
+
+    server_mods: "930163787498143754"
+    testing_requests: "930163808079605760"
+    
+    moderation: "930163635882446928"
+    ticket_logs: "930160191318683738"
+
 
   voice_channels:
-    public_chat: "928721215034646548"
-    public_testing: "928721215034646548"
-    nda_chat: "928721215034646548"
-    nda_testing: "928721215034646548"
+    public: "930159893351137382"
+    nda: "930164012853891132"
+    accelerator: "930172968192069642"
+    
+    public_testing: "930165276547350529"
+    nda_testing: "930164293733859459"
+
 
   roles:
-    qa_lead: "914625617318801428"
-    server_administrator: "914625617318801428"
-    manager: "914625617318801428"
-    server_moderator: "914625617318801428"
-    moderator: "914625617318801428"
-    nda_verified: "914628469105782824"
-    public: "914628469105782824"
+    qa_lead: "930160597717381140"
+    server_administrator: "930160750276784179"
+    manager: "930160716110000179"
+    roblox_staff: "930160884846837791"
+    server_moderator: "930160661114261564"
+    moderator: "930160777690742836"
+    accelerator: "930173203664482314"
+    nda_verified: "930160862327607306"
+    active_tester: "930185712454729729"
+    devforum_regular: "930185534796627970"
+    public: "930160924420096070"
+
 
   users:
     developers: ["556206370429599755", "180803410306662401", "697765709580599406"]
+
 
 text:
   opening_message: "Hello {name}, thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#922957941395570748> and the <#922957941395570748> channels to see if they answer your question."
   ticket_name: "ticket-{number}"
   footer: "Roblox QA Team"
+
 
 presence:
   randomise: true

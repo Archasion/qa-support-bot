@@ -15,6 +15,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		const settings = await utils.getSettings(message.guild.id);
 		const ticket_row = await db.models.Ticket.findOne({ where: { id: message.channel.id } });
 
+		// ANCHOR OTENTIALLY UNDERAGE
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-2])(\s|$)/gi) &&
 			!message.member.roles.cache.has(config.ids.roles.moderator) &&
@@ -36,13 +37,14 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.ids.channels.staff).send({
+			message.guild.channels.cache.get(config.ids.channels.moderation).send({
 				content: `<@&${config.ids.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
 			});
 		}
 
+		// ANCHOR POTENTIALLY UNDERAGE FOR NDA
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-4])(\s|$)/gi) &&
 			!message.member.roles.cache.has(config.ids.roles.moderator) &&
@@ -64,13 +66,14 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.ids.channels.staff).send({
+			message.guild.channels.cache.get(config.ids.channels.moderation).send({
 				content: `<@&${config.ids.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
 			});
 		}
 
+		// ANCHOR LEAKING NDA FORM
 		if (
 			message.content.includes(process.env.NDA_FORM_KEY) &&
 			!message.member.roles.cache.has(config.ids.roles.moderator)
@@ -91,7 +94,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.ids.channels.staff).send({
+			message.guild.channels.cache.get(config.ids.channels.moderation).send({
 				content: `<@&${config.ids.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]

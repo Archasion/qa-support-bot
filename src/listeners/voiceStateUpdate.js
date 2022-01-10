@@ -17,21 +17,44 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 			newVCState = newMember.channelId;
 		}
 
-		const textChannel = await this.client.channels.cache.get(config.ids.channels.public_no_mic);
-		const voiceChannel = config.ids.voice_channels.public_testing;
+		const publicNoMic = await this.client.channels.cache.get(config.ids.channels.public_no_mic);
+		const ndaNoMic = await this.client.channels.cache.get(config.ids.channels.nda_no_mic);
+
+		const publicVC = config.ids.voice_channels.public;
+		const ndaVC = config.ids.voice_channels.nda;
+
+		const publicTestingVC = config.ids.voice_channels.public_testing;
+		const ndaTestingVC = config.ids.voice_channels.nda_testing;
 
 		const user = await this.client.users.fetch(newMember.id);
 
-		if (oldVCState === voiceChannel && !newVCState) {
-			await textChannel.permissionOverwrites.create(user, {
-				VIEW_CHANNEL: true,
-				SEND_MESSAGES: true
-			});
-		} else {
-			await textChannel.permissionOverwrites.delete(
+		async function hideChannel(channelTohide) {
+			await channelTohide.permissionOverwrites.delete(
 				user,
 				"User left VC, no-mic is no longer needed"
 			);
 		}
+
+		// No-mic for public VC
+		if (
+			(oldVCState === publicVC && newVCState !== publicVC) ||
+			(oldVCState === publicTestingVC && newVCState !== publicTestingVC)
+		) {
+			await publicNoMic.permissionOverwrites.create(user, {
+				VIEW_CHANNEL: true,
+				SEND_MESSAGES: true
+			});
+		} else hideChannel(publicNoMic);
+
+		// No-mic for NDA VC
+		if (
+			(oldVCState === ndaVC && newVCState !== ndaVC) ||
+			(oldVCState === ndaTestingVC && newVCState !== ndaTestingVC)
+		) {
+			await ndaNoMic.permissionOverwrites.create(user, {
+				VIEW_CHANNEL: true,
+				SEND_MESSAGES: true
+			});
+		} else hideChannel(ndaNoMic);
 	}
 };
