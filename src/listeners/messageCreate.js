@@ -152,7 +152,6 @@ module.exports = class MessageCreateEventListener extends EventListener {
 					});
 				}
 			}
-			// eslint-disable-next-line no-useless-return, curly
 		} else if (message.author.bot) return;
 	}
 };

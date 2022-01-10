@@ -6,7 +6,6 @@ module.exports = class MessageDeleteEventListener extends EventListener {
 	}
 
 	async execute(message) {
-		// eslint-disable-next-line no-useless-return, curly
 		if (!message.guild) return;
 	}
 };

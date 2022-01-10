@@ -14,7 +14,6 @@ module.exports = class MessageUpdateEventListener extends EventListener {
 			}
 		}
 
-		// eslint-disable-next-line no-useless-return, curly
 		if (!newm.guild) return;
 	}
 };
