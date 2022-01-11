@@ -1,6 +1,5 @@
 const EventListener = require("../modules/listeners/listener");
-const fetch = require("node-fetch");
-const { MessageAttachment, MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 
 module.exports = class MessageCreateEventListener extends EventListener {
 	constructor(client) {
@@ -8,19 +7,58 @@ module.exports = class MessageCreateEventListener extends EventListener {
 	}
 
 	async execute(message) {
-		if (!message.guild) {
-			return;
-		}
+		if (!message.guild) return;
 
-		const settings = await utils.getSettings(message.guild.id);
-		const ticket_row = await db.models.Ticket.findOne({ where: { id: message.channel.id } });
-
-		// ANCHOR OTENTIALLY UNDERAGE
+		// ANCHOR UNDERAGE
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-2])(\s|$)/gi) &&
 			!message.member.roles.cache.has(config.ids.roles.moderator) &&
 			!message.member.roles.cache.has(config.ids.roles.nda_verified)
 		) {
+			potentiallyUnderage();
+		}
+
+		// ANCHOR UNDERAGE [NDA]
+		if (
+			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-4])(\s|$)/gi) &&
+			!message.member.roles.cache.has(config.ids.roles.moderator) &&
+			message.member.roles.cache.has(config.ids.roles.nda_verified)
+		) {
+			potentiallyUnderageNDA();
+		}
+
+		// ANCHOR APPLICATION LEAK
+		if (
+			message.content.includes(process.env.NDA_FORM_KEY) &&
+			!message.member.roles.cache.has(config.ids.roles.moderator)
+		) {
+			leakingApplication();
+		}
+
+		// ANCHOR TICKETS
+		const ticket_row = await db.models.Ticket.findOne({
+			where: { id: message.channel.id }
+		});
+
+		if (ticket_row) {
+			const ignore = [this.client.user.id, ticket_row.creator];
+			if (!ticket_row.first_response && !ignore.includes(message.author.id)) {
+				ticket_row.first_response = new Date();
+			}
+
+			ticket_row.last_message = new Date();
+			await ticket_row.save();
+		} else if (message.author.bot) return;
+
+		// ANCHOR FUNCTIONS
+
+		/**
+		 * Response to an underage flag
+		 * @name potentiallyUnderage
+		 * @returns {Promise} Sends the alert in the moderation channel
+		 * @function
+		 */
+		async function potentiallyUnderage() {
 			const embed = new MessageEmbed()
 
 				.setColor(config.colors.default_color)
@@ -44,12 +82,13 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			});
 		}
 
-		// ANCHOR POTENTIALLY UNDERAGE FOR NDA
-		if (
-			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-4])(\s|$)/gi) &&
-			!message.member.roles.cache.has(config.ids.roles.moderator) &&
-			message.member.roles.cache.has(config.ids.roles.nda_verified)
-		) {
+		/**
+		 * Response to an underage flag (For NDA)
+		 * @name potentiallyUnderageNDA
+		 * @returns {Promise} Sends the alert in the moderation channel
+		 * @function
+		 */
+		async function potentiallyUnderageNDA() {
 			const embed = new MessageEmbed()
 
 				.setColor(config.colors.default_color)
@@ -73,11 +112,13 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			});
 		}
 
-		// ANCHOR LEAKING NDA FORM
-		if (
-			message.content.includes(process.env.NDA_FORM_KEY) &&
-			!message.member.roles.cache.has(config.ids.roles.moderator)
-		) {
+		/**
+		 * Response to an underage flag (For NDA)
+		 * @name leakingApplication
+		 * @returns {Promise} Sends the alert in the moderation channel
+		 * @function
+		 */
+		async function leakingApplication() {
 			const embed = new MessageEmbed()
 
 				.setColor(config.colors.default_color)
@@ -100,58 +141,5 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				embeds: [embed]
 			});
 		}
-
-		if (ticket_row) {
-			const ignore = [this.client.user.id, ticket_row.creator];
-			if (!ticket_row.first_response && !ignore.includes(message.author.id)) {
-				ticket_row.first_response = new Date();
-			}
-
-			ticket_row.last_message = new Date();
-			await ticket_row.save();
-		} else if (message.content.startsWith("tickets/")) {
-			if (!message.member.permissions.has("MANAGE_GUILD")) {
-				return;
-			}
-
-			if (message.content.toLowerCase().match(/tickets\/tags/i)) {
-				const attachments = [...message.attachments.values()];
-
-				if (attachments.length >= 1) {
-					log.info(`Downloading tags for "${message.guild.name}"`);
-					const data = await (await fetch(attachments[0].url)).json();
-					settings.tags = data;
-					await settings.save();
-					log.success(`Updated tags for "${message.guild.name}"`);
-					this.client.commands.publish(message.guild);
-
-					message.channel.send({
-						content: "The settings have been updated.",
-						ephermal: true
-					});
-				} else {
-					const list = Object.keys(settings.tags).map(t => `❯ **\`${t}\`**`);
-
-					const attachment = new MessageAttachment(
-						Buffer.from(JSON.stringify(settings.tags, null, 2)),
-						"tags.json"
-					);
-
-					return message.channel.send({
-						embeds: [
-							new MessageEmbed()
-								.setColor(config.colors.default_color)
-								.setTitle("Tag List")
-								.setDescription(list.join("\n"))
-								.setFooter({
-									text: config.text.footer,
-									iconURL: message.guild.iconURL()
-								})
-						],
-						files: [attachment]
-					});
-				}
-			}
-		} else if (message.author.bot) return;
 	}
 };
