@@ -113,7 +113,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		}
 
 		/**
-		 * Response to an underage flag (For NDA)
+		 * Response to an application leak
 		 * @name leakingApplication
 		 * @returns {Promise} Sends the alert in the moderation channel
 		 * @function
