@@ -68,12 +68,21 @@ class Bot extends Client {
 		super({
 			intents: [
 				Intents.FLAGS.GUILDS,
+				Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
 				Intents.FLAGS.GUILD_MEMBERS,
 				Intents.FLAGS.GUILD_MESSAGES,
 				Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-				Intents.FLAGS.GUILD_VOICE_STATES
+				Intents.FLAGS.GUILD_VOICE_STATES,
+				Intents.FLAGS.GUILD_SCHEDULED_EVENTS
 			],
-			partials: ["CHANNEL", "MESSAGE", "REACTION", "VOICE"],
+			partials: [
+				"CHANNEL",
+				"MESSAGE",
+				"REACTION",
+				"VOICE",
+				"GUILD_SCHEDULED_EVENT",
+				"GUILD_MEMBER"
+			],
 			presence: DiscordUtils.selectPresence()
 		});
 

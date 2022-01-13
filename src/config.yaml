@@ -19,6 +19,12 @@ urls:
 
 
 ids:
+  guild: "930159892906516480"
+
+  messages:
+    testing_requests: "931264247130882088"
+
+
   channels:
     information: "930174084992626708"
     faq: "930174011613270016"
@@ -34,7 +40,6 @@ ids:
     nda_sessions: "930164246476627978"
     accel_sessions: "930172872805212240"
 
-    server_mods: "930163787498143754"
     testing_requests: "930163808079605760"
     
     moderation: "930163635882446928"

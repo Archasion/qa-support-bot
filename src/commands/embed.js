@@ -400,7 +400,7 @@ module.exports = class EmbedCommand extends Command {
 		}
 
 		if (description) {
-			embed.setDescription(description);
+			embed.setDescription(description.format());
 		}
 
 		if (field_name_1 && field_value_1) {
