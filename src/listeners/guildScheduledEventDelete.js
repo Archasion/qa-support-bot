@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 /* eslint-disable no-useless-escape */
 const EventListener = require("../modules/listeners/listener");
 
