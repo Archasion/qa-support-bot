@@ -83,7 +83,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								);
 
 								await member.send(
-									`Hey there, we have just reviewed your request for **${
+									`Hey there, we've reviewed your request for **${
 										embed.title
 									}** to be tested by our **${
 										embed.author.name.split(" ")[0]
