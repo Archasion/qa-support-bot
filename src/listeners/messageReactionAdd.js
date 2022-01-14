@@ -80,9 +80,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 							try {
 								const usernameRegex = new RegExp(/Username:\s([\w\d_]+),/gims);
 								const username = usernameRegex.exec(embed.footer.text)[1];
-								const member = guild.members.cache.find(
-									member => member.nickname === username
-								);
+								let member = await guild.members.search({ query: username });
+								member = member.first();
 
 								await member.send(
 									`Hey there, we've reviewed your request for **${
