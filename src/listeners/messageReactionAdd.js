@@ -65,12 +65,14 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 									m.edit({
 										content: `${m.content}\n\n> ${
 											embed.author.name === "NDA Test" ? "🔒 " : ""
-										}**${embed.title}** <t:${timestamp / 1000}:F>\n> ${m.url}`
+										}**${embed.title}** <t:${timestamp / 1000}:F>\n> ${message.url}`
 									})
 								);
 
 							moderationChannel.send(
-								`${user} The \`${embed.author.name}\` has been scheduled for <t:${
+								`${user} The \`${embed.author.name}\` for **${
+									embed.title
+								}** has been scheduled for <t:${
 									timestamp / 1000
 								}:F>\nhttps://discord.com/events/${guild.id}/${testingSession.id}`
 							);

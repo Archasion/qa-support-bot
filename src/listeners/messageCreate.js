@@ -35,6 +35,19 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			leakingApplication();
 		}
 
+		// ANCHOR VALIDATE APPLICATION
+		if (message.channel.id === config.ids.channels.nda_applications && message.author.bot) {
+			const username = message.embeds[0].author.name;
+			try {
+				let member = await message.guild.members.search({ query: username });
+				member = member.first();
+
+				if (!member.roles.cache.has(config.ids.roles.active_tester)) message.react("⚠️");
+			} catch {
+				message.react("⚠️");
+			}
+		}
+
 		// ANCHOR TICKETS
 		const ticket_row = await db.models.Ticket.findOne({
 			where: { id: message.channel.id }
