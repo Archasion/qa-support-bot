@@ -14,8 +14,8 @@ module.exports = class ReadyEventListener extends EventListener {
 		log.success(`Connected to Discord as "${this.client.user.tag}"`);
 
 		log.info("Loading commands");
-		this.client.commands.load(); // Load internal commands
-		this.client.commands.publish(); // Send commands to discord
+		this.client.commands.load();
+		this.client.commands.publish();
 
 		if (config.presence.options.length > 1) {
 			const { selectPresence } = require("../utils/discord");
