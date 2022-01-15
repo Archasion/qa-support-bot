@@ -8,7 +8,7 @@ module.exports = class GuildScheduledEventDeleteEventListener extends EventListe
 
 	async execute(event) {
 		event.guild.channels.cache
-			.get(config.channels.moderation)
+			.get(config.channels.moderation.chat)
 			.messages.fetch(config.messages.testing_requests)
 			.then(async message => {
 				const replaceRegex = new RegExp(

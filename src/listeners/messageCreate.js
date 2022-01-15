@@ -88,7 +88,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.channels.moderation).send({
+			message.guild.channels.cache.get(config.channels.moderation.chat).send({
 				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
@@ -118,7 +118,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.channels.moderation).send({
+			message.guild.channels.cache.get(config.channels.moderation.chat).send({
 				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
@@ -148,7 +148,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.channels.moderation).send({
+			message.guild.channels.cache.get(config.channels.moderation.chat).send({
 				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]

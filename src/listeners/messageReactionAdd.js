@@ -8,7 +8,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 	async execute(reaction, user) {
 		const guild = reaction.message.guild;
-		const moderationChannel = guild.channels.cache.get(config.channels.moderation);
+		const moderationChannel = guild.channels.cache.get(config.channels.moderation.chat);
 
 		if (reaction.message.channel.id === config.channels.moderation.requests) {
 			if (!utils.isStaff(guild.members.cache.get(user.id))) return;

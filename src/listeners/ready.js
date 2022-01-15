@@ -27,7 +27,7 @@ module.exports = class ReadyEventListener extends EventListener {
 
 		const guild = this.client.guilds.cache.get(config.guild);
 		guild.channels.cache
-			.get(config.channels.moderation)
+			.get(config.channels.moderation.chat)
 			.messages.fetch(config.messages.testing_requests)
 			.then(async message => {
 				const newTestMessage = [];
