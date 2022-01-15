@@ -36,7 +36,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		}
 
 		// ANCHOR VALIDATE APPLICATION
-		if (message.channel.id === config.channels.moderation.applications && message.author.bot) {
+		if (message.channel.id === config.channels.management.applications && message.author.bot) {
 			const username = message.embeds[0].author.name;
 			try {
 				let member = await message.guild.members.search({ query: username });
