@@ -17,14 +17,14 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 			newVCState = newMember.channelId;
 		}
 
-		const publicNoMic = await this.client.channels.cache.get(config.ids.channels.public_no_mic);
-		const ndaNoMic = await this.client.channels.cache.get(config.ids.channels.nda_no_mic);
+		const publicNoMic = await this.client.channels.cache.get(config.channels.public.no_mic);
+		const ndaNoMic = await this.client.channels.cache.get(config.channels.nda.no_mic);
 
-		const publicVC = config.ids.voice_channels.public;
-		const ndaVC = config.ids.voice_channels.nda;
+		const publicVC = config.vcs.public.chat;
+		const ndaVC = config.vcs.nda.chat;
 
-		const publicTestingVC = config.ids.voice_channels.public_testing;
-		const ndaTestingVC = config.ids.voice_channels.nda_testing;
+		const publicTestingVC = config.vcs.public.testing;
+		const ndaTestingVC = config.vcs.nda.testing;
 
 		const user = await this.client.users.fetch(newMember.id);
 

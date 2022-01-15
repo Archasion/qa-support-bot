@@ -27,9 +27,9 @@ module.exports = class DiscordUtils {
 	async isStaff(member) {
 		return member.roles.cache.some(
 			role =>
-				role.id === config.ids.roles.moderator ||
-				role.id === config.ids.roles.manager ||
-				role.id === config.ids.roles.qa_lead
+				role.id === config.roles.moderator ||
+				role.id === config.roles.manager ||
+				role.id === config.roles.qa_lead
 		);
 	}
 
@@ -39,7 +39,7 @@ module.exports = class DiscordUtils {
 	 * @returns {boolean}
 	 */
 	async isDeveloper(member) {
-		return config.ids.users.developers.includes(member.id);
+		return config.users.developers.includes(member.id);
 	}
 
 	/**

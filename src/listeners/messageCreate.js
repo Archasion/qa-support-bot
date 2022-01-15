@@ -12,8 +12,8 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		// ANCHOR UNDERAGE
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-2])(\s|$)/gi) &&
-			!message.member.roles.cache.has(config.ids.roles.moderator) &&
-			!message.member.roles.cache.has(config.ids.roles.nda_verified)
+			!message.member.roles.cache.has(config.roles.moderator) &&
+			!message.member.roles.cache.has(config.roles.nda_verified)
 		) {
 			potentiallyUnderage();
 		}
@@ -21,8 +21,8 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		// ANCHOR UNDERAGE [NDA]
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-4])(\s|$)/gi) &&
-			!message.member.roles.cache.has(config.ids.roles.moderator) &&
-			message.member.roles.cache.has(config.ids.roles.nda_verified)
+			!message.member.roles.cache.has(config.roles.moderator) &&
+			message.member.roles.cache.has(config.roles.nda_verified)
 		) {
 			potentiallyUnderageNDA();
 		}
@@ -30,19 +30,19 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		// ANCHOR APPLICATION LEAK
 		if (
 			message.content.includes(process.env.NDA_FORM_KEY) &&
-			!message.member.roles.cache.has(config.ids.roles.moderator)
+			!message.member.roles.cache.has(config.roles.moderator)
 		) {
 			leakingApplication();
 		}
 
 		// ANCHOR VALIDATE APPLICATION
-		if (message.channel.id === config.ids.channels.nda_applications && message.author.bot) {
+		if (message.channel.id === config.channels.moderation.applications && message.author.bot) {
 			const username = message.embeds[0].author.name;
 			try {
 				let member = await message.guild.members.search({ query: username });
 				member = member.first();
 
-				if (!member.roles.cache.has(config.ids.roles.active_tester)) message.react("⚠️");
+				if (!member.roles.cache.has(config.roles.active_tester)) message.react("⚠️");
 			} catch {
 				message.react("⚠️");
 			}
@@ -88,8 +88,8 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.ids.channels.moderation).send({
-				content: `<@&${config.ids.roles.moderator}>`,
+			message.guild.channels.cache.get(config.channels.moderation).send({
+				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
 			});
@@ -118,8 +118,8 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.ids.channels.moderation).send({
-				content: `<@&${config.ids.roles.moderator}>`,
+			message.guild.channels.cache.get(config.channels.moderation).send({
+				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
 			});
@@ -148,8 +148,8 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.ids.channels.moderation).send({
-				content: `<@&${config.ids.roles.moderator}>`,
+			message.guild.channels.cache.get(config.channels.moderation).send({
+				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
 			});

@@ -99,13 +99,9 @@ module.exports = class CommandManager {
 				});
 			});
 
-			const staff_roles = [
-				config.ids.roles.moderator,
-				config.ids.roles.manager,
-				config.ids.roles.qa_lead
-			];
+			const staff_roles = [config.roles.moderator, config.roles.manager, config.roles.qa_lead];
 
-			const { developers } = config.ids.users;
+			const { developers } = config.users;
 
 			commands.forEach(async g_cmd => {
 				const cmd_permissions = [...blacklist];

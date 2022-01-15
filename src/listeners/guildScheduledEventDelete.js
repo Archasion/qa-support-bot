@@ -8,13 +8,11 @@ module.exports = class GuildScheduledEventDeleteEventListener extends EventListe
 
 	async execute(event) {
 		event.guild.channels.cache
-			.get(config.ids.channels.moderation)
-			.messages.fetch(config.ids.messages.testing_requests)
+			.get(config.channels.moderation)
+			.messages.fetch(config.messages.testing_requests)
 			.then(async message => {
 				const replaceRegex = new RegExp(
-					`\n\n>\\s${
-						event.channel.id === config.ids.voice_channels.nda_testing ? "🔒" : ""
-					}.+<t:${
+					`\n\n>\\s${event.channel.id === config.vcs.nda.testing ? "🔒" : ""}.+<t:${
 						event.scheduledStartTimestamp / 1000
 					}:F>\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`,
 					"gmis"

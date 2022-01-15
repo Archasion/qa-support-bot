@@ -25,10 +25,10 @@ module.exports = class ReadyEventListener extends EventListener {
 			}, config.presence.duration * 1000);
 		}
 
-		const guild = this.client.guilds.cache.get(config.ids.guild);
+		const guild = this.client.guilds.cache.get(config.guild);
 		guild.channels.cache
-			.get(config.ids.channels.moderation)
-			.messages.fetch(config.ids.messages.testing_requests)
+			.get(config.channels.moderation)
+			.messages.fetch(config.messages.testing_requests)
 			.then(async message => {
 				const newTestMessage = [];
 				const messageContent = message.content;
@@ -39,9 +39,7 @@ module.exports = class ReadyEventListener extends EventListener {
 
 				events.forEach(event => {
 					const regex = new RegExp(
-						`\n\n>\\s${
-							event.channel.id === config.ids.voice_channels.nda_testing ? "🔒" : ""
-						}.+<t:${
+						`\n\n>\\s${event.channel.id === config.vcs.nda.testing ? "🔒" : ""}.+<t:${
 							event.startTime / 1000
 						}:F>\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`,
 						"gmis"

@@ -8,9 +8,9 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 	async execute(reaction, user) {
 		const guild = reaction.message.guild;
-		const moderationChannel = guild.channels.cache.get(config.ids.channels.moderation);
+		const moderationChannel = guild.channels.cache.get(config.channels.moderation);
 
-		if (reaction.message.channel.id === config.ids.channels.testing_requests) {
+		if (reaction.message.channel.id === config.channels.moderation.requests) {
 			if (!utils.isStaff(guild.members.cache.get(user.id))) return;
 			if (reaction.emoji.name === "📅" || reaction.emoji.name === "🗓️") {
 				try {
@@ -43,11 +43,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								}
 							});
 
-							let channel = config.ids.voice_channels.public_testing;
+							let channel = config.vcs.public.testing;
 
 							if (check) return;
-							if (embed.author.name === "NDA Test")
-								channel = config.ids.voice_channels.nda_testing;
+							if (embed.author.name === "NDA Test") channel = config.vcs.nda.testing;
 
 							const testingSession = await guild.scheduledEvents.create({
 								privacyLevel: "GUILD_ONLY",
@@ -59,15 +58,13 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 							});
 
-							moderationChannel.messages
-								.fetch(config.ids.messages.testing_requests)
-								.then(m =>
-									m.edit({
-										content: `${m.content}\n\n> ${
-											embed.author.name === "NDA Test" ? "🔒 " : ""
-										}**${embed.title}** <t:${timestamp / 1000}:F>\n> ${message.url}`
-									})
-								);
+							moderationChannel.messages.fetch(config.messages.testing_requests).then(m =>
+								m.edit({
+									content: `${m.content}\n\n> ${
+										embed.author.name === "NDA Test" ? "🔒 " : ""
+									}**${embed.title}** <t:${timestamp / 1000}:F>\n> ${message.url}`
+								})
+							);
 
 							moderationChannel.send(
 								`${user} The \`${embed.author.name}\` for **${
