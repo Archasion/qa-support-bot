@@ -79,7 +79,7 @@ module.exports = class DiscordUtils {
 		let num;
 		if (length === 1) {
 			num = 0;
-		} else if (config.presence.randomise) {
+		} else if (config.presence.randomize) {
 			num = Math.floor(Math.random() * length);
 		} else {
 			current_presence += 1; // ++ doesn't work on negative numbers
