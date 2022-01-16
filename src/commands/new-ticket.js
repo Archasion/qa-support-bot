@@ -11,7 +11,6 @@ module.exports = class NewCommand extends Command {
 			manager_only: false,
 			moderator_only: false,
 			dev_only: false,
-			internal: true,
 			options: [
 				{
 					description: "The topic of the ticket",

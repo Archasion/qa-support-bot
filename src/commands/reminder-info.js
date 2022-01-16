@@ -10,7 +10,6 @@ module.exports = class ReminderInfoCommand extends Command {
 			manager_only: true,
 			moderator_only: true,
 			dev_only: true,
-			internal: true,
 			options: [
 				{
 					name: "reminder_id",

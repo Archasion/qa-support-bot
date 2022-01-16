@@ -10,7 +10,6 @@ module.exports = class SettingsCommand extends Command {
 			manager_only: true,
 			moderator_only: false,
 			dev_only: true,
-			internal: true,
 			options: [
 				{
 					name: "categories",

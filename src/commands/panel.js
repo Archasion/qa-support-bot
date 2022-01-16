@@ -12,7 +12,6 @@ module.exports = class PanelCommand extends Command {
 			manager_only: true,
 			moderator_only: false,
 			dev_only: false,
-			internal: true,
 			options: []
 		});
 	}

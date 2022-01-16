@@ -10,7 +10,6 @@ module.exports = class RemoveCommand extends Command {
 			manager_only: true,
 			moderator_only: true,
 			dev_only: false,
-			internal: true,
 			options: [
 				{
 					description: "The member to remove from a ticket",

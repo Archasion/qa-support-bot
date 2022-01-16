@@ -9,7 +9,6 @@ module.exports = class MessageCommand extends Command {
 			manager_only: true,
 			moderator_only: false,
 			dev_only: true,
-			internal: true,
 			options: [
 				{
 					name: "content",

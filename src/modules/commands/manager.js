@@ -1,5 +1,4 @@
 const { Collection, MessageEmbed } = require("discord.js");
-const { config } = require("dotenv");
 
 const fs = require("fs");
 const { path } = require("../../utils/fs");
@@ -23,7 +22,6 @@ module.exports = class CommandManager {
 		this.commands = new Collection();
 	}
 
-	/** Automatically load all internal commands */
 	load() {
 		const files = fs.readdirSync(path("./src/commands")).filter(file => file.endsWith(".js"));
 
@@ -33,7 +31,7 @@ module.exports = class CommandManager {
 				// eslint-disable-next-line no-new, new-cap
 				new file(this.client);
 			} catch (e) {
-				log.warn("An error occurred whilst loading an internal command");
+				log.warn("An error occurred whilst loading a command");
 				log.error(e);
 			}
 		}
@@ -41,19 +39,6 @@ module.exports = class CommandManager {
 
 	/** Register a command */
 	register(command) {
-		const exists = this.commands.has(command.name);
-		const is_internal =
-			(exists && command.internal) || (exists && this.commands.get(command.name).internal);
-
-		if (is_internal) {
-			log.commands(`An unknown plugin has overridden the internal "${command.name}" command`);
-			if (command.internal) {
-				return;
-			}
-		} else if (exists) {
-			throw new Error(`A non-internal command with the name "${command.name}" already exists`);
-		}
-
 		this.commands.set(command.name, command);
 		log.commands(`Loaded "${command.name}" command`);
 	}

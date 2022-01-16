@@ -11,7 +11,6 @@ module.exports = class StatsCommand extends Command {
 			manager_only: true,
 			moderator_only: true,
 			dev_only: false,
-			internal: true,
 			options: []
 		});
 

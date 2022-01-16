@@ -11,7 +11,6 @@ module.exports = class RemindCommand extends Command {
 			manager_only: true,
 			moderator_only: true,
 			dev_only: true,
-			internal: true,
 			options: [
 				{
 					name: "duration",

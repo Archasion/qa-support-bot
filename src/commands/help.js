@@ -10,7 +10,6 @@ module.exports = class HelpCommand extends Command {
 			manager_only: false,
 			moderator_only: false,
 			dev_only: false,
-			internal: true,
 			options: []
 		});
 	}

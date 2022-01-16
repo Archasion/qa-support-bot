@@ -9,7 +9,6 @@ module.exports = class WhoisCommand extends Command {
 			manager_only: true,
 			moderator_only: true,
 			dev_only: false,
-			internal: true,
 			options: [
 				{
 					name: "nickname",

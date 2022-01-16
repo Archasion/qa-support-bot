@@ -80,12 +80,6 @@ module.exports = class Command {
 		 */
 		this.options = data.options ?? [];
 
-		/**
-		 * True if command is internal, false if it is from a plugin
-		 * @type {boolean}
-		 */
-		this.internal = data.internal === true;
-
 		try {
 			this.manager.register(this); // Register the command
 		} catch (error) {

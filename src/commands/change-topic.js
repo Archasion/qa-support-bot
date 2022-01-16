@@ -10,7 +10,6 @@ module.exports = class TopicCommand extends Command {
 			manager_only: false,
 			moderator_only: false,
 			dev_only: false,
-			internal: true,
 			options: [
 				{
 					description: "The new topic of the ticket",

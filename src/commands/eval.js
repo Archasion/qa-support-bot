@@ -9,7 +9,6 @@ module.exports = class EvalCommand extends Command {
 			manager_only: false,
 			moderator_only: false,
 			dev_only: true,
-			internal: true,
 			name: "eval",
 			options: [
 				{
