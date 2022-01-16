@@ -8,8 +8,9 @@ module.exports = class PanelCommand extends Command {
 		super(client, {
 			name: "panel",
 			description: "The ticket panel",
-			permissions: ["MANAGE_CHANNELS"],
-			staff_only: true,
+			permissions: [],
+			manager_only: true,
+			moderator_only: false,
 			dev_only: false,
 			internal: true,
 			options: []

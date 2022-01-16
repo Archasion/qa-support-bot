@@ -6,6 +6,9 @@ module.exports = class EvalCommand extends Command {
 		super(client, {
 			description: "Evaluates code.",
 			permissions: [],
+			manager_only: false,
+			moderator_only: false,
+			dev_only: true,
 			internal: true,
 			name: "eval",
 			options: [
@@ -21,8 +24,7 @@ module.exports = class EvalCommand extends Command {
 					required: false,
 					type: Command.option_types.BOOLEAN
 				}
-			],
-			dev_only: true
+			]
 		});
 	}
 

@@ -6,8 +6,9 @@ module.exports = class MessageCommand extends Command {
 			name: "message",
 			description: "Send a message as the bot",
 			permissions: [],
-			staff_only: true,
-			dev_only: false,
+			manager_only: true,
+			moderator_only: false,
+			dev_only: true,
 			internal: true,
 			options: [
 				{

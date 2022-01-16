@@ -11,7 +11,8 @@ module.exports = class CloseCommand extends Command {
 			description: "Close a ticket channel",
 			permissions: [],
 			internal: true,
-			staff_only: true,
+			manager_only: true,
+			moderator_only: true,
 			dev_only: false,
 			options: [
 				{

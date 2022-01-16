@@ -7,7 +7,8 @@ module.exports = class TopicCommand extends Command {
 			name: "change-topic",
 			description: "Change the topic of the ticket",
 			permissions: [],
-			staff_only: false,
+			manager_only: false,
+			moderator_only: false,
 			dev_only: false,
 			internal: true,
 			options: [

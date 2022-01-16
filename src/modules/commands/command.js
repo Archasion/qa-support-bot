@@ -18,7 +18,8 @@ module.exports = class Command {
 	 * @param {Object} data - Command data
 	 * @param {string} data.name - The name of the command (3-32)
 	 * @param {string} data.description - The description of the command (1-100)
-	 * @param {boolean} [data.staff_only] - Only allow staff to use this command?
+	 * @param {boolean} [data.manager_only] - Only allow managers+ to use this command?
+	 * @param {boolean} [data.moderator_only] - Only allow moderators to use this command?
 	 * @param {boolean} [data.dev_only] - Only allow developers to use this command?
 	 * @param {string[]} [data.permissions] - Array of permissions needed for a user to use this command
 	 * @param {CommandOption[]} [data.options] - The command's options
@@ -47,11 +48,18 @@ module.exports = class Command {
 		this.description = data.description;
 
 		/**
-		 * Only allow staff to use this command?
+		 * Only allow moderators to use this command?
 		 * @type {boolean}
 		 * @default false
 		 */
-		this.staff_only = data.staff_only === true;
+		this.moderator_only = data.moderator_only === true;
+
+		/**
+		 * Only allow managers+ to use this command?
+		 * @type {boolean}
+		 * @default false
+		 */
+		this.manager_only = data.manager_only === true;
 
 		/**
 		 * Only allow developers to use this command?
@@ -88,7 +96,7 @@ module.exports = class Command {
 
 	async build(guild) {
 		return {
-			defaultPermission: !this.staff_only,
+			defaultPermission: !this.moderator_only,
 			description: this.description,
 			name: this.name,
 			options: typeof this.options === "function" ? await this.options(guild) : this.options

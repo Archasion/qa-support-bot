@@ -8,7 +8,8 @@ module.exports = class NewCommand extends Command {
 			name: "new-ticket",
 			description: "Create a new ticket",
 			permissions: [],
-			staff_only: false,
+			manager_only: false,
+			moderator_only: false,
 			dev_only: false,
 			internal: true,
 			options: [

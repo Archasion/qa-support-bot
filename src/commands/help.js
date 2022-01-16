@@ -7,7 +7,8 @@ module.exports = class HelpCommand extends Command {
 			name: "help",
 			description: "List the commands you have access to",
 			permissions: [],
-			staff_only: false,
+			manager_only: false,
+			moderator_only: false,
 			dev_only: false,
 			internal: true,
 			options: []
@@ -27,7 +28,7 @@ module.exports = class HelpCommand extends Command {
 				return interaction.member.permissions.has(command.permissions);
 			}
 
-			if (command.staff_only) {
+			if (command.moderator_only) {
 				return isStaffMember;
 			}
 

@@ -6,7 +6,8 @@ module.exports = class WhoisCommand extends Command {
 			name: "whois",
 			description: "Find a user by nickname",
 			permissions: [],
-			staff_only: true,
+			manager_only: true,
+			moderator_only: true,
 			dev_only: false,
 			internal: true,
 			options: [

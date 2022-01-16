@@ -1,4 +1,5 @@
 const { Collection, MessageEmbed } = require("discord.js");
+const { config } = require("dotenv");
 
 const fs = require("fs");
 const { path } = require("../../utils/fs");
@@ -99,7 +100,7 @@ module.exports = class CommandManager {
 				});
 			});
 
-			const staff_roles = [config.roles.moderator, config.roles.manager, config.roles.qa_lead];
+			const manager_roles = [config.roles.manager, config.roles.qa_lead];
 
 			const { developers } = config.users;
 
@@ -107,13 +108,26 @@ module.exports = class CommandManager {
 				const cmd_permissions = [...blacklist];
 				const command = this.client.commands.commands.get(g_cmd.name);
 
-				if (command.staff_only) {
+				if (command.moderator_only) {
 					cmd_permissions.push({
 						id: guild.roles.everyone.id,
 						permission: false,
 						type: "ROLE"
 					});
-					staff_roles.forEach(roleId => {
+					cmd_permissions.push({
+						id: config.roles.moderator,
+						permission: true,
+						type: "ROLE"
+					});
+				}
+
+				if (command.manager_only) {
+					cmd_permissions.push({
+						id: guild.roles.everyone.id,
+						permission: false,
+						type: "ROLE"
+					});
+					manager_roles.forEach(roleId => {
 						cmd_permissions.push({
 							id: roleId,
 							permission: true,

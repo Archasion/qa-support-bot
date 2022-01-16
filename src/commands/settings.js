@@ -6,9 +6,10 @@ module.exports = class SettingsCommand extends Command {
 		super(client, {
 			name: "settings",
 			description: "Edit the settings of the bot",
-			permissions: ["MANAGE_GUILD"],
-			staff_only: true,
-			dev_only: false,
+			permissions: [],
+			manager_only: true,
+			moderator_only: false,
+			dev_only: true,
 			internal: true,
 			options: [
 				{

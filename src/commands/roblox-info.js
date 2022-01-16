@@ -11,7 +11,8 @@ module.exports = class RobloxInfoCommand extends Command {
 			name: "roblox-info",
 			description: "Gets information about a Roblox user.",
 			permissions: [],
-			staff_only: true,
+			manager_only: true,
+			moderator_only: true,
 			dev_only: false,
 			internal: true,
 			options: [

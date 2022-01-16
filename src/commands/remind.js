@@ -8,8 +8,9 @@ module.exports = class RemindCommand extends Command {
 			name: "remind",
 			description: "Set a reminder",
 			permissions: [],
-			staff_only: true,
-			dev_only: false,
+			manager_only: true,
+			moderator_only: true,
+			dev_only: true,
 			internal: true,
 			options: [
 				{

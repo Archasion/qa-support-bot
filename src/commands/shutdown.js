@@ -6,7 +6,8 @@ module.exports = class ShutdownCommand extends Command {
 			name: "shutdown",
 			description: "Shuts down the client",
 			permissions: [],
-			staff_only: false,
+			manager_only: false,
+			moderator_only: false,
 			dev_only: true,
 			internal: true,
 			options: []

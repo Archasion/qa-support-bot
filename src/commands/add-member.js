@@ -7,7 +7,8 @@ module.exports = class AddCommand extends Command {
 			name: "add-member",
 			description: "Add a member to a ticket",
 			permissions: [],
-			staff_only: true,
+			manager_only: true,
+			moderator_only: true,
 			dev_only: false,
 			internal: true,
 			options: [
