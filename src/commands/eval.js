@@ -4,12 +4,12 @@ const Command = require("../modules/commands/command");
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
 		super(client, {
+			name: "eval",
 			description: "Evaluates code.",
 			permissions: [],
 			manager_only: false,
 			moderator_only: false,
 			dev_only: true,
-			name: "eval",
 			options: [
 				{
 					description: "The code to evaluate.",
