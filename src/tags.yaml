@@ -26,7 +26,7 @@ hats: *v
 # Testing Session
 # Keywords: testing session, session, request
 
-testing session: &r "You may request your experience to be tested by either our <@&PUBLIC> testers or our <@&NDA> team through the form provided in <#CHANNEL>. Please make sure you **read the requirements** before requesting a testing session!"
+testing session: &r "You may request your experience to be tested by either our <@&PUBLIC> testers or our <@&NDA> team through the form provided in <#CHANNEL>.\n\nPlease make sure you **read the requirements** before requesting a testing session!"
 session: *r
 request: *r
 
