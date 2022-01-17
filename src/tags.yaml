@@ -1,0 +1,32 @@
+
+# Valiant Hats
+# Keywords: valiant valkyrie of testing, valiant valkyrie, testing valkyrie, valiant valk, testing valk, valkyrie, valk, valiant top hat of testing, valiant top hat, testing top hat, valiant hat, testing hat, top hat, hat, valiant, awards, award, hats
+
+valiant valkyrie of testing: &v "The `Valiant Valkyrie of Testing` and the `Valiant Top Hat of Testing` are awarded to testers for outstanding work, however they notably take quite long to obtain."
+valiant valkyrie: *v
+testing valkyrie: *v
+valiant valk: *v
+testing valk: *v
+valkyrie: *v
+valk: *v
+
+valiant top hat of testing: *v
+valiant top hat: *v
+testing top hat: *v
+testing hat: *v
+valiant hat: *v
+top hat: *v
+hat: *v
+
+valiant: *v
+awards: *v
+award: *v
+hats: *v
+
+# Testing Session
+# Keywords: testing session, session, request
+
+testing session: &r "You may request your experience to be tested by either our <@&PUBLIC> testers or our <@&NDA> team through the form provided in <#CHANNEL>. Please make sure you **read the requirements** before requesting a testing session!"
+session: *r
+request: *r
+
