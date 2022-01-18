@@ -17,6 +17,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					await reaction.message.channel.messages
 						.fetch(reaction.message.id)
 						.then(async message => {
+							// ANCHOR Variables
 							const timestampRegex = new RegExp(/⏰ <t:(\d+):F>/gims);
 							const platformsRegex = new RegExp(/🖥(.+)/gims);
 
@@ -24,6 +25,12 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 							const timestamp = timestampRegex.exec(embed.description)[1] * 1000;
 							const platforms = platformsRegex.exec(embed.description)[1];
 
+							const usernameRegex = new RegExp(/Username:\s([\w\d_]+),/gims);
+							const username = usernameRegex.exec(embed.footer.text)[1];
+							let member = await guild.members.search({ query: username });
+							member = member.first();
+
+							// ANCHOR Check if event exists
 							const events = message.guild.scheduledEvents.cache.map(event => ({
 								startTime: event.scheduledStartTimestamp,
 								name: event.name,
@@ -43,9 +50,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								}
 							});
 
-							let channel = config.vcs.public.testing;
-
 							if (check) return;
+
+							// ANCHOR Create event
+							let channel = config.vcs.public.testing;
 							if (embed.author.name === "NDA Test") channel = config.vcs.nda.testing;
 
 							const testingSession = await guild.scheduledEvents.create({
@@ -58,6 +66,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 							});
 
+							// ANCHOR Update pinned message
 							moderationChannel.messages.fetch(config.messages.testing_requests).then(m =>
 								m.edit({
 									content: `${m.content}\n\n> ${
@@ -66,33 +75,54 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								})
 							);
 
-							moderationChannel.send(
-								`${user} The \`${embed.author.name}\` for **${
-									embed.title
-								}** has been scheduled for <t:${
-									timestamp / 1000
-								}:F>\nhttps://discord.com/events/${guild.id}/${testingSession.id}`
-							);
+							// ANCHOR Structure message
+							const messageToSend = `Hey there ${member}, we've reviewed your request for **${
+								embed.title
+							}** to be tested by our **${embed.author.name.split(" ")[0]} team** on <t:${
+								timestamp / 1000
+							}:F> (Local Time) and have decided to approve the request, feel free to **contact** a staff member if you have any questions regarding your testing session.\n\nEvent URL:\nhttps://discord.com/${
+								guild.id
+							}/${testingSession.id}`;
 
+							// ANCHOR Notify author
 							try {
-								const usernameRegex = new RegExp(/Username:\s([\w\d_]+),/gims);
-								const username = usernameRegex.exec(embed.footer.text)[1];
-								let member = await guild.members.search({ query: username });
-								member = member.first();
-
-								await member.send(
-									`Hey there, we've reviewed your request for **${
+								await member.send(messageToSend);
+								moderationChannel.send(
+									`${user} The \`${embed.author.name}\` for **${
 										embed.title
-									}** to be tested by our **${
-										embed.author.name.split(" ")[0]
-									} team** on <t:${
+									}** has been scheduled for <t:${
 										timestamp / 1000
-									}:F> (Local Time) and have decided to approve the request, feel free to **contact** a staff member if you have any questions regarding your testing session.\n\nEvent URL:\nhttps://discord.com/${
-										guild.id
-									}/${testingSession.id}`
+									}:F>\nhttps://discord.com/events/${guild.id}/${testingSession.id}`
 								);
+
 								message.react("✅");
 							} catch {
+								const channel = message.guild.channels.cache.get(
+									config.channels.public.request
+								);
+								channel.threads
+									.create({
+										name: embed.title,
+										autoArchiveDuration: 1440,
+										type: "GUILD_PRIVATE_THREAD",
+										reason: "Unable to message author regarding a testing request."
+									})
+									.then(thread => {
+										thread.send(messageToSend);
+
+										moderationChannel.send(
+											`${user} The \`${embed.author.name}\` for **${
+												embed.title
+											}** has been scheduled for <t:${
+												timestamp / 1000
+											}:F> (messaged the user through a private thread: <#${
+												thread.id
+											}>)\nhttps://discord.com/events/${guild.id}/${
+												testingSession.id
+											}`
+										);
+									});
+
 								message.react("❌");
 							}
 						});
