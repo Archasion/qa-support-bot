@@ -19,7 +19,8 @@ module.exports = class HelpCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const isStaffMember = await utils.isStaff(interaction.member);
+		const isModerator = await utils.isModerator(interaction.member);
+		const isManager = await utils.isManager(interaction.member);
 		const isDeveloper = await utils.isDeveloper(interaction.member);
 
 		const commands = this.manager.commands.filter(command => {
@@ -27,13 +28,9 @@ module.exports = class HelpCommand extends Command {
 				return interaction.member.permissions.has(command.permissions);
 			}
 
-			if (command.moderator_only) {
-				return isStaffMember;
-			}
-
-			if (command.dev_only) {
-				return isDeveloper;
-			}
+			if (command.moderator_only) return isModerator;
+			if (command.manager_only) return isManager;
+			if (command.dev_only) return isDeveloper;
 
 			return true;
 		});

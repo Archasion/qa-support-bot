@@ -6,30 +6,33 @@ module.exports = class DiscordUtils {
 	}
 
 	/**
-	 * Generate embed footer text
-	 * @param {string} text
-	 * @param {string} [additional]
-	 * @returns {string}
-	 */
-	footer(text, additional) {
-		if (text && additional) {
-			return `${text} | ${additional}`;
-		}
-
-		return additional || text || "";
-	}
-
-	/**
-	 * Check if a guild member is staff
+	 * Check if a guild member is a moderator
 	 * @param {GuildMember} member - the guild member
 	 * @returns {boolean}
 	 */
 	async isStaff(member) {
 		return member.roles.cache.some(
-			role =>
-				role.id === config.roles.moderator ||
-				role.id === config.roles.manager ||
-				role.id === config.roles.qa_lead
+			role => role.id === config.roles.moderator || config.roles.manager || config.roles.qa_lead
+		);
+	}
+
+	/**
+	 * Check if a guild member is a moderator
+	 * @param {GuildMember} member - the guild member
+	 * @returns {boolean}
+	 */
+	async isModerator(member) {
+		return member.roles.cache.some(role => role.id === config.roles.moderator);
+	}
+
+	/**
+	 * Check if a guild member is a manager
+	 * @param {GuildMember} member - the guild member
+	 * @returns {boolean}
+	 */
+	async isManager(member) {
+		return member.roles.cache.some(
+			role => role.id === config.roles.manager || role.id === config.roles.qa_lead
 		);
 	}
 
@@ -57,49 +60,25 @@ module.exports = class DiscordUtils {
 	}
 
 	/**
-	 * Delete a guild's settings
-	 * @param {string} id - The guild ID
-	 * @returns {Promise<Number>}
-	 */
-	async deleteSettings(id) {
-		const row = await this.getSettings(id);
-		return row.destroy();
-	}
-
-	/**
 	 * Select a presence from the config
 	 * @returns {PresenceData}
 	 */
 	static selectPresence() {
 		const { length } = config.presence.options;
-		if (length === 0) {
-			return {};
-		}
-
 		let num;
-		if (length === 1) {
-			num = 0;
-		} else if (config.presence.randomize) {
-			num = Math.floor(Math.random() * length);
-		} else {
-			current_presence += 1; // ++ doesn't work on negative numbers
-			if (current_presence === length) {
-				current_presence = 0;
-			}
 
+		if (length === 0) return {};
+		if (length === 1) num = 0;
+		else if (config.presence.randomize) num = Math.floor(Math.random() * length);
+		else {
+			current_presence += 1;
+			if (current_presence === length) current_presence = 0;
 			num = current_presence;
 		}
 
 		const { activity: name, status, type, url } = config.presence.options[num];
-
 		return {
-			activities: [
-				{
-					name,
-					type,
-					url
-				}
-			],
+			activities: [{ name, type, url }],
 			status
 		};
 	}
