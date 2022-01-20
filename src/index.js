@@ -9,43 +9,20 @@ const { path } = require("./utils/fs");
 
 const fileContents = fs.readFileSync(path("/src/config.yaml"), "utf8");
 
+process.title = "QA Support";
+
 global.config = yaml.load(fileContents);
 global.log = require("./logger");
 
 app.get("/", (req, res) => res.send("Hello World!"));
 app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
 
-process.title = "QA Support";
-
-// eslint-disable-next-line no-unused-vars
-const checkFile = (file, example) => {
-	if (fs.existsSync(path(file))) {
-		return true;
-	}
-
-	if (!fs.existsSync(path(example))) {
-		console.log(
-			`\x07Error: "${file}" not found, and unable to create it due to "${example}" being missing.`
-		);
-		return process.exit();
-	}
-
-	console.log(`Copying "${example}" to "${file}"...`);
-	fs.copyFileSync(path(example), path(file));
-	return false;
-};
-
 require("dotenv").config({ path: path("./.env") });
 require("./utils/functions")();
 
 process.on("unhandledRejection", error => {
-	if (error instanceof Error) {
-		log.warn(`Uncaught ${error.name} (${error.message})`);
-	}
-
-	if (error.message !== "Missing Access") {
-		log.error(error);
-	}
+	if (error instanceof Error) log.warn(`Uncaught ${error.name} (${error.message})`);
+	if (error.message !== "Missing Access") log.error(error);
 });
 
 const ListenerLoader = require("./modules/listeners/loader");
