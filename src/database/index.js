@@ -5,10 +5,10 @@ const types = require("./dialects");
 
 module.exports = async client => {
 	const { DB_TYPE, DB_HOST, DB_PORT, DB_USER, DB_PASS, DB_NAME } = process.env;
-
 	const type = (DB_TYPE || "sqlite").toLowerCase();
 
 	const supported = Object.keys(types);
+
 	if (!supported.includes(type)) {
 		log.error(new Error(`DB_TYPE (${type}) is not a valid type`));
 		return process.exit();
@@ -57,11 +57,8 @@ module.exports = async client => {
 		.readdirSync(path("./src/database/models"))
 		.filter(filename => filename.endsWith(".model.js"));
 
-	for (const model of models) {
-		require(`./models/${model}`)(client, sequelize);
-	}
+	for (const model of models) require(`./models/${model}`)(client, sequelize);
 
 	await sequelize.sync({ alter: false });
-
 	return sequelize;
 };

@@ -20,7 +20,6 @@ module.exports = {
 		packages: ["mysql2"]
 	},
 	postgre: {
-		// This is incorrect
 		dialect: "postgres",
 		name: "PostgreSQL",
 		packages: ["pg", "pg-hstore"]

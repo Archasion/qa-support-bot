@@ -1,7 +1,9 @@
 /* eslint-disable new-cap */
 const { DataTypes } = require("sequelize");
+
 module.exports = (_client, sequelize) => {
 	const { DB_TABLE_PREFIX } = process.env;
+
 	sequelize.define(
 		"ChannelEntity",
 		{
@@ -21,6 +23,8 @@ module.exports = (_client, sequelize) => {
 				unique: "channel-ticket"
 			}
 		},
-		{ tableName: DB_TABLE_PREFIX + "channel_entities" }
+		{
+			tableName: DB_TABLE_PREFIX + "channel_entities"
+		}
 	);
 };

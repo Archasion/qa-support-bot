@@ -1,7 +1,9 @@
 /* eslint-disable new-cap */
 const { DataTypes } = require("sequelize");
+
 module.exports = (_client, sequelize) => {
 	const { DB_TABLE_PREFIX } = process.env;
+
 	sequelize.define(
 		"Message",
 		{
@@ -35,6 +37,8 @@ module.exports = (_client, sequelize) => {
 				type: DataTypes.CHAR(19)
 			}
 		},
-		{ tableName: DB_TABLE_PREFIX + "messages" }
+		{
+			tableName: DB_TABLE_PREFIX + "messages"
+		}
 	);
 };

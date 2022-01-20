@@ -1,14 +1,16 @@
 /* eslint-disable new-cap, no-empty-pattern */
-const { DataTypes } = require("sequelize");
 const yaml = require("js-yaml");
 const fs = require("fs");
 
 const { path } = require("./../../utils/fs");
+const { DataTypes } = require("sequelize");
 
 const fileContents = fs.readFileSync(path("/src/config.yaml"), "utf8");
 const config = yaml.load(fileContents);
+
 module.exports = ({}, sequelize) => {
 	const { DB_TABLE_PREFIX } = process.env;
+
 	sequelize.define(
 		"Guild",
 		{
@@ -65,6 +67,8 @@ module.exports = ({}, sequelize) => {
 				type: DataTypes.JSON
 			}
 		},
-		{ tableName: DB_TABLE_PREFIX + "guilds" }
+		{
+			tableName: DB_TABLE_PREFIX + "guilds"
+		}
 	);
 };

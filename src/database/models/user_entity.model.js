@@ -1,7 +1,9 @@
 /* eslint-disable new-cap */
 const { DataTypes } = require("sequelize");
+
 module.exports = (client, sequelize) => {
 	const { DB_TABLE_PREFIX } = process.env;
+
 	sequelize.define(
 		"UserEntity",
 		{
@@ -33,6 +35,8 @@ module.exports = (client, sequelize) => {
 			},
 			username: DataTypes.TEXT
 		},
-		{ tableName: DB_TABLE_PREFIX + "user_entities" }
+		{
+			tableName: DB_TABLE_PREFIX + "user_entities"
+		}
 	);
 };

@@ -1,7 +1,9 @@
 /* eslint-disable new-cap */
 const { DataTypes } = require("sequelize");
+
 module.exports = (_client, sequelize) => {
 	const { DB_TABLE_PREFIX } = process.env;
+
 	sequelize.define(
 		"Reminder",
 		{
@@ -12,6 +14,8 @@ module.exports = (_client, sequelize) => {
 			before: DataTypes.NUMBER,
 			after: DataTypes.NUMBER
 		},
-		{ tableName: DB_TABLE_PREFIX + "list_reminders" }
+		{
+			tableName: DB_TABLE_PREFIX + "list_reminders"
+		}
 	);
 };

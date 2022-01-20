@@ -1,7 +1,9 @@
 /* eslint-disable new-cap, no-empty-pattern */
 const { DataTypes } = require("sequelize");
+
 module.exports = ({}, sequelize) => {
 	const { DB_TABLE_PREFIX } = process.env;
+
 	sequelize.define(
 		"Category",
 		{
