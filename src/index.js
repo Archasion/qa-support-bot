@@ -1,4 +1,4 @@
-// Const functions = require("./utils/functions");
+// ANCHOR Constants
 const express = require("express");
 const yaml = require("js-yaml");
 const fs = require("fs");
@@ -8,6 +8,7 @@ const port = 3000;
 const { path } = require("./utils/fs");
 
 const fileContents = fs.readFileSync(path("/src/config.yaml"), "utf8");
+
 global.config = yaml.load(fileContents);
 global.log = require("./logger");
 
@@ -36,8 +37,6 @@ const checkFile = (file, example) => {
 
 require("dotenv").config({ path: path("./.env") });
 require("./utils/functions")();
-
-const { version } = require("../package.json");
 
 process.on("unhandledRejection", error => {
 	if (error instanceof Error) {
@@ -87,23 +86,20 @@ class Bot extends Client {
 		});
 
 		(async () => {
-			this.version = version;
-
 			global.cryptr = new Cryptr(process.env.DB_ENCRYPTION_KEY);
 			global.db = await require("./database")(this);
 			global.tickets = new TicketManager(this);
 			global.action = new LoggingManager(this);
 			global.utils = new DiscordUtils(this);
 
-			this.setMaxListeners(config.max_listeners);
+			log.info("Connecting to Discord API...");
 
 			this.commands = new CommandManager(this);
 
 			const listeners = new ListenerLoader(this);
 			listeners.load();
 
-			log.info("Connecting to Discord API...");
-
+			this.setMaxListeners(config.max_listeners);
 			this.login();
 		})();
 	}
