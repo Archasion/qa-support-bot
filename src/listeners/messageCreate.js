@@ -9,6 +9,33 @@ module.exports = class MessageCreateEventListener extends EventListener {
 	async execute(message) {
 		if (!message.guild) return;
 
+		// ANCHOR Automatic deletion
+		if (message.channel.type === "GUILD_PUBLIC_THREAD") {
+			if (message.channel.parent.id === config.channels.public.sessions) {
+				// Sentence includes word(s)
+				// prettier-ignore
+				const wildcard = ["fuck", "shit"];
+
+				// Sentence is exactly the word(s)
+				// prettier-ignore
+				const exact = ["hi", "hello", "hey", "sup", "yo", "whats up", "lol", "wow", "ok", "lmao", "ha", "haha"];
+
+				let remove = false;
+				const input = message.content.toLowerCase();
+
+				for (const word of exact) {
+					if (input === word) remove = true;
+				}
+
+				for (const word of wildcard) {
+					if (input.includes(word)) remove = true;
+				}
+
+				if (input.length <= 3 && !input.match(/^(?:\^+|y[eu][sp]|no)$/gims)) remove = true;
+				if (remove) return message.delete();
+			}
+		}
+
 		// ANCHOR UNDERAGE
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-2])(\s|$)/gi) &&
