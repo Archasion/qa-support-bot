@@ -20,10 +20,11 @@ module.exports = class EvalCommand extends Command {
 			dev_only: false,
 			options: [
 				{
-					description: "The keyword for the question",
 					name: "keyword",
+					description: "The keyword for the question",
 					required: true,
-					type: Command.option_types.STRING
+					type: Command.option_types.STRING,
+					choices: tags.choices
 				},
 				{
 					description: "Mention a user in the message (nothing by default)",
