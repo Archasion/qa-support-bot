@@ -15,6 +15,7 @@ module.exports = class EvalCommand extends Command {
 			name: "tag",
 			description: "Reply with the answer to a common question",
 			permissions: [],
+			cooldown: 60,
 			manager_only: true,
 			moderator_only: true,
 			nda_only: true,
@@ -42,29 +43,6 @@ module.exports = class EvalCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const check = await interaction.channel.messages
-			.fetch()
-			.then(messages =>
-				messages.filter(
-					message =>
-						message.type === "APPLICATION_COMMAND" &&
-						(message.embeds[0]
-							? message.embeds[0].footer
-								? message.embeds[0].footer.text.includes("Invoked by")
-								: message.embeds[0]
-							: message.embeds[0]) &&
-						message.createdTimestamp > Date.now() - 60000
-				)
-			);
-
-		if (check.first()) {
-			interaction.reply({
-				content: "The command has already been used by someone less than 1 minute ago",
-				ephemeral: true
-			});
-			return;
-		}
-
 		const keyword = interaction.options.getString("keyword").toLowerCase();
 		const target = interaction.options.getUser("targeted_user");
 
