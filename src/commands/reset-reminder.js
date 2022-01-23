@@ -51,9 +51,9 @@ module.exports = class ResetReminderCommand extends Command {
 		});
 
 		await interaction.reply({
-			content: `The following reminder${
-				reminder_ids.length > 1 ? "s" : ""
-			} have been reset: \`${reminder_ids.join("`, `")}\``,
+			content: `The following reminder${reminder_ids.length > 1 ? "s" : ""} ha${
+				reminder_ids.length > 1 ? "ve" : "s"
+			} been reset: \`${reminder_ids.join("`, `")}\``,
 			ephemeral: true
 		});
 	}

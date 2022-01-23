@@ -109,9 +109,10 @@ module.exports = class RemindCommand extends Command {
 				new MessageEmbed()
 					.setColor(config.colors.default_color)
 					.setDescription(
-						`Okay! I will remind you in <t:${timestampAfter}:R> (<t:${timestampAfter}:f>)`
+						`Okay! I will remind you <t:${timestampAfter}:R> (<t:${timestampAfter}:f>)`
 					)
 					.addField("Reminder", message)
+					.setFooter({ text: `Reminder ID: ${id}` })
 			],
 			ephemeral: true
 		});
