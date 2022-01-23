@@ -17,7 +17,7 @@ module.exports = class EvalCommand extends Command {
 			permissions: [],
 			manager_only: true,
 			moderator_only: true,
-			nda_only: false,
+			nda_only: true,
 			dev_only: false,
 			options: [
 				{
@@ -42,6 +42,29 @@ module.exports = class EvalCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
+		const check = await interaction.channel.messages
+			.fetch()
+			.then(messages =>
+				messages.filter(
+					message =>
+						message.type === "APPLICATION_COMMAND" &&
+						(message.embeds[0]
+							? message.embeds[0].footer
+								? message.embeds[0].footer.text.includes("Invoked by")
+								: message.embeds[0]
+							: message.embeds[0]) &&
+						message.createdTimestamp > Date.now() - 60000
+				)
+			);
+
+		if (check.first()) {
+			interaction.reply({
+				content: "The command has already been used by someone less than 1 minute ago",
+				ephemeral: true
+			});
+			return;
+		}
+
 		const keyword = interaction.options.getString("keyword").toLowerCase();
 		const target = interaction.options.getUser("targeted_user");
 
@@ -52,6 +75,10 @@ module.exports = class EvalCommand extends Command {
 					new MessageEmbed()
 						.setColor(config.colors.default_color)
 						.setDescription(tags[keyword])
+						.setFooter({
+							text: `Invoked by ${interaction.member.displayName}`,
+							iconURL: interaction.user.avatarURL()
+						})
 				]
 			});
 		} catch {
