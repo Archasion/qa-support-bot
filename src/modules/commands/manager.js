@@ -93,6 +93,19 @@ module.exports = class CommandManager {
 				const cmd_permissions = [...blacklist];
 				const command = this.client.commands.commands.get(g_cmd.name);
 
+				if (command.nda_only) {
+					cmd_permissions.push({
+						id: guild.roles.everyone.id,
+						permission: false,
+						type: "ROLE"
+					});
+					cmd_permissions.push({
+						id: config.roles.nda_verified,
+						permission: true,
+						type: "ROLE"
+					});
+				}
+
 				if (command.moderator_only) {
 					cmd_permissions.push({
 						id: guild.roles.everyone.id,

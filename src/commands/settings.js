@@ -9,6 +9,7 @@ module.exports = class SettingsCommand extends Command {
 			permissions: [],
 			manager_only: true,
 			moderator_only: false,
+			nda_only: false,
 			dev_only: true,
 			options: [
 				{

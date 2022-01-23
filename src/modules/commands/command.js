@@ -20,6 +20,7 @@ module.exports = class Command {
 	 * @param {string} data.description - The description of the command (1-100)
 	 * @param {boolean} [data.manager_only] - Only allow managers+ to use this command?
 	 * @param {boolean} [data.moderator_only] - Only allow moderators to use this command?
+	 * @param {boolean} [data.nda_only] - Only allow NDA Testers to use this command?
 	 * @param {boolean} [data.dev_only] - Only allow developers to use this command?
 	 * @param {string[]} [data.permissions] - Array of permissions needed for a user to use this command
 	 * @param {CommandOption[]} [data.options] - The command's options
@@ -53,6 +54,13 @@ module.exports = class Command {
 		 * @default false
 		 */
 		this.moderator_only = data.moderator_only === true;
+
+		/**
+		 * Only allow NDA Testers to use this command?
+		 * @type {boolean}
+		 * @default false
+		 */
+		this.nda_only = data.nda_only === true;
 
 		/**
 		 * Only allow managers+ to use this command?

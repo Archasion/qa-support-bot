@@ -12,6 +12,7 @@ module.exports = class CloseCommand extends Command {
 			permissions: [],
 			manager_only: true,
 			moderator_only: true,
+			nda_only: false,
 			dev_only: false,
 			options: [
 				{

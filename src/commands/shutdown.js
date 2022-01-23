@@ -8,6 +8,7 @@ module.exports = class ShutdownCommand extends Command {
 			permissions: [],
 			manager_only: false,
 			moderator_only: false,
+			nda_only: false,
 			dev_only: true,
 			options: []
 		});
