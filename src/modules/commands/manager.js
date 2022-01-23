@@ -246,7 +246,7 @@ module.exports = class CommandManager {
 			
 			const current_time = Date.now();
 			const time_stamps = this.cooldowns.get(command.name);
-			const cooldown_time = (command.cooldown) * 1000; // cooldowns are provided in seconds, converted to milliseconds
+			const cooldown_time = (command.cooldown) * 1000; // Cooldowns are provided in seconds, converted to milliseconds
 
 			if (time_stamps.has(interaction.channel.id)) {
 				const expiration_time = time_stamps.get(interaction.channel.id) + cooldown_time;
@@ -255,7 +255,7 @@ module.exports = class CommandManager {
 					const time_left = (expiration_time - current_time) / 1000;
 					const cooldown_time_minutes = Math.trunc(cooldown_time / 60000)
 					return interaction.reply({
-						content: `The command has already been used by someone less than ${cooldown_time_minutes} minute${cooldown_time_minutes > 1 ? `s` : ``} ago. Try again in ${time_left.toFixed(1)} seconds.`,
+						content: `The command has already been used by someone less than ${cooldown_time_minutes} minute${cooldown_time_minutes > 1 ? "s" : ""} ago. Try again in ${time_left.toFixed(1)} seconds.`,
 						ephemeral: true
 					})
 				}
