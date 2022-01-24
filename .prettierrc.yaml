@@ -1,0 +1,11 @@
+trailingComma: "none"
+arrowParens: "avoid"
+
+printWidth: 105
+tabWidth: 4
+
+bracketSpacing: true
+singleQuote: false
+bracketLine: false
+useTabs: true
+semi: true

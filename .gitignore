@@ -8,6 +8,4 @@ site/
 .env
 version
 database.sqlite
-.prettierrc.yaml
 config.yaml
-.eslintrc.yaml
