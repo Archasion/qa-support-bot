@@ -174,6 +174,71 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 			const filter = (response) =>
 				response.author.id === interaction.user.id;
 
+			if (current_index === Object.keys(current_values).length - 1) {
+				await interaction.followUp({
+					content:
+						"This is the finished embed! When you're ready to post the embed to the channel press the button below.\n\n**Finished Embed:**",
+					ephemeral: true,
+					embeds: [current_values],
+					components: [
+						new MessageActionRow().addComponents(
+							new MessageButton()
+								.setCustomId(
+									`embed.creator.post:${interaction.id}`
+								)
+								.setLabel("Post embed!")
+								.setStyle("SUCCESS")
+						),
+					],
+				});
+
+				const filter = (new_interaction) =>
+					new_interaction.user.id === interaction.user.id &&
+					new_interaction.customId.includes(interaction.id);
+				const collector =
+					interaction.channel.createMessageComponentCollector({
+						filter,
+						time: 30000,
+					});
+
+				collector.on("collect", async (new_interaction) => {
+					await new_interaction.deferUpdate();
+
+					if (
+						new_interaction.customId ===
+						`embed.creator.post:${interaction.id}`
+					) {
+						new_interaction.channel.send({
+							embeds: [current_values],
+						});
+
+						return new_interaction.editReply({
+							content: "Embed posted successfully. ✅",
+							components: [],
+							embeds: [],
+							ephemeral: true,
+						});
+					}
+
+					collector.stop();
+				});
+
+				collector.on("end", async (collected) => {
+					if (collected.size === 0) {
+						await interaction.editReply({
+							content:
+								"You failed to reply in time, operation cancelled!",
+							components: [],
+							embeds: [],
+							ephemeral: true,
+						});
+					}
+				});
+			}
+
+			if (current_index === Object.keys(current_values).length - 1) {
+				return;
+			}
 			await interaction
 				.editReply({
 					content: message_content,
@@ -191,12 +256,28 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							errors: ["time"],
 						})
 						.then(async (collected) => {
+							// Validation for specific embed fields
+							if (
+								index_to_string_map[current_index] === "color"
+							) {
+								if (
+									!collected
+										.first()
+										.content.match(
+											/(#|(0x))?([a-f]|[0-9]){6}/gi
+										)
+								) {
+									// TODO: Handle invalid color
+									console.log("Invalid color!");
+								}
+							}
+
 							current_values[index_to_string_map[current_index]] =
 								collected.first().content;
 							handleEmbedCreation(
 								`Currently filling out \`\`${
 									index_to_string_map[current_index + 1]
-								}\`\`...`,
+								}\`\`...\n\n**Embed Preview:**`,
 								current_index + 1,
 								current_values,
 								index_to_string_map
@@ -205,7 +286,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 						.catch(async () => {
 							await interaction.followUp({
 								content:
-									"You failed to reply in time, please start over!",
+									"You failed to reply in time, operation cancelled!",
 								ephemeral: true,
 							});
 						});
@@ -512,7 +593,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 				let current_index = 1;
 				handleEmbedCreation(
-					`Send a message below to fill out the data for the embed below, it will update as you go. Currently filling out \`\`${index_to_string_map[current_index]}\`\`...`,
+					`Send a message below to fill out the data for the embed below, it will update as you go. Currently filling out \`\`${index_to_string_map[current_index]}\`\`...\n\n**Embed Preview:**`,
 					current_index,
 					current_values,
 					index_to_string_map
@@ -534,7 +615,16 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					embed[key] = "Lorem ipsum dolor sit amet";
 					if (key === "content")
 						message_content = "\nLorem ipsum dolor sit amet";
+					if (key === "color") embed.setColor("#bbaaee");
 				});
+
+				if (embed["description"] === null && embed["title"] === null) {
+					return interaction.followUp({
+						content:
+							"An embed must contain at least a title and/or a description.",
+						ephemeral: true,
+					});
+				}
 
 				const components = [];
 				interaction.message.components.forEach((row) => {

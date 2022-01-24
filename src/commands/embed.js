@@ -36,20 +36,26 @@ module.exports = class EmbedCommand extends Command {
 				.setMinValues(1)
 				.addOptions([
 					{
-						label: "Add description",
-						value: "description",
-						description: "Add a description to the embed.",
-					},
-					{
 						label: "Add title",
 						value: "title",
 						description: "Add a title to the embed.",
 					},
 					{
-						label: "Add content",
+						label: "Add description",
+						value: "description",
+						description: "Add a description to the embed.",
+					},
+					{
+						label: "(TODO) Add message content",
 						value: "content",
 						description:
-							"This is the raw message content; not sent within the embed, instead it is sent above the embed.",
+							"This is the raw message content; not sent within the embed.",
+					},
+					{
+						label: "Add color",
+						value: "color",
+						description:
+							"A color shown on the left-side of the embed.",
 					},
 				])
 		);
