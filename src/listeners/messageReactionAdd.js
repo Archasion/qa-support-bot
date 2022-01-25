@@ -41,7 +41,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						alert_message.author.bot
 				);
 
-				if (check.first()) return; // Not used in the last 10 minutes
+				if (check.first()) return; // Not used in the last 10 minutes on the same user
 
 				notifyStaff(message);
 				break;
