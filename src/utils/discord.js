@@ -12,8 +12,20 @@ module.exports = class DiscordUtils {
 	 */
 	async isStaff(member) {
 		return member.roles.cache.some(
-			role => role.id === config.roles.moderator || config.roles.manager || config.roles.qa_lead
+			role =>
+				role.id === config.roles.moderator ||
+				role.id === config.roles.manager ||
+				role.id === config.roles.qa_lead
 		);
+	}
+
+	/**
+	 * Check if a guild member is an NDA Verified tester
+	 * @param {GuildMember} member - the guild member
+	 * @returns {boolean}
+	 */
+	async isNDA(member) {
+		return member.roles.cache.some(role => role.id === config.roles.nda_verified);
 	}
 
 	/**
