@@ -16,25 +16,21 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 		const blacklisted =
 			settings.blacklist.members.includes[interaction.user.id] ||
-			interaction.member?.roles.cache?.some((role) =>
-				settings.blacklist.roles.includes(role)
-			);
+			interaction.member?.roles.cache?.some(role => settings.blacklist.roles.includes(role));
 		if (blacklisted) {
 			return interaction.reply({
 				content: "You are blacklisted",
-				ephemeral: true,
+				ephemeral: true
 			});
 		}
 
-		const handlePanel = async (id) => {
+		const handlePanel = async id => {
 			const caticket_row = await db.models.Category.findOne({
-				where: { id },
+				where: { id }
 			});
 
 			if (!caticket_row) {
-				log.warn(
-					"Could not find a category with the ID given by a panel interaction"
-				);
+				log.warn("Could not find a category with the ID given by a panel interaction");
 				return interaction.reply({
 					embeds: [
 						new MessageEmbed()
@@ -42,9 +38,9 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							.setTitle("⚠️")
 							.setDescription(
 								"An unexpected error occurred during command execution.\nPlease ask an administrator to check the console output / logs for details."
-							),
+							)
 					],
-					ephemeral: true,
+					ephemeral: true
 				});
 			}
 
@@ -52,8 +48,8 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				where: {
 					category: caticket_row.id,
 					creator: interaction.user.id,
-					open: true,
-				},
+					open: true
+				}
 			});
 
 			if (ticket_channels.count >= caticket_row.max_per_member) {
@@ -64,8 +60,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 								.setColor(config.colors.error_color)
 								.setAuthor({
 									name: interaction.user.username,
-									iconURL:
-										interaction.user.displayAvatarURL(),
+									iconURL: interaction.user.displayAvatarURL()
 								})
 								.setTitle("Existing Ticket")
 								.setDescription(
@@ -73,14 +68,14 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 								)
 								.setFooter({
 									text: config.text.footer,
-									iconURL: interaction.guild.iconURL(),
-								}),
+									iconURL: interaction.guild.iconURL()
+								})
 						],
-						ephemeral: true,
+						ephemeral: true
 					});
 				}
 
-				const list = ticket_channels.rows.map((row) => {
+				const list = ticket_channels.rows.map(row => {
 					if (row.topic) {
 						const description = row.topic.substring(0, 30);
 						const ellipses = row.topic.length > 30 ? "..." : "";
@@ -95,12 +90,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							.setColor(config.colors.error_color)
 							.setAuthor({
 								name: interaction.user.username,
-								iconURL: interaction.user.displayAvatarURL(),
+								iconURL: interaction.user.displayAvatarURL()
 							})
 							.setTitle(
-								`You already have ${
-									ticket_channels.count
-								} open ticket${
+								`You already have ${ticket_channels.count} open ticket${
 									ticket_channels.count === 1 ? "" : "s"
 								}`
 							)
@@ -111,37 +104,31 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							)
 							.setFooter({
 								text: config.text.footer,
-								iconURL: interaction.guild.iconURL(),
-							}),
+								iconURL: interaction.guild.iconURL()
+							})
 					],
-					ephemeral: true,
+					ephemeral: true
 				});
 			}
 
 			try {
-				const ticket_row = await tickets.create(
-					interaction.guild.id,
-					interaction.user.id,
-					id
-				);
+				const ticket_row = await tickets.create(interaction.guild.id, interaction.user.id, id);
 				return interaction.reply({
 					embeds: [
 						new MessageEmbed()
 							.setColor(config.colors.success_color)
 							.setAuthor({
 								name: interaction.user.username,
-								iconURL: interaction.user.displayAvatarURL(),
+								iconURL: interaction.user.displayAvatarURL()
 							})
 							.setTitle("Ticket created")
-							.setDescription(
-								`Your ticket has been created: <#${ticket_row.id}>.`
-							)
+							.setDescription(`Your ticket has been created: <#${ticket_row.id}>.`)
 							.setFooter({
 								text: config.text.footer,
-								iconURL: interaction.guild.iconURL(),
-							}),
+								iconURL: interaction.guild.iconURL()
+							})
 					],
-					ephemeral: true,
+					ephemeral: true
 				});
 			} catch (error) {
 				log.error(error);
@@ -151,146 +138,132 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							.setColor(config.colors.error_color)
 							.setAuthor({
 								name: interaction.user.username,
-								iconURL: interaction.user.displayAvatarURL(),
+								iconURL: interaction.user.displayAvatarURL()
 							})
 							.setTitle("Error")
 							.setDescription(error.message)
 							.setFooter({
 								text: config.text.footer,
-								iconURL: interaction.guild.iconURL(),
-							}),
+								iconURL: interaction.guild.iconURL()
+							})
 					],
-					ephemeral: true,
+					ephemeral: true
 				});
 			}
 		};
 
 		const handleEmbedCreation = async (
-			message_content,
+			output_message,
 			current_index,
 			current_values,
 			index_to_string_map
 		) => {
-			const filter = (response) =>
-				response.author.id === interaction.user.id;
+			const filter = response => response.author.id === interaction.user.id;
 
-			if (current_index === Object.keys(current_values).length - 1) {
+			const embed_message_content =
+				current_values.message_content !== undefined ? current_values.message_content : "";
+
+			// This means the user is on the last index so we should show them the finished embed
+			if (current_index === Object.keys(current_values).length) {
 				await interaction.followUp({
-					content:
-						"This is the finished embed! When you're ready to post the embed to the channel press the button below.\n\n**Finished Embed:**",
+					content: `This is the finished embed! When you're ready to post the embed to the channel press the button below.\n\n**Finished Embed:**\n\n${embed_message_content}`,
 					ephemeral: true,
 					embeds: [current_values],
 					components: [
 						new MessageActionRow().addComponents(
 							new MessageButton()
-								.setCustomId(
-									`embed.creator.post:${interaction.id}`
-								)
+								.setCustomId(`embed.creator.post:${interaction.id}`)
 								.setLabel("Post embed!")
 								.setStyle("SUCCESS")
-						),
-					],
+						)
+					]
 				});
 
-				const filter = (new_interaction) =>
+				const filter = new_interaction =>
 					new_interaction.user.id === interaction.user.id &&
 					new_interaction.customId.includes(interaction.id);
-				const collector =
-					interaction.channel.createMessageComponentCollector({
-						filter,
-						time: 30000,
-					});
+				const collector = interaction.channel.createMessageComponentCollector({
+					filter,
+					time: 60000
+				});
 
-				collector.on("collect", async (new_interaction) => {
+				collector.on("collect", async new_interaction => {
 					await new_interaction.deferUpdate();
 
-					if (
-						new_interaction.customId ===
-						`embed.creator.post:${interaction.id}`
-					) {
+					if (new_interaction.customId === `embed.creator.post:${interaction.id}`) {
 						new_interaction.channel.send({
-							embeds: [current_values],
+							content: current_values.message_content,
+							embeds: [current_values]
 						});
 
 						return new_interaction.editReply({
 							content: "Embed posted successfully. ✅",
 							components: [],
 							embeds: [],
-							ephemeral: true,
+							ephemeral: true
 						});
 					}
 
 					collector.stop();
 				});
 
-				collector.on("end", async (collected) => {
+				collector.on("end", async collected => {
 					if (collected.size === 0) {
 						await interaction.editReply({
-							content:
-								"You failed to reply in time, operation cancelled!",
+							content: "You failed to reply in time, operation cancelled!",
 							components: [],
 							embeds: [],
-							ephemeral: true,
+							ephemeral: true
 						});
 					}
 				});
-			}
-
-			if (current_index === Object.keys(current_values).length - 1) {
-				return;
-			}
-			await interaction
-				.editReply({
-					content: message_content,
-					ephemeral: true,
-					fetchReply: true,
-					components: [],
-					embeds: [current_values],
-				})
-				.then(() => {
-					interaction.channel
-						.awaitMessages({
-							filter,
-							max: 1,
-							time: 120000,
-							errors: ["time"],
-						})
-						.then(async (collected) => {
-							// Validation for specific embed fields
-							if (
-								index_to_string_map[current_index] === "color"
-							) {
-								if (
-									!collected
-										.first()
-										.content.match(
-											/(#|(0x))?([a-f]|[0-9]){6}/gi
-										)
-								) {
-									// TODO: Handle invalid color
-									console.log("Invalid color!");
+			} else {
+				await interaction
+					.editReply({
+						content: output_message,
+						ephemeral: true,
+						fetchReply: true,
+						components: [],
+						embeds: [current_values]
+					})
+					.then(() => {
+						interaction.channel
+							.awaitMessages({
+								filter,
+								max: 1,
+								time: 120000,
+								errors: ["time"]
+							})
+							.then(async collected => {
+								// Validation for specific embed fields
+								if (index_to_string_map[current_index] === "color") {
+									if (
+										!collected.first().content.match(/(#|(0x))?([a-f]|[0-9]){6}/gi)
+									) {
+										// TODO: Handle invalid color
+										console.log("Invalid color!");
+									}
 								}
-							}
 
-							current_values[index_to_string_map[current_index]] =
-								collected.first().content;
-							handleEmbedCreation(
-								`Currently filling out \`\`${
-									index_to_string_map[current_index + 1]
-								}\`\`...\n\n**Embed Preview:**`,
-								current_index + 1,
-								current_values,
-								index_to_string_map
-							);
-						})
-						.catch(async () => {
-							await interaction.followUp({
-								content:
-									"You failed to reply in time, operation cancelled!",
-								ephemeral: true,
+								current_values[index_to_string_map[current_index]] =
+									collected.first().content;
+								handleEmbedCreation(
+									`Currently filling out \`\`${
+										index_to_string_map[current_index + 1]
+									}\`\`...\n\n**Embed Preview:**\n${embed_message_content}`,
+									current_index + 1,
+									current_values,
+									index_to_string_map
+								);
+							})
+							.catch(async () => {
+								await interaction.followUp({
+									content: "You failed to reply in time, operation cancelled!",
+									ephemeral: true
+								});
 							});
-						});
-				});
+					});
+			}
 		};
 
 		if (interaction.isCommand()) {
@@ -307,7 +280,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				const ticket_row = await db.models.Ticket.findOne({
-					where: { id: interaction.channel.id },
+					where: { id: interaction.channel.id }
 				});
 				await ticket_row.update({ claimed_by: interaction.user.id });
 				await interaction.channel.permissionOverwrites.edit(
@@ -317,7 +290,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				);
 
 				const caticket_row = await db.models.Category.findOne({
-					where: { id: ticket_row.category },
+					where: { id: ticket_row.category }
 				});
 
 				for (const role of caticket_row.roles) {
@@ -338,17 +311,15 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							.setColor(config.colors.default_color)
 							.setAuthor({
 								name: interaction.user.username,
-								iconURL: interaction.user.displayAvatarURL(),
+								iconURL: interaction.user.displayAvatarURL()
 							})
 							.setTitle("Ticket Claimed")
-							.setDescription(
-								`${interaction.member.toString()} has claimed this ticket.`
-							)
+							.setDescription(`${interaction.member.toString()} has claimed this ticket.`)
 							.setFooter({
 								text: config.text.footer,
-								iconURL: interaction.guild.iconURL(),
-							}),
-					],
+								iconURL: interaction.guild.iconURL()
+							})
+					]
 				});
 
 				const components = new MessageActionRow();
@@ -381,7 +352,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				const ticket_row = await db.models.Ticket.findOne({
-					where: { id: interaction.channel.id },
+					where: { id: interaction.channel.id }
 				});
 				await ticket_row.update({ claimed_by: null });
 
@@ -391,7 +362,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				);
 
 				const caticket_row = await db.models.Category.findOne({
-					where: { id: ticket_row.category },
+					where: { id: ticket_row.category }
 				});
 
 				for (const role of caticket_row.roles) {
@@ -412,17 +383,15 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							.setColor(config.colors.default_color)
 							.setAuthor({
 								name: interaction.user.username,
-								iconURL: interaction.user.displayAvatarURL(),
+								iconURL: interaction.user.displayAvatarURL()
 							})
 							.setTitle("Ticket Released")
-							.setDescription(
-								`${interaction.member.toString()} has released this ticket.`
-							)
+							.setDescription(`${interaction.member.toString()} has released this ticket.`)
 							.setFooter({
 								text: config.text.footer,
-								iconURL: interaction.guild.iconURL(),
-							}),
-					],
+								iconURL: interaction.guild.iconURL()
+							})
+					]
 				});
 
 				const components = new MessageActionRow();
@@ -451,27 +420,23 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 			} else if (interaction.customId.startsWith("ticket.close")) {
 				// Handle ticket close button
 				const ticket_row = await db.models.Ticket.findOne({
-					where: { id: interaction.channel.id },
+					where: { id: interaction.channel.id }
 				});
 				await interaction.reply({
 					components: [
 						new MessageActionRow()
 							.addComponents(
 								new MessageButton()
-									.setCustomId(
-										`confirm_close:${interaction.id}`
-									)
+									.setCustomId(`confirm_close:${interaction.id}`)
 									.setLabel("Close")
 									.setStyle("SUCCESS")
 							)
 							.addComponents(
 								new MessageButton()
-									.setCustomId(
-										`cancel_close:${interaction.id}`
-									)
+									.setCustomId(`cancel_close:${interaction.id}`)
 									.setLabel("Cancel")
 									.setStyle("SECONDARY")
-							),
+							)
 					],
 					embeds: [
 						new MessageEmbed()
@@ -480,48 +445,38 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							.setDescription("Please confirm your decision")
 							.setFooter({
 								text: `${config.text.footer} • Expires in 30 seconds`,
-								iconURL: interaction.guild.iconURL(),
-							}),
+								iconURL: interaction.guild.iconURL()
+							})
 					],
-					ephemeral: true,
+					ephemeral: true
 				});
 
-				const filter = (new_interaction) =>
+				const filter = new_interaction =>
 					new_interaction.user.id === interaction.user.id &&
 					new_interaction.customId.includes(interaction.id);
-				const collector =
-					interaction.channel.createMessageComponentCollector({
-						filter,
-						time: 30000,
-					});
+				const collector = interaction.channel.createMessageComponentCollector({
+					filter,
+					time: 30000
+				});
 
-				collector.on("collect", async (new_interaction) => {
+				collector.on("collect", async new_interaction => {
 					await new_interaction.deferUpdate();
 
-					if (
-						new_interaction.customId ===
-						`confirm_close:${interaction.id}`
-					) {
-						await tickets.close(
-							ticket_row.id,
-							interaction.user.id,
-							interaction.guild.id
-						);
+					if (new_interaction.customId === `confirm_close:${interaction.id}`) {
+						await tickets.close(ticket_row.id, interaction.user.id, interaction.guild.id);
 						await new_interaction.editReply({
 							components: [],
 							embeds: [
 								new MessageEmbed()
 									.setColor(config.colors.success_color)
 									.setTitle("Ticket Closed")
-									.setDescription(
-										`Ticket ${ticket_row.number} has been closed`
-									)
+									.setDescription(`Ticket ${ticket_row.number} has been closed`)
 									.setFooter({
 										text: config.text.footer,
-										iconURL: interaction.guild.iconURL(),
-									}),
+										iconURL: interaction.guild.iconURL()
+									})
 							],
-							ephemeral: true,
+							ephemeral: true
 						});
 					} else {
 						await new_interaction.editReply({
@@ -530,22 +485,20 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 								new MessageEmbed()
 									.setColor(config.colors.error_color)
 									.setTitle("Cancelled")
-									.setDescription(
-										"The operation has been cancelled."
-									)
+									.setDescription("The operation has been cancelled.")
 									.setFooter({
 										text: config.text.footer,
-										iconURL: interaction.guild.iconURL(),
-									}),
+										iconURL: interaction.guild.iconURL()
+									})
 							],
-							ephemeral: true,
+							ephemeral: true
 						});
 					}
 
 					collector.stop();
 				});
 
-				collector.on("end", async (collected) => {
+				collector.on("end", async collected => {
 					if (collected.size === 0) {
 						await interaction.editReply({
 							components: [],
@@ -554,8 +507,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 									.setColor(config.colors.error_color)
 									.setAuthor({
 										name: interaction.user.username,
-										iconURL:
-											interaction.user.displayAvatarURL(),
+										iconURL: interaction.user.displayAvatarURL()
 									})
 									.setTitle("Timed out")
 									.setDescription(
@@ -563,41 +515,13 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 									)
 									.setFooter({
 										text: config.text.footer,
-										iconURL: interaction.guild.iconURL(),
-									}),
+										iconURL: interaction.guild.iconURL()
+									})
 							],
-							ephemeral: true,
+							ephemeral: true
 						});
 					}
 				});
-			} else if (
-				interaction.customId.startsWith("embed.creator.confirm")
-			) {
-				// Handle selection button for embed creation workflow; this will collect embed data & fill it out.
-				await interaction.deferUpdate();
-
-				let current_values = {};
-				interaction.message.embeds.forEach((embed) => {
-					// Fetch all non-null values from embed object.
-					const values = Object.fromEntries(
-						Object.entries(embed).filter(([_, key]) => key != null)
-					);
-					current_values = values;
-				});
-
-				// From index 1 -> x
-				let index_to_string_map = {};
-				for (let i = 1; i < Object.keys(current_values).length; i++) {
-					index_to_string_map[i] = Object.keys(current_values)[i];
-				}
-
-				let current_index = 1;
-				handleEmbedCreation(
-					`Send a message below to fill out the data for the embed below, it will update as you go. Currently filling out \`\`${index_to_string_map[current_index]}\`\`...\n\n**Embed Preview:**`,
-					current_index,
-					current_values,
-					index_to_string_map
-				);
 			}
 		} else if (interaction.isSelectMenu()) {
 			if (interaction.customId.startsWith("panel.multiple")) {
@@ -611,28 +535,26 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				let confirmation_stage = false;
 
 				const embed = new MessageEmbed();
-				interaction.values.forEach((key) => {
+				interaction.values.forEach(key => {
 					embed[key] = "Lorem ipsum dolor sit amet";
-					if (key === "content")
-						message_content = "\nLorem ipsum dolor sit amet";
+					if (key === "content") message_content = "\nLorem ipsum dolor sit amet";
 					if (key === "color") embed.setColor("#bbaaee");
 				});
 
-				if (embed["description"] === null && embed["title"] === null) {
+				if (embed.description === null && embed.title === null) {
 					return interaction.followUp({
-						content:
-							"An embed must contain at least a title and/or a description.",
-						ephemeral: true,
+						content: "An embed must contain at least a title and/or a description.",
+						ephemeral: true
 					});
 				}
 
 				const components = [];
-				interaction.message.components.forEach((row) => {
+				interaction.message.components.forEach(row => {
 					components.push(row);
 
 					if (!confirmation_stage) {
-						row.components.forEach((menu) => {
-							if (menu.customId === "embed.creator.confirm") {
+						row.components.forEach(menu => {
+							if (menu.customId.includes("embed.creator.confirm")) {
 								confirmation_stage = true;
 							}
 						});
@@ -644,21 +566,84 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					components.push(
 						new MessageActionRow().addComponents(
 							new MessageButton()
-								.setCustomId("embed.creator.confirm")
+								.setCustomId(`embed.creator.confirm:${interaction.id}`)
 								.setLabel("Confirm!")
 								.setStyle("SUCCESS")
 						)
 					);
 				}
 
-				return interaction.editReply({
+				await interaction.editReply({
 					content: `You selected the following: \`\`${interaction.values.join(
 						", "
 					)}\`\`. An example of the embed (with sample data) is shown below. Is this correct? If so proceed to the next step to fill out embed data by confirming, otherwise make your selections again if this is not correct.
 		  		\n**Embed Preview:**\n${message_content}`,
 					embeds: [embed],
 					components,
-					ephemeral: true,
+					ephemeral: true
+				});
+
+				const filter = new_interaction =>
+					new_interaction.user.id === interaction.user.id &&
+					new_interaction.customId.includes(interaction.id);
+				const collector = interaction.channel.createMessageComponentCollector({
+					filter,
+					time: 60000
+				});
+
+				collector.on("collect", async new_interaction => {
+					await new_interaction.deferUpdate();
+
+					if (new_interaction.customId === `embed.creator.confirm:${interaction.id}`) {
+						let current_values = {};
+						interaction.message.embeds.forEach(embed => {
+							// Fetch all non-null values from embed object.
+							const values = Object.fromEntries(
+								Object.entries(embed).filter(
+									([key, value]) => value !== null && key !== "fields"
+								)
+							);
+							current_values = values;
+						});
+
+						// From index 1 -> x, index 0 must be ignored
+						const index_to_string_map = {};
+						for (let i = 1; i < Object.keys(current_values).length; i++) {
+							index_to_string_map[i] = Object.keys(current_values)[i];
+						}
+
+						const has_content = Object.values(interaction.values).includes("content");
+						if (has_content) {
+							current_values.message_content = message_content;
+							index_to_string_map[Object.keys(index_to_string_map).length + 1] =
+								"message_content";
+						}
+
+						const current_index = 1;
+						handleEmbedCreation(
+							`Send a message below to fill out the data for the embed below, it will update as you go. Currently filling out \`\`${
+								index_to_string_map[current_index]
+							}\`\`...\n\n**Embed Preview:**\n${
+								has_content ? current_values.message_content : ""
+							}`,
+							current_index,
+							current_values,
+							index_to_string_map
+						);
+					}
+
+					collector.stop();
+				});
+
+				collector.on("end", async collected => {
+					if (collected.size === 0) {
+						await interaction.editReply({
+							content: "You failed to confirm in time, operation cancelled!",
+							components: [],
+							embeds: [],
+							ephemeral: true
+						});
+					}
 				});
 			}
 		}
