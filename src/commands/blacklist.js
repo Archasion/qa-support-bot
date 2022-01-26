@@ -7,6 +7,11 @@ module.exports = class BlacklistCommand extends Command {
 			name: "blacklist",
 			description: "View or modify the blacklist",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: false,
 			nda_only: false,

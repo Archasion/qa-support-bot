@@ -7,6 +7,11 @@ module.exports = class SettingsCommand extends Command {
 			name: "settings",
 			description: "Edit the settings of the bot",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: false,
 			nda_only: false,

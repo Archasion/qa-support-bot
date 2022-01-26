@@ -7,6 +7,11 @@ module.exports = class EvalCommand extends Command {
 			name: "eval",
 			description: "Evaluates code.",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: false,
 			moderator_only: false,
 			nda_only: false,

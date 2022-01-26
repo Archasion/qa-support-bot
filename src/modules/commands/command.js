@@ -90,6 +90,12 @@ module.exports = class Command {
 		this.cooldown = data.cooldown;
 
 		/**
+		 * Don't allow command use in channel x (can be used by moderators+)
+		 * @type {number}
+		 */
+		this.ignored = data.ignored;
+
+		/**
 		 * The command options
 		 * @type {CommandOption[]}
 		 */

@@ -6,6 +6,11 @@ module.exports = class ResetReminderCommand extends Command {
 			name: "reset-reminder",
 			description: "Reset your reminder",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: true,
 			nda_only: false,

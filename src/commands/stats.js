@@ -8,6 +8,11 @@ module.exports = class StatsCommand extends Command {
 			name: "stats",
 			description: "View the server's statistics.",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: true,
 			nda_only: false,

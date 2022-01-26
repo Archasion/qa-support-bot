@@ -15,6 +15,11 @@ module.exports = class EvalCommand extends Command {
 			name: "tag",
 			description: "Reply with the answer to a common question",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			cooldown: 60,
 			manager_only: true,
 			moderator_only: true,

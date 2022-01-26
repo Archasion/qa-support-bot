@@ -239,6 +239,42 @@ module.exports = class CommandManager {
 			});
 		}
 
+		if (command.ignored) {
+			const { ignored, name } = command;
+
+			// Ignored roles
+			if (ignored.roles) {
+				if (interaction.member.roles.cache.some(role => ignored.roles.includes(role.id))) {
+					return interaction.reply({
+						content: `You cannot use \`/${name}\` due to role restrictions`,
+						ephemeral: true
+					});
+				}
+			}
+
+			if (!(await utils.isStaff(interaction.member))) {
+				// Ignored channels
+				if (ignored.channels) {
+					if (ignored.channels.includes(interaction.channel.id)) {
+						return interaction.reply({
+							content: `\`/${name}\` cannot be used in this channel`,
+							ephemeral: true
+						});
+					}
+				}
+
+				// Ignored threads
+				if (ignored.threads) {
+					if (ignored.threads.includes(interaction.channel.id)) {
+						return interaction.reply({
+							content: `\`/${name}\` cannot be used in this thread`,
+							ephemeral: true
+						});
+					}
+				}
+			}
+		}
+
 		if (command.cooldown) {
 			if (!this.cooldowns.has(command.name)) {
 				this.cooldowns.set(command.name, new Collection());

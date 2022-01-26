@@ -7,6 +7,11 @@ module.exports = class ReminderInfoCommand extends Command {
 			name: "reminder-info",
 			description: "Get information about your reminder",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: true,
 			nda_only: false,

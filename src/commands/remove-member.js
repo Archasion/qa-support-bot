@@ -7,6 +7,11 @@ module.exports = class RemoveCommand extends Command {
 			name: "remove-member",
 			description: "Remove a member from a ticket",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: true,
 			nda_only: false,

@@ -8,6 +8,11 @@ module.exports = class EmbedCommand extends Command {
 			name: "embed",
 			description: "Build a customized embed",
 			permissions: [],
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			manager_only: true,
 			moderator_only: true,
 			nda_only: false,

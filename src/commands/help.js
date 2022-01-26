@@ -6,6 +6,11 @@ module.exports = class HelpCommand extends Command {
 		super(client, {
 			name: "help",
 			description: "List the commands you have access to",
+			ignored: {
+				roles: [],
+				channels: [],
+				threads: []
+			},
 			permissions: [],
 			manager_only: false,
 			moderator_only: false,
