@@ -1,8 +1,3 @@
-module.exports = (req, res) => {
-	const { name = "World" } = req.query;
-	res.send(`Hello ${name}!`);
-};
-
 // ANCHOR Constants
 const express = require("express");
 const yaml = require("js-yaml");
