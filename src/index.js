@@ -15,10 +15,11 @@ global.config = yaml.load(fileContents);
 global.log = require("./logger");
 
 app.get("/", (req, res) => res.send("Hello World!"));
-app.listen(port, () => console.log(`Example app listening at http://localhost:${port}`));
+app.listen(port, () => log.success(`Example app listening at http://localhost:${port}`));
 
 require("dotenv").config({ path: path("./.env") });
 require("./utils/functions")();
+require("./mongodb")();
 
 process.on("unhandledRejection", error => {
 	if (error instanceof Error) log.warn(`Uncaught ${error.name} (${error.message})`);

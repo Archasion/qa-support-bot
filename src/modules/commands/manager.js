@@ -3,6 +3,8 @@ const { Collection, MessageEmbed } = require("discord.js");
 const fs = require("fs");
 const { path } = require("../../utils/fs");
 
+const { MemberBlacklist, RoleBlacklist } = require("./../../mongodb/models/blacklist");
+
 /**
  * Manages the loading and execution of commands
  */
@@ -72,20 +74,21 @@ module.exports = class CommandManager {
 	async updatePermissions(guild) {
 		guild.commands.fetch().then(async commands => {
 			const permissions = [];
-			const settings = await utils.getSettings(guild.id);
+			const memberBlacklist = await MemberBlacklist.find();
+			const roleBlacklist = await RoleBlacklist.find();
 			const blacklist = [];
 
-			settings.blacklist.users?.forEach(userId => {
+			memberBlacklist.forEach(obj => {
 				blacklist.push({
-					id: userId,
+					id: obj.id,
 					permission: false,
 					type: "USER"
 				});
 			});
 
-			settings.blacklist.roles?.forEach(roleId => {
+			roleBlacklist.forEach(obj => {
 				blacklist.push({
-					id: roleId,
+					id: obj.id,
 					permission: false,
 					type: "ROLE"
 				});

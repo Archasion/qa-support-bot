@@ -1,5 +1,6 @@
 const EventListener = require("../modules/listeners/listener");
 const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
 
 module.exports = class InteractionCreateEventListener extends EventListener {
 	constructor(client) {
@@ -12,11 +13,16 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 	async execute(interaction) {
 		log.debug(interaction);
 
-		const settings = await utils.getSettings(interaction.guild.id);
+		const settings = utils.getSettings(interaction.guild.id);
+
+		const blacklist = {
+			roles: Object.values(await RoleBlacklist.find()).map(obj => obj.id),
+			members: Object.values(await MemberBlacklist.find()).map(obj => obj.id)
+		};
 
 		const blacklisted =
-			settings.blacklist.members.includes[interaction.user.id] ||
-			interaction.member?.roles.cache?.some(role => settings.blacklist.roles.includes(role));
+			blacklist.members.includes(interaction.user.id) ||
+			interaction.member?.roles.cache?.some(role => blacklist.roles.includes(role));
 		if (blacklisted) {
 			return interaction.reply({
 				content: "You are blacklisted",

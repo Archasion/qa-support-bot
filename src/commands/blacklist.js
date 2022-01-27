@@ -1,5 +1,6 @@
 const { MessageEmbed, Role } = require("discord.js");
 const Command = require("../modules/commands/command");
+const { RoleBlacklist, MemberBlacklist } = require("./../mongodb/models/blacklist");
 
 module.exports = class BlacklistCommand extends Command {
 	constructor(client) {
@@ -57,8 +58,10 @@ module.exports = class BlacklistCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const settings = await utils.getSettings(interaction.guild.id);
-		const blacklist = JSON.parse(JSON.stringify(settings.blacklist));
+		const blacklist = {
+			roles: RoleBlacklist,
+			members: MemberBlacklist
+		};
 
 		switch (interaction.options.getSubcommand()) {
 			case "add": {
@@ -83,7 +86,17 @@ module.exports = class BlacklistCommand extends Command {
 					});
 				}
 
-				blacklist[`${type}s`].push(member_or_role.id);
+				if (type === "member") {
+					MemberBlacklist.create({
+						name: member_or_role.user.tag,
+						id: member_or_role.id
+					});
+				} else {
+					RoleBlacklist.create({
+						name: member_or_role.name,
+						id: member_or_role.id
+					});
+				}
 
 				const description = [];
 
@@ -113,34 +126,28 @@ module.exports = class BlacklistCommand extends Command {
 					ephemeral: true
 				});
 
-				await settings.update({ blacklist });
 				break;
 			}
 
 			case "remove": {
 				const member_or_role = interaction.options.getMentionable("member_or_role");
 				const type = member_or_role instanceof Role ? "role" : "member";
-				const index = blacklist[`${type}s`].findIndex(element => element === member_or_role.id);
 
-				if (index === -1) {
+				try {
+					if (type === "member") {
+						await MemberBlacklist.deleteMany({ id: member_or_role.id });
+					} else {
+						await RoleBlacklist.deleteMany({ id: member_or_role.id });
+					}
+				} catch (error) {
+					console.log(error);
 					return interaction.reply({
-						embeds: [
-							new MessageEmbed()
-								.setColor(config.colors.error_color)
-								.setTitle("Error")
-								.setDescription(
-									"This member or role can not be removed from the blacklist as they are not blacklisted."
-								)
-								.setFooter({
-									text: config.text.footer,
-									iconURL: interaction.guild.iconURL()
-								})
-						],
+						content: `Could not remove <@${type === "member" ? "" : "&"}${
+							member_or_role.id
+						}> from the blacklist`,
 						ephemeral: true
 					});
 				}
-
-				blacklist[`${type}s`].splice(index, 1);
 
 				const description = [];
 
@@ -167,8 +174,6 @@ module.exports = class BlacklistCommand extends Command {
 					],
 					ephemeral: true
 				});
-
-				await settings.update({ blacklist });
 				break;
 			}
 
@@ -191,8 +196,8 @@ module.exports = class BlacklistCommand extends Command {
 					});
 				}
 
-				const members = blacklist.members.map(id => `• <@${id}>`);
-				const roles = blacklist.roles.map(id => `• <@&${id}>`);
+				const members = Object.values(await MemberBlacklist.find()).map(obj => `• <@${obj.id}>`);
+				const roles = Object.values(await RoleBlacklist.find()).map(obj => `• <@&${obj.id}>`);
 
 				return interaction.reply({
 					embeds: [
