@@ -132,4 +132,12 @@ module.exports = class Command {
 			NUMBER: 10
 		};
 	}
+
+	static get types() {
+		return {
+			SLASH_COMMAND: 1,
+			USER_COMMAND: 2,
+			MESSAGE_COMMAND: 3
+		};
+	}
 };

@@ -18,9 +18,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		switch (emoji.name) {
 			case "📅": // Create event and message developer
 			case "🗓️":
-				if (!(await utils.isStaff(await message.guild.members.fetch(message.author.id)))) return;
-				if (message.channel.id === config.channels.moderation.requests) return;
+				if (!(await utils.isStaff(guild_member))) return;
+				if (message.channel.id !== config.channels.moderation.requests) return;
 				if (!message.author.bot) return;
+				if (guild_member.bot) return;
 
 				createEvent(message);
 				break;
@@ -30,6 +31,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				if (await utils.isStaff(await message.guild.members.fetch(message.author.id))) return; // Not used on staff
 				if (message.author.id === user.id) return; // Not used on self
 				if (message.author.bot) return; // Not used on a bot
+				if (guild_member.bot) return; // Not used by a bot
 
 				// eslint-disable-next-line no-case-declarations
 				const check = alert_thread.messages.cache.filter(
@@ -75,7 +77,6 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 		async function createEvent(message) {
 			try {
-				const username_regex = new RegExp(/Username:\s([\w\d_]+),/gims);
 				const timestamp_regex = new RegExp(/⏰ <t:(\d+):F>/gims);
 				const platforms_regex = new RegExp(/🖥(.+)/gims);
 
@@ -83,9 +84,20 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				const timestamp = timestamp_regex.exec(embed.description)[1] * 1000;
 				const platforms = platforms_regex.exec(embed.description)[1];
 
-				const username = username_regex.exec(embed.footer.text)[1];
-				let member = await message.guild.members.search({ query: username });
-				member = member.first();
+				let member;
+
+				if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
+					const user_id_regex = new RegExp(/<@!?(\d{17,19})>/gims);
+					const user_id = user_id_regex.exec(embed.fields[0].value)[1];
+
+					member = await message.guild.members.fetch(user_id);
+				} else {
+					const username_regex = new RegExp(/Username:\s([\w\d_]+),/gims);
+					const username = username_regex.exec(embed.footer.text)[1];
+
+					member = await message.guild.members.search({ query: username });
+					member = await member.first();
+				}
 
 				// ANCHOR Check if event exists
 				const events = message.guild.scheduledEvents.cache.map(event => ({
@@ -110,7 +122,15 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				if (check) return;
 
 				let channel = config.vcs.public.testing;
-				if (embed.author.name === "NDA Test") channel = config.vcs.nda.testing;
+				let emoji = "";
+
+				if (embed.color === 0xe67e22) {
+					channel = config.vcs.accelerator.chat;
+					emoji = "🥕 ";
+				} else if (embed.author.name === "NDA Test") {
+					channel = config.vcs.nda.testing;
+					emoji = "🔒 ";
+				}
 
 				const testing_session = await message.guild.scheduledEvents.create({
 					privacyLevel: "GUILD_ONLY",
@@ -122,14 +142,14 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 				});
 
-				const pinned_message = moderation_channel.messages.fetch(
+				const pinned_message = await moderation_channel.messages.fetch(
 					config.messages.testing_requests
 				);
 
 				pinned_message.edit({
-					content: `${pinned_message.content}\n\n> ${
-						embed.author.name === "NDA Test" ? "🔒 " : ""
-					}**${embed.title}** <t:${timestamp / 1000}:F>\n> ${message.url}`
+					content: `${pinned_message.content}\n\n> ${emoji}**${embed.title}** <t:${
+						timestamp / 1000
+					}:F>\n> ${message.url}`
 				});
 
 				const notification = `Hey there ${member}, we've reviewed your request for **${
@@ -141,7 +161,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				}/${testing_session.id}`;
 
 				try {
-					await member.send(notification);
+					member.send(notification);
 					moderation_channel.send(
 						`${user} The \`${embed.author.name}\` for **${
 							embed.title
@@ -158,6 +178,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 							name: embed.title,
 							autoArchiveDuration: 1440,
 							type: "GUILD_PRIVATE_THREAD",
+							invitable: false,
 							reason: "Unable to message author regarding a testing request."
 						})
 						.then(thread => {
@@ -176,9 +197,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 							);
 						});
 
-					message.react("❌");
+					message.react("✅");
 				}
 			} catch {
+				message.react("❌");
 				await moderation_channel.send(`${user} could not accept the test.`);
 			}
 		}

@@ -410,15 +410,15 @@ module.exports = class EmbedCommand extends Command {
 		}
 
 		if (field_name_1 && field_value_1) {
-			embed.addField(field_name_1, field_value_1, field_inline_1);
+			embed.addField(field_name_1, field_value_1.format(), field_inline_1);
 		}
 
 		if (field_name_2 && field_value_2) {
-			embed.addField(field_name_2, field_value_2, field_inline_2);
+			embed.addField(field_name_2, field_value_2.format(), field_inline_2);
 		}
 
 		if (field_name_3 && field_value_3) {
-			embed.addField(field_name_3, field_value_3, field_inline_3);
+			embed.addField(field_name_3, field_value_3.format(), field_inline_3);
 		}
 
 		if (footer) {
