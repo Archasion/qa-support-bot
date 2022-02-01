@@ -240,7 +240,11 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					`testing_sessions_${type}.csv`
 				);
 
-				interaction.reply({ files: [attachment], ephemeral: true });
+				interaction.reply({
+					content: "Import into **Google Sheets** or **Microsoft Excel**",
+					files: [attachment],
+					ephemeral: true
+				});
 			} else if (custom_id.startsWith("panel.single")) {
 				// Handle single-category panels
 				handlePanel(custom_id.split(":")[1]);
