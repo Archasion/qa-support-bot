@@ -47,22 +47,27 @@ module.exports = class StatsCommand extends Command {
 	 */
 	async execute(interaction) {
 		let option = interaction.options.getString("time_period");
-		let display = "Current Month";
 
 		let time_period_gt = new Date();
 		let time_period_lt = new Date();
+
+		let date = new Date();
 
 		switch (option) {
 			case "current_year":
 				time_period_gt = new Date(time_period_gt.getFullYear(), 0, 0);
 				time_period_lt = new Date(time_period_lt.getFullYear() + 1, 0, 1);
-				display = "Current Year";
+
+				date = date.getFullYear();
 				break;
+
 			case "all_time":
 				time_period_gt = new Date(0);
 				time_period_lt = new Date(100 ** 7);
-				display = "All Time";
+
+				date = "All Time";
 				break;
+
 			default:
 				time_period_lt = new Date(
 					time_period_lt.getFullYear(),
@@ -70,6 +75,8 @@ module.exports = class StatsCommand extends Command {
 					1
 				);
 				time_period_gt = new Date(time_period_gt.getFullYear(), time_period_gt.getMonth(), 0);
+
+				date = `${date.toLocaleString("default", { month: "long" })} ${date.getFullYear()}`;
 				option = "current_month";
 				break;
 		}
@@ -88,7 +95,7 @@ module.exports = class StatsCommand extends Command {
 			.setDescription(
 				`There ha${public_tests === 1 ? "s" : "ve"} been **${public_tests.format()}** test${
 					public_tests === 1 ? "" : "s"
-				} run in this server (${display})`
+				} run in this server (${date})`
 			);
 
 		if (await utils.isNDA(interaction.member)) {
@@ -108,7 +115,7 @@ module.exports = class StatsCommand extends Command {
 			});
 
 			embed.description = null;
-			embed.setTitle(`Testing Statistics (${display})`);
+			embed.setTitle(`Testing Statistics (${date})`);
 			embed.addField("Public Tests", public_tests.format(), true);
 			embed.addField("NDA Tests", nda_tests.format(), true);
 			embed.addField("Accelerator Tests", accelerator_tests.format(), true);
@@ -128,6 +135,10 @@ module.exports = class StatsCommand extends Command {
 			];
 		}
 
-		interaction.reply({ embeds: [embed], components: download, ephemeral: true });
+		interaction.reply({
+			embeds: [embed],
+			components: download,
+			ephemeral: true
+		});
 	}
 };

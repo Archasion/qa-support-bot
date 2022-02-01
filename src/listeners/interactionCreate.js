@@ -164,18 +164,27 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 		} else if (interaction.isButton()) {
 			if (custom_id.startsWith("download_test_csv_")) {
 				const type = `${custom_id.split("_")[3]}_${custom_id.split("_")[4]}`;
+
 				let time_period_gt = new Date();
 				let time_period_lt = new Date();
+
+				let date = new Date();
 
 				switch (type) {
 					case "current_year":
 						time_period_gt = new Date(time_period_gt.getFullYear(), 0, 0);
 						time_period_lt = new Date(time_period_lt.getFullYear() + 1, 0, 1);
+
+						date = date.getFullYear();
 						break;
+
 					case "all_time":
 						time_period_gt = new Date(0);
 						time_period_lt = new Date(100 ** 7);
+
+						date = "all_time";
 						break;
+
 					default:
 						time_period_lt = new Date(
 							time_period_lt.getFullYear(),
@@ -187,11 +196,16 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 							time_period_gt.getMonth(),
 							0
 						);
+
+						date = `${date.toLocaleString("default", {
+							month: "long"
+						})}_${date.getFullYear()}`.toLowerCase();
 						break;
 				}
 
 				time_period_gt = time_period_gt.toISOString();
 				time_period_lt = time_period_lt.toISOString();
+
 				const tests = await Tests.find({ date: { $gt: time_period_gt, $lt: time_period_lt } });
 				const data = [];
 
@@ -230,6 +244,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 				let csvContent =
 					"Game,Amount [ALL],,Game,Amount [PUBLIC],,Game,Amount [NDA],,Game,Amount [ACCELERATOR]\n";
+
 				data.forEach(rowArray => {
 					const row = Object.values(rowArray).join(",");
 					csvContent += `${row}\n`;
@@ -237,7 +252,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 				const attachment = new MessageAttachment(
 					Buffer.from(csvContent, "utf8"),
-					`testing_sessions_${type}.csv`
+					`testing_sessions_${date}.csv`
 				);
 
 				interaction.reply({
