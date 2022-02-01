@@ -1,6 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
 
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const Tests = require("./../mongodb/models/tests");
 
 module.exports = class MessageReactionAddEventListener extends EventListener {
 	constructor(client) {
@@ -81,8 +82,20 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				const platforms_regex = new RegExp(/🖥(.+)/gims);
 
 				const embed = message.embeds[0];
+				const game_title = embed.title;
+				const type = embed.author.name;
 				const timestamp = timestamp_regex.exec(embed.description)[1] * 1000;
 				const platforms = platforms_regex.exec(embed.description)[1];
+				let test_type = "unknown";
+
+				switch (type) {
+					case "Public Test":
+						test_type = "public";
+						break;
+					case "NDA Test":
+						test_type = "nda";
+						break;
+				}
 
 				let member;
 
@@ -109,12 +122,13 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				let check = false;
 
 				await events.forEach(event => {
-					if (event.name === embed.author.name && event.startTime === timestamp) {
+					if (event.name === type && event.startTime === timestamp) {
 						moderation_channel.send(
 							`${user} Test already scheduled for <t:${
 								timestamp / 1000
 							}:F>\nhttps://discord.com/events/${message.guild.id}/${event.id}`
 						);
+						reaction.remove();
 						check = true;
 					}
 				});
@@ -125,17 +139,31 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				let emoji = "";
 
 				if (embed.color === 0xe67e22) {
+					await await Tests.create({
+						name: game_title,
+						type: "accelerator",
+						url: embed.url,
+						date: new Date(timestamp)
+					});
+
 					channel = config.vcs.accelerator.chat;
 					emoji = "🥕 ";
-				} else if (embed.author.name === "NDA Test") {
+				} else if (type === "NDA Test") {
 					channel = config.vcs.nda.testing;
 					emoji = "🔒 ";
 				}
 
+				await Tests.create({
+					name: game_title,
+					type: test_type,
+					url: embed.url,
+					date: new Date(timestamp)
+				});
+
 				const testing_session = await message.guild.scheduledEvents.create({
 					privacyLevel: "GUILD_ONLY",
 					entityType: "VOICE",
-					name: embed.author.name,
+					name: type,
 					channel: message.guild.channels.cache.get(channel),
 					scheduledStartTime: new Date(timestamp).toISOString(),
 					scheduledEndTime: new Date(timestamp + 6000000).toISOString(),
@@ -147,14 +175,14 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				);
 
 				pinned_message.edit({
-					content: `${pinned_message.content}\n\n> ${emoji}**${embed.title}** <t:${
+					content: `${pinned_message.content}\n\n> ${emoji}**${game_title}** <t:${
 						timestamp / 1000
 					}:F>\n> ${message.url}`
 				});
 
-				const notification = `Hey there ${member}, we've reviewed your request for **${
-					embed.title
-				}** to be tested by our **${embed.author.name.split(" ")[0]} team** on <t:${
+				const notification = `Hey there ${member}, we've reviewed your request for **${game_title}** to be tested by our **${
+					type.split(" ")[0]
+				} team** on <t:${
 					timestamp / 1000
 				}:F> (Local Time) and have decided to approve the request, feel free to **contact** a staff member if you have any questions regarding your testing session.\n\nEvent URL:\nhttps://discord.com/${
 					message.guild.id
@@ -163,9 +191,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				try {
 					member.send(notification);
 					moderation_channel.send(
-						`${user} The \`${embed.author.name}\` for **${
-							embed.title
-						}** has been scheduled for <t:${
+						`${user} The \`${type}\` for **${game_title}** has been scheduled for <t:${
 							timestamp / 1000
 						}:F>\nhttps://discord.com/events/${message.guild.id}/${testing_session.id}`
 					);
@@ -175,7 +201,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					const channel = message.guild.channels.cache.get(config.channels.public.request);
 					channel.threads
 						.create({
-							name: embed.title,
+							name: game_title,
 							autoArchiveDuration: 1440,
 							type: "GUILD_PRIVATE_THREAD",
 							invitable: false,
@@ -185,9 +211,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 							thread.send(notification);
 
 							moderation_channel.send(
-								`${user} The \`${embed.author.name}\` for **${
-									embed.title
-								}** has been scheduled for <t:${
+								`${user} The \`${type}\` for **${game_title}** has been scheduled for <t:${
 									timestamp / 1000
 								}:F> (messaged the user through a private thread: <#${
 									thread.id
@@ -199,7 +223,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 					message.react("✅");
 				}
-			} catch {
+			} catch (er) {
+				console.log(er);
 				message.react("❌");
 				await moderation_channel.send(`${user} could not accept the test.`);
 			}

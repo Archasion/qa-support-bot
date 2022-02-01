@@ -1,6 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
-const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { MessageActionRow, MessageButton, MessageEmbed, MessageAttachment } = require("discord.js");
 const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
+const Tests = require("./../mongodb/models/tests");
 
 module.exports = class InteractionCreateEventListener extends EventListener {
 	constructor(client) {
@@ -11,6 +12,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 	 * @param {Interaction} interaction
 	 */
 	async execute(interaction) {
+		const custom_id = interaction.customId;
 		log.debug(interaction);
 
 		const settings = utils.getSettings(interaction.guild.id);
@@ -160,10 +162,89 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 			// Handle slash commands
 			this.client.commands.handle(interaction);
 		} else if (interaction.isButton()) {
-			if (interaction.customId.startsWith("panel.single")) {
+			if (custom_id.startsWith("download_test_csv_")) {
+				const type = `${custom_id.split("_")[3]}_${custom_id.split("_")[4]}`;
+				let time_period_gt = new Date();
+				let time_period_lt = new Date();
+
+				switch (type) {
+					case "current_year":
+						time_period_gt = new Date(time_period_gt.getFullYear(), 0, 0);
+						time_period_lt = new Date(time_period_lt.getFullYear() + 1, 0, 1);
+						break;
+					case "all_time":
+						time_period_gt = new Date(0);
+						time_period_lt = new Date(100 ** 7);
+						break;
+					default:
+						time_period_lt = new Date(
+							time_period_lt.getFullYear(),
+							time_period_lt.getMonth() + 1,
+							1
+						);
+						time_period_gt = new Date(
+							time_period_gt.getFullYear(),
+							time_period_gt.getMonth(),
+							0
+						);
+						break;
+				}
+
+				time_period_gt = time_period_gt.toISOString();
+				time_period_lt = time_period_lt.toISOString();
+				const tests = await Tests.find({ date: { $gt: time_period_gt, $lt: time_period_lt } });
+				const data = [];
+
+				tests.forEach(game => {
+					const obj = data.findIndex(item => item.game_all.includes(`;"${game.name}")`));
+					if (obj !== -1) {
+						switch (game.type) {
+							case "public":
+								data[obj].amount_public++;
+								data[obj].amount_all++;
+								break;
+							case "nda":
+								data[obj].amount_nda++;
+								data[obj].amount_all++;
+								break;
+							case "accelerator":
+								data[obj].amount_accelerator++;
+								break;
+						}
+					} else {
+						data.push({
+							game_all: `=HYPERLINK("${game.url}";"${game.name}")`,
+							amount_all: 0,
+							blank_all: "",
+							game_public: `=HYPERLINK("${game.url}";"${game.name}")`,
+							amount_public: game.type === "public" ? 1 : 0,
+							blank_public: "",
+							game_nda: `=HYPERLINK("${game.url}";"${game.name}")`,
+							amount_nda: game.type === "nda" ? 1 : 0,
+							blank_nda: "",
+							game_accelerator: `=HYPERLINK("${game.url}";"${game.name}")`,
+							amount_accelerator: game.type === "accelerator" ? 1 : 0
+						});
+					}
+				});
+
+				let csvContent =
+					"Game,Amount [ALL],,Game,Amount [PUBLIC],,Game,Amount [NDA],,Game,Amount [ACCELERATOR]\n";
+				data.forEach(rowArray => {
+					const row = Object.values(rowArray).join(",");
+					csvContent += `${row}\n`;
+				});
+
+				const attachment = new MessageAttachment(
+					Buffer.from(csvContent, "utf8"),
+					`testing_sessions_${type}.csv`
+				);
+
+				interaction.reply({ files: [attachment], ephemeral: true });
+			} else if (custom_id.startsWith("panel.single")) {
 				// Handle single-category panels
-				handlePanel(interaction.customId.split(":")[1]);
-			} else if (interaction.customId.startsWith("ticket.claim")) {
+				handlePanel(custom_id.split(":")[1]);
+			} else if (custom_id.startsWith("ticket.claim")) {
 				// Handle ticket claiming
 				if (!(await utils.isStaff(interaction.member))) {
 					return;
@@ -235,7 +316,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				await interaction.message.edit({ components: [components] });
-			} else if (interaction.customId.startsWith("ticket.unclaim")) {
+			} else if (custom_id.startsWith("ticket.unclaim")) {
 				// Handle ticket unclaiming
 				if (!(await utils.isStaff(interaction.member))) {
 					return;
@@ -307,7 +388,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				await interaction.message.edit({ components: [components] });
-			} else if (interaction.customId.startsWith("ticket.close")) {
+			} else if (custom_id.startsWith("ticket.close")) {
 				// Handle ticket close button
 				const ticket_row = await db.models.Ticket.findOne({
 					where: { id: interaction.channel.id }
@@ -414,7 +495,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				});
 			}
 		} else if (interaction.isSelectMenu()) {
-			if (interaction.customId.startsWith("panel.multiple")) {
+			if (custom_id.startsWith("panel.multiple")) {
 				// Handle multi-category panels and new command
 				handlePanel(interaction.values[0]);
 			}

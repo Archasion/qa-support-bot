@@ -1,26 +1,44 @@
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
 const Command = require("../modules/commands/command");
-const Keyv = require("keyv");
+const Tests = require("./../mongodb/models/tests");
 
 module.exports = class StatsCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "stats",
-			description: "View the server's statistics.",
+			description: "View the server's test statistics.",
 			permissions: [],
 			ignored: {
 				roles: [],
 				channels: [],
 				threads: []
 			},
-			manager_only: true,
-			moderator_only: true,
+			manager_only: false,
+			moderator_only: false,
 			nda_only: false,
 			dev_only: false,
-			options: []
+			options: [
+				{
+					name: "time_period",
+					description: "The time period to view statistics for",
+					type: Command.option_types.STRING,
+					choices: [
+						{
+							name: "Current Month",
+							value: "current_month"
+						},
+						{
+							name: "Current Year",
+							value: "current_year"
+						},
+						{
+							name: "All Time",
+							value: "all_time"
+						}
+					]
+				}
+			]
 		});
-
-		this.cache = new Keyv({ namespace: "cache.commands.stats" });
 	}
 
 	/**
@@ -28,81 +46,88 @@ module.exports = class StatsCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		let stats = await this.cache.get(interaction.guild.id);
+		let option = interaction.options.getString("time_period");
+		let display = "Current Month";
 
-		if (!stats) {
-			const tickets = await db.models.Ticket.findAndCountAll({
-				where: { guild: interaction.guild.id }
-			});
-			stats = {
-				messages: null,
-				response_time: Math.floor(
-					tickets.rows.reduce(
-						(acc, row) =>
-							row.first_response ? acc + (Math.abs(new Date(row.createdAt) - new Date(row.first_response)) / 1000 / 60) : acc, // prettier-ignore
-						0
-					) / tickets.count
-				),
-				tickets: tickets.count
-			};
+		let time_period_gt = new Date();
+		let time_period_lt = new Date();
 
-			await this.cache.set(interaction.guild.id, stats, 60 * 60 * 1000); // Cache for an hour
+		switch (option) {
+			case "current_year":
+				time_period_gt = new Date(time_period_gt.getFullYear(), 0, 0);
+				time_period_lt = new Date(time_period_lt.getFullYear() + 1, 0, 1);
+				display = "Current Year";
+				break;
+			case "all_time":
+				time_period_gt = new Date(0);
+				time_period_lt = new Date(100 ** 7);
+				display = "All Time";
+				break;
+			default:
+				time_period_lt = new Date(
+					time_period_lt.getFullYear(),
+					time_period_lt.getMonth() + 1,
+					1
+				);
+				time_period_gt = new Date(time_period_gt.getFullYear(), time_period_gt.getMonth(), 0);
+				option = "current_month";
+				break;
 		}
 
-		const guild_embed = new MessageEmbed()
+		time_period_gt = time_period_gt.toISOString();
+		time_period_lt = time_period_lt.toISOString();
+
+		const public_tests = await Tests.countDocuments({
+			type: "public",
+			date: { $gt: time_period_gt, $lt: time_period_lt }
+		});
+
+		const embed = new MessageEmbed()
+
 			.setColor(config.colors.default_color)
-			.setTitle("This server's stats")
 			.setDescription(
-				"Statistics about tickets within this guild. This data is cached for an hour."
-			)
-			.addField("Tickets", String(stats.tickets), true)
-			.addField("Avg. response time", `${stats.response_time} minutes`, true)
-			.setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() });
+				`There ha${public_tests === 1 ? "s" : "ve"} been **${public_tests.format()}** test${
+					public_tests === 1 ? "" : "s"
+				} run in this server (${display})`
+			);
 
-		if (stats.messages) {
-			guild_embed.addField("Messages", String(stats.messages), true);
+		if (await utils.isNDA(interaction.member)) {
+			const total = await Tests.countDocuments({
+				type: { $in: ["public", "nda"] },
+				date: { $gt: time_period_gt, $lt: time_period_lt }
+			});
+
+			const nda_tests = await Tests.countDocuments({
+				type: "nda",
+				date: { $gt: time_period_gt, $lt: time_period_lt }
+			});
+
+			const accelerator_tests = await Tests.countDocuments({
+				type: "accelerator",
+				date: { $gt: time_period_gt, $lt: time_period_lt }
+			});
+
+			embed.description = null;
+			embed.setTitle(`Testing Statistics (${display})`);
+			embed.addField("Public Tests", public_tests.format(), true);
+			embed.addField("NDA Tests", nda_tests.format(), true);
+			embed.addField("Accelerator Tests", accelerator_tests.format(), true);
+			embed.setFooter({ text: `Total Tests: ${total.format()}` });
 		}
 
-		const embeds = [guild_embed];
+		let download = [];
 
-		if (this.client.guilds.cache.size > 1) {
-			let global = await this.cache.get("global");
-
-			if (!global) {
-				const tickets = await db.models.Ticket.findAndCountAll();
-				global = {
-					messages: null,
-					response_time: Math.floor(
-						tickets.rows.reduce(
-							(acc, row) =>
-								row.first_response
-									? acc + (Math.abs(new Date(row.createdAt) - new Date(row.first_response)) / 1000 / 60) : acc, // prettier-ignore
-							0
-						) / tickets.count
-					),
-					tickets: tickets.count
-				};
-
-				await this.cache.set("global", global, 60 * 60 * 1000); // Cache for an hour
-			}
-
-			const global_embed = new MessageEmbed()
-				.setColor(config.colors.default_color)
-				.setTitle("Global stats")
-				.setDescription(
-					"Statistics about tickets across all guilds where this QA Support instance is used."
+		if (await utils.isStaff(interaction.member)) {
+			download = [
+				new MessageActionRow().addComponents(
+					new MessageButton()
+						.setCustomId(`download_test_csv_${option}`)
+						.setLabel("Download CSV")
+						.setStyle("DANGER")
 				)
-				.addField("Tickets", String(global.tickets), true)
-				.addField("Avg. response time", `${global.response_time} minutes`, true)
-				.setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() });
-
-			if (stats.messages) {
-				global_embed.addField("Messages", String(global.messages), true);
-			}
-
-			embeds.push(global_embed);
+			];
 		}
 
-		await interaction.reply({ embeds });
+		interaction.reply({ embeds: [embed], components: download, ephemeral: true });
 	}
 };
