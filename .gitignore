@@ -9,3 +9,4 @@ site/
 version
 database.sqlite
 config.yaml
+filter.yaml
