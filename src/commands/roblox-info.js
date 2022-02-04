@@ -71,7 +71,8 @@ module.exports = class RobloxInfoCommand extends Command {
 
 			// Add known group ranks to agknowledgements
 			for (const group of groups) {
-				if (group.Role.match(/(q\/?a|test)/gi)) {
+				// prettier-ignore
+				if (group.Role.match(/(?:(?<=^|\s)(?:test(?:er|ing)?)|(?:q\/?a|(?:play|game| )test(?:er|ing)?))/gi)) {
 					testerInGroups++;
 				}
 
