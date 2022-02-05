@@ -6,10 +6,7 @@ module.exports = class ThreadCreateEventListener extends EventListener {
 	}
 
 	async execute(thread) {
-		if (
-			thread.parent.id === config.channels.public.sessions &&
-			thread.type === "GUILD_PUBLIC_THREAD"
-		) {
+		if (thread.parent.id === config.channels.sessions && thread.type === "GUILD_PUBLIC_THREAD") {
 			setTimeout(() => {
 				thread.setRateLimitPerUser(120);
 				thread

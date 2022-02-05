@@ -1,4 +1,5 @@
 const Command = require("../modules/commands/command");
+const { NDA_SESSIONS, TESTING_REQUESTS } = process.env;
 
 module.exports = class SessionCommand extends Command {
 	constructor(client) {
@@ -72,7 +73,7 @@ module.exports = class SessionCommand extends Command {
 				break;
 		}
 
-		const requests = await interaction.guild.channels.cache.get(config.channels.moderation.requests);
+		const requests = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
 		const message = await requests.messages.fetch(message_id);
 
 		if (!message) {
@@ -90,10 +91,10 @@ module.exports = class SessionCommand extends Command {
 
 		switch (embed.author.name) {
 			case "Public Test":
-				announcement_channel = config.channels.public.sessions;
+				announcement_channel = config.channels.sessions;
 				break;
 			case "NDA Test":
-				announcement_channel = config.channels.nda.sessions;
+				announcement_channel = NDA_SESSIONS;
 				break;
 		}
 
@@ -125,12 +126,14 @@ module.exports = class SessionCommand extends Command {
 
 		const fetch = await announcement_channel.messages.fetch({ limit: 1 });
 
-		if (fetch.first().content === announcement) {
-			interaction.reply({
-				content: "An announcement has already been sent for this session",
-				ephemeral: true
-			});
-			return;
+		if (fetch.size > 0) {
+			if (fetch.first().content === announcement) {
+				interaction.reply({
+					content: "An announcement has already been sent for this session",
+					ephemeral: true
+				});
+				return;
+			}
 		}
 
 		announcement_channel.send({ content: announcement }).then(async message => {

@@ -1,5 +1,6 @@
 const EventEmitter = require("events");
 const { MessageEmbed, MessageAttachment } = require("discord.js");
+const { TICKET_LOGS } = process.env;
 
 /** Manages tickets */
 module.exports = class LoggingManager extends EventEmitter {
@@ -24,7 +25,7 @@ module.exports = class LoggingManager extends EventEmitter {
 	 * @param {string} [topic] - The ticket topic
 	 */
 	async createTicket(guild, creator, ticket, topic) {
-		const loggingChannel = guild.channels.cache.get(config.channels.moderation.logs);
+		const loggingChannel = guild.channels.cache.get(TICKET_LOGS);
 		const member = guild.members.cache.get(creator.id);
 
 		const sb = []; // New string builder
@@ -54,7 +55,7 @@ module.exports = class LoggingManager extends EventEmitter {
 	 * @param {number} ticket - The ticket's ID
 	 */
 	async closeTicket(guild, creator, reason, ticket) {
-		const loggingChannel = guild.channels.cache.get(config.channels.moderation.logs);
+		const loggingChannel = guild.channels.cache.get(TICKET_LOGS);
 		const member = guild.members.cache.get(creator.id);
 
 		ticket = await this.client.channels.cache.get(ticket);
@@ -114,7 +115,7 @@ module.exports = class LoggingManager extends EventEmitter {
 	 * @param {string} topic - The new topic
 	 */
 	async changeTopic(guild, creator, ticket, topic) {
-		const loggingChannel = guild.channels.cache.get(config.channels.moderation.logs);
+		const loggingChannel = guild.channels.cache.get(TICKET_LOGS);
 		const member = guild.members.cache.get(creator.id);
 
 		const sb = []; // New string builder
@@ -144,7 +145,7 @@ module.exports = class LoggingManager extends EventEmitter {
 	 * @param {object} ticket - The ticket object
 	 */
 	async addMember(guild, creator, member, ticket) {
-		const loggingChannel = guild.channels.cache.get(config.channels.moderation.logs);
+		const loggingChannel = guild.channels.cache.get(TICKET_LOGS);
 		const user = guild.members.cache.get(creator.id);
 
 		const sb = []; // New string builder
@@ -174,7 +175,7 @@ module.exports = class LoggingManager extends EventEmitter {
 	 * @param {object} ticket - The ticket object
 	 */
 	async removeMember(guild, creator, member, ticket) {
-		const loggingChannel = guild.channels.cache.get(config.channels.moderation.logs);
+		const loggingChannel = guild.channels.cache.get(TICKET_LOGS);
 		const user = guild.members.cache.get(creator.id);
 
 		const sb = []; // New string builder

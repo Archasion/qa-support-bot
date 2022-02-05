@@ -1,6 +1,7 @@
 /* eslint-disable no-useless-escape */
 const EventListener = require("../modules/listeners/listener");
 const { MessageEmbed } = require("discord.js");
+const { MODERATION_CHAT, ACTIVE_TESTING_REQUESTS, NDA_TESTING_VC } = process.env;
 
 module.exports = class ReadyEventListener extends EventListener {
 	constructor(client) {
@@ -27,8 +28,8 @@ module.exports = class ReadyEventListener extends EventListener {
 
 		const guild = this.client.guilds.cache.get(config.guild);
 		guild.channels.cache
-			.get(config.channels.moderation.chat)
-			.messages.fetch(config.messages.testing_requests)
+			.get(MODERATION_CHAT)
+			.messages.fetch(ACTIVE_TESTING_REQUESTS)
 			.then(async message => {
 				const newTestMessage = [];
 				const messageContent = message.content;
@@ -39,7 +40,7 @@ module.exports = class ReadyEventListener extends EventListener {
 
 				events.forEach(event => {
 					const regex = new RegExp(
-						`\n\n>\\s${event.channel.id === config.vcs.nda.testing ? "🔒" : ""}.+<t:${
+						`\n\n>\\s${event.channel.id === NDA_TESTING_VC ? "🔒" : ""}.+<t:${
 							event.startTime / 1000
 						}:F>\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`,
 						"gmis"

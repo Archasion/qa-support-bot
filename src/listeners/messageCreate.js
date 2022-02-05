@@ -1,5 +1,6 @@
 const EventListener = require("../modules/listeners/listener");
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { MODERATION_CHAT, NDA_APPLICATIONS } = process.env;
 
 module.exports = class MessageCreateEventListener extends EventListener {
 	constructor(client) {
@@ -11,7 +12,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
 		// ANCHOR Automatic deletion
 		if (message.channel.type === "GUILD_PUBLIC_THREAD") {
-			if (message.channel.parent.id === config.channels.public.sessions) {
+			if (message.channel.parent.id === config.channels.sessions) {
 				// Sentence includes word(s)
 				// prettier-ignore
 				const wildcard = ["fuck", "shit"];
@@ -63,7 +64,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		}
 
 		// ANCHOR VALIDATE APPLICATION
-		if (message.channel.id === config.channels.management.applications && message.author.bot) {
+		if (message.channel.id === NDA_APPLICATIONS && message.author.bot) {
 			const username = message.embeds[0].author.name;
 			try {
 				let member = await message.guild.members.search({ query: username });
@@ -115,7 +116,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.channels.moderation.chat).send({
+			message.guild.channels.cache.get(MODERATION_CHAT).send({
 				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
@@ -145,7 +146,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.channels.moderation.chat).send({
+			message.guild.channels.cache.get(MODERATION_CHAT).send({
 				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]
@@ -175,7 +176,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			message.guild.channels.cache.get(config.channels.moderation.chat).send({
+			message.guild.channels.cache.get(MODERATION_CHAT).send({
 				content: `<@&${config.roles.moderator}>`,
 				components: [messageUrl],
 				embeds: [embed]

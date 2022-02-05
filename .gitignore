@@ -8,5 +8,4 @@ site/
 .env
 version
 database.sqlite
-config.yaml
 filter.yaml

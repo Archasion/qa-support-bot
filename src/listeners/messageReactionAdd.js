@@ -3,6 +3,15 @@ const EventListener = require("../modules/listeners/listener");
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const Tests = require("./../mongodb/models/tests");
 
+const {
+	TESTING_REQUESTS,
+	MODERATION_CHAT,
+	ACTIVE_TESTING_REQUESTS,
+	NDA_TESTING_VC,
+	ACCELERATOR_CHAT_VC,
+	MODERATION_ALERTS
+} = process.env;
+
 module.exports = class MessageReactionAddEventListener extends EventListener {
 	constructor(client) {
 		super(client, { event: "messageReactionAdd" });
@@ -12,15 +21,15 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		let { message, emoji } = reaction;
 		message = await message.channel.messages.fetch(message.id);
 
-		const moderation_channel = message.guild.channels.cache.get(config.channels.moderation.chat);
-		const alert_thread = await moderation_channel.threads.fetch(config.threads.alerts);
+		const moderation_channel = message.guild.channels.cache.get(MODERATION_CHAT);
+		const alert_thread = await moderation_channel.threads.fetch(MODERATION_ALERTS);
 		const guild_member = await message.guild.members.fetch(user.id);
 
 		switch (emoji.name) {
 			case "📅": // Create event and message developer
 			case "🗓️":
 				if (!(await utils.isStaff(guild_member))) return;
-				if (message.channel.id !== config.channels.moderation.requests) return;
+				if (message.channel.id !== TESTING_REQUESTS) return;
 				if (!message.author.bot) return;
 				if (guild_member.bot) return;
 
@@ -135,7 +144,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				if (check) return;
 
-				let channel = config.vcs.public.testing;
+				let channel = config.vcs.testing;
 				let emoji = "";
 
 				if (embed.color === 0xe67e22) {
@@ -146,10 +155,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						date: new Date(timestamp)
 					});
 
-					channel = config.vcs.accelerator.chat;
+					channel = ACCELERATOR_CHAT_VC;
 					emoji = "🥕 ";
 				} else if (type === "NDA Test") {
-					channel = config.vcs.nda.testing;
+					channel = NDA_TESTING_VC;
 					emoji = "🔒 ";
 				}
 
@@ -170,9 +179,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 				});
 
-				const pinned_message = await moderation_channel.messages.fetch(
-					config.messages.testing_requests
-				);
+				const pinned_message = await moderation_channel.messages.fetch(ACTIVE_TESTING_REQUESTS);
 
 				pinned_message.edit({
 					content: `${pinned_message.content}\n\n> ${emoji}**${game_title}** <t:${
@@ -198,7 +205,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 					message.react("✅");
 				} catch {
-					const channel = message.guild.channels.cache.get(config.channels.public.request);
+					const channel = message.guild.channels.cache.get(config.channels.request);
 					channel.threads
 						.create({
 							name: game_title,

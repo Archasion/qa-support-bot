@@ -1,0 +1,60 @@
+max_listeners: 10
+debugging: false
+guild: "930159892906516480"
+
+colors:
+  default_color: "#E0DBEE"
+  success_color: "#84F584"
+  error_color: "#202020"
+
+images:
+  avatar: "avatar.png"
+  avatar_dev: "avatar_dev.png"
+
+urls:
+  avatar: "./src/media/avatar.png"
+  avatar_dev: "./src/media/avatar_dev.png"
+
+channels:
+  sessions: "930165256473440297"
+  request: "930165245434011698"
+  no_mic: "930159969775538217"
+
+vcs:
+  chat: "930159893351137382"
+  testing: "930165276547350529"
+
+roles:
+  qa_lead: "930160597717381140"
+  server_administrator: "930160750276784179"
+  manager: "930160716110000179"
+  roblox_staff: "930160884846837791"
+  server_moderator: "930160661114261564"
+  moderator: "930160777690742836"
+  accelerator: "930173203664482314"
+  nda_verified: "930160862327607306"
+  active_tester: "930185712454729729"
+  devforum_regular: "930185534796627970"
+  public: "930160924420096070"
+
+users:
+  developers: 
+    - "556206370429599755" # Archasion
+    - "697765709580599406" # Archasion 2
+    - "180803410306662401" # Spencer
+
+text:
+  opening_message: "Hello {name}, thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#922957941395570748> and the <#922957941395570748> channels to see if they answer your question."
+  ticket_name: "ticket-{number}"
+  footer: "Roblox QA Team"
+
+presence:
+  randomize: true
+  duration: 60
+  options:
+    - type: PLAYING
+      activity: "/new-ticket"
+    - type: PLAYING
+      activity: "with tickets"
+    - type: WATCHING
+      activity: "tickets"
