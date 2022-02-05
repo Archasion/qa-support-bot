@@ -1,5 +1,5 @@
 const Command = require("../modules/commands/command");
-const { NDA_SESSIONS, TESTING_REQUESTS } = process.env;
+const { NDA_SESSIONS, TESTING_REQUESTS, ACCELERATOR_CHAT_VC } = process.env;
 
 module.exports = class SessionCommand extends Command {
 	constructor(client) {
@@ -58,7 +58,26 @@ module.exports = class SessionCommand extends Command {
 	 */
 	async execute(interaction) {
 		const message_id = interaction.options.getString("message_id");
+		const message = await requests.messages.fetch(message_id);
+
+		if (!message) {
+			interaction.reply({ content: "Could not find the request", ephemeral: true });
+			return;
+		}
+
+		if (message.channel.id !== TESTING_REQUESTS) {
+			interaction.reply({ content: "The message must be a testing request", ephemeral: true });
+			return;
+		}
+
+		if (!message.author.bot) {
+			interaction.reply({ content: "The message must belong to the bot", ephemeral: true });
+			return;
+		}
+
 		const create_thread = interaction.options.getBoolean("create_thread");
+
+		const requests = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
 		let type = interaction.options.getString("action");
 
 		switch (type) {
@@ -73,19 +92,6 @@ module.exports = class SessionCommand extends Command {
 				break;
 		}
 
-		const requests = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
-		const message = await requests.messages.fetch(message_id);
-
-		if (!message) {
-			interaction.reply({ content: "Could not find the request", ephemeral: true });
-			return;
-		}
-
-		if (!message.author.bot) {
-			interaction.reply({ content: "The message must belong to the bot", ephemeral: true });
-			return;
-		}
-
 		const embed = message.embeds[0];
 		let announcement_channel = null;
 
@@ -98,30 +104,14 @@ module.exports = class SessionCommand extends Command {
 				break;
 		}
 
+		if (embed.color === 0xe67e22) {
+			announcement_channel = ACCELERATOR_CHAT_VC;
+		}
+
 		announcement_channel = interaction.guild.channels.cache.get(announcement_channel);
 
 		if (!announcement_channel) {
 			interaction.reply({ content: "Could not find the announcement channel", ephemeral: true });
-		}
-
-		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
-
-		if (type) {
-			try {
-				announcement = embed.fields
-					.filter(
-						field =>
-							field.name.includes(type) &&
-							field.name.slice(type.length + 4, -3) <= parseInt(Date.now() / 1000)
-					)[0]
-					.value.replaceAll("```", "");
-			} catch {
-				interaction.reply({
-					content: "It is too early to post the anouncement",
-					ephemeral: true
-				});
-				return;
-			}
 		}
 
 		const fetch = await announcement_channel.messages.fetch({ limit: 1 });
@@ -134,6 +124,24 @@ module.exports = class SessionCommand extends Command {
 				});
 				return;
 			}
+		}
+
+		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
+
+		try {
+			announcement = embed.fields
+				.filter(
+					field =>
+						field.name.includes(type) &&
+						field.name.slice(type.length + 4, -3) <= parseInt(Date.now() / 1000)
+				)[0]
+				.value.replaceAll("```", "");
+		} catch {
+			interaction.reply({
+				content: "It is too early to post the anouncement",
+				ephemeral: true
+			});
+			return;
 		}
 
 		announcement_channel.send({ content: announcement }).then(async message => {
