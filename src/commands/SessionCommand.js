@@ -58,6 +58,7 @@ module.exports = class SessionCommand extends Command {
 	 */
 	async execute(interaction) {
 		const message_id = interaction.options.getString("message_id");
+		const requests = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
 		const message = await requests.messages.fetch(message_id);
 
 		if (!message) {
@@ -77,7 +78,6 @@ module.exports = class SessionCommand extends Command {
 
 		const create_thread = interaction.options.getBoolean("create_thread");
 
-		const requests = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
 		let type = interaction.options.getString("action");
 
 		switch (type) {
