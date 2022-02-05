@@ -1,4 +1,5 @@
 const Command = require("../modules/commands/command");
+const roblox = require("noblox.js");
 
 module.exports = class WhoisCommand extends Command {
 	constructor(client) {
@@ -11,14 +12,14 @@ module.exports = class WhoisCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			manager_only: true,
-			moderator_only: true,
+			manager_only: false,
+			moderator_only: false,
 			nda_only: false,
 			dev_only: false,
 			options: [
 				{
-					name: "nickname",
-					description: "The nickname to search for",
+					name: "username",
+					description: "The username to search for",
 					required: true,
 					type: Command.option_types.STRING
 				}
@@ -31,20 +32,39 @@ module.exports = class WhoisCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const nickname = interaction.options.getString("nickname").format();
-		let member = await interaction.guild.members.search({ query: nickname });
+		const username = interaction.options.getString("username").format();
+
+		let member = await interaction.guild.members.search({ query: username });
 		member = member.first();
 
-		if (member) {
-			await interaction.reply({
-				content: `${member} (\`${member.id}\`) is verified as **${member.displayName}**`,
+		if (!member) {
+			interaction.reply({
+				content: `Could not find anyone with the username **${username}**`,
 				ephemeral: true
 			});
-		} else {
-			await interaction.reply({
-				content: `No one is verified as **${nickname}**`,
-				ephemeral: true
-			});
+			return;
 		}
+
+		if (!member.roles.cache.has(config.roles.public)) {
+			interaction.reply({ content: `**${member.displayName}** is not verified`, ephemeral: true });
+			return;
+		}
+
+		let ID;
+
+		try {
+			ID = await roblox.getIdFromUsername(username);
+		} catch {
+			interaction.reply({
+				content: "Invalid username",
+				ephemeral: true
+			});
+			return;
+		}
+
+		await interaction.reply({
+			content: `${member} (\`${member.id}\`) is verified as **${member.displayName}**\n<https://roblox.com/users/${ID}/profile>`,
+			ephemeral: true
+		});
 	}
 };
