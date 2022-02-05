@@ -148,7 +148,7 @@ module.exports = class SessionCommand extends Command {
 			if (type === "Start Template" && create_thread) {
 				await message.startThread({
 					name: embed.title,
-					autoArchiveDuration: 120,
+					autoArchiveDuration: 4320,
 					type: "GUILD_PUBLIC_THREAD",
 					reason: `Testing has begun for ${embed.title}`
 				});
