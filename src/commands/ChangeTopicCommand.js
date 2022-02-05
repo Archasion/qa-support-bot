@@ -1,7 +1,7 @@
 const { MessageEmbed } = require("discord.js");
 const Command = require("../modules/commands/command");
 
-module.exports = class TopicCommand extends Command {
+module.exports = class ChangeTopicCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "change-topic",

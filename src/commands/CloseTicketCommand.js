@@ -4,7 +4,7 @@ const { Op } = require("sequelize");
 const Command = require("../modules/commands/command");
 const ms = require("ms");
 
-module.exports = class CloseCommand extends Command {
+module.exports = class CloseTicketCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "close-ticket",

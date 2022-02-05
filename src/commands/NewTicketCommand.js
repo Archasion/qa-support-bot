@@ -2,7 +2,7 @@
 const { MessageActionRow, MessageEmbed, MessageSelectMenu } = require("discord.js");
 const Command = require("../modules/commands/command");
 
-module.exports = class NewCommand extends Command {
+module.exports = class NewTicketCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "new-ticket",

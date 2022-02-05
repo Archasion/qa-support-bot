@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 
-module.exports = class HelpCommand extends Command {
+module.exports = class SessionCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "session",
