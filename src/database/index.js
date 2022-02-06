@@ -3,7 +3,7 @@ const fs = require("fs");
 const { path } = require("../utils/fs");
 
 module.exports = async client => {
-	require("sqlite3");
+	// require("sqlite3");
 	log.info("Using SQLite storage");
 
 	const sequelize = new Sequelize({
