@@ -12,10 +12,6 @@ module.exports = class HelpCommand extends Command {
 				threads: []
 			},
 			permissions: [],
-			manager_only: false,
-			moderator_only: false,
-			nda_only: false,
-			dev_only: false,
 			options: []
 		});
 	}
@@ -28,6 +24,7 @@ module.exports = class HelpCommand extends Command {
 		const isModerator = await utils.isModerator(interaction.member);
 		const isManager = await utils.isManager(interaction.member);
 		const isDeveloper = await utils.isDeveloper(interaction.member);
+		const isVerified = await utils.isVerified(interaction.member);
 
 		const commands = this.manager.commands.filter(command => {
 			if (command.permissions.length >= 1) {
@@ -37,6 +34,7 @@ module.exports = class HelpCommand extends Command {
 			if (command.moderator_only) return isModerator;
 			if (command.manager_only) return isManager;
 			if (command.dev_only) return isDeveloper;
+			if (command.verified_only) return isVerified;
 
 			return true;
 		});

@@ -58,6 +58,15 @@ module.exports = class DiscordUtils {
 	}
 
 	/**
+	 * Check if a guild member is verified
+	 * @param {GuildMember} member - the guild member
+	 * @returns {boolean}
+	 */
+	async isVerified(member) {
+		return member.roles.cache.some(role => role.id === config.roles.public);
+	}
+
+	/**
 	 * Fet a guild's settings
 	 * @param {string} id - The guild's ID
 	 * @returns {Promise<Model>}

@@ -102,12 +102,21 @@ module.exports = class CommandManager {
 				const cmd_permissions = [...blacklist];
 				const command = this.client.commands.commands.get(g_cmd.name);
 
-				if (command.nda_only) {
+				if (
+					command.nda_only ||
+					command.moderator_only ||
+					command.dev_only ||
+					command.manager_only ||
+					command.verified_only
+				) {
 					cmd_permissions.push({
 						id: guild.roles.everyone.id,
 						permission: false,
 						type: "ROLE"
 					});
+				}
+
+				if (command.nda_only) {
 					cmd_permissions.push({
 						id: config.roles.nda_verified,
 						permission: true,
@@ -117,11 +126,6 @@ module.exports = class CommandManager {
 
 				if (command.moderator_only) {
 					cmd_permissions.push({
-						id: guild.roles.everyone.id,
-						permission: false,
-						type: "ROLE"
-					});
-					cmd_permissions.push({
 						id: config.roles.moderator,
 						permission: true,
 						type: "ROLE"
@@ -129,14 +133,9 @@ module.exports = class CommandManager {
 				}
 
 				if (command.manager_only) {
-					cmd_permissions.push({
-						id: guild.roles.everyone.id,
-						permission: false,
-						type: "ROLE"
-					});
-					manager_roles.forEach(roleId => {
+					manager_roles.forEach(role_id => {
 						cmd_permissions.push({
-							id: roleId,
+							id: role_id,
 							permission: true,
 							type: "ROLE"
 						});
@@ -144,17 +143,20 @@ module.exports = class CommandManager {
 				}
 
 				if (command.dev_only) {
-					cmd_permissions.push({
-						id: guild.roles.everyone.id,
-						permission: false,
-						type: "ROLE"
-					});
-					developers.forEach(userId => {
+					developers.forEach(user_id => {
 						cmd_permissions.push({
-							id: userId,
+							id: user_id,
 							permission: true,
 							type: "USER"
 						});
+					});
+				}
+
+				if (command.verified_only) {
+					cmd_permissions.push({
+						id: config.roles.public,
+						permission: true,
+						type: "ROLE"
 					});
 				}
 

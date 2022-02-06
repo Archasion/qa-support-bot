@@ -12,8 +12,6 @@ module.exports = class MessageCommand extends Command {
 				threads: []
 			},
 			manager_only: true,
-			moderator_only: false,
-			nda_only: false,
 			dev_only: true,
 			options: [
 				{

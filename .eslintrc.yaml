@@ -20,6 +20,7 @@ globals:
 
 rules:
   no-negated-condition: off
+  capitalized-comments: off
   operator-linebreak: off
   no-useless-return: off
   no-await-in-loop: off

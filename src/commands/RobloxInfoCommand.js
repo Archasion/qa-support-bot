@@ -18,8 +18,7 @@ module.exports = class RobloxInfoCommand extends Command {
 			},
 			manager_only: true,
 			moderator_only: true,
-			nda_only: false,
-			dev_only: false,
+			dev_only: true,
 			options: [
 				{
 					description: "The Roblox username to get information about.",

@@ -22,9 +22,11 @@ module.exports = class Command {
 	 * @param {boolean} [data.moderator_only] - Only allow moderators to use this command?
 	 * @param {boolean} [data.nda_only] - Only allow NDA Testers to use this command?
 	 * @param {boolean} [data.dev_only] - Only allow developers to use this command?
+	 * @param {boolean} [data.verified_only] - Only allow verified users to use this command?
 	 * @param {string[]} [data.permissions] - Array of permissions needed for a user to use this command
 	 * @param {number} [data.cooldown] - The wait period (in seconds) to run the command again
 	 * @param {CommandOption[]} [data.options] - The command's options
+	 * @param {string[]} [data.ignored] - Array of items to ignore
 	 */
 	constructor(client, data) {
 		/** The Discord Client */
@@ -76,6 +78,13 @@ module.exports = class Command {
 		 * @default false
 		 */
 		this.dev_only = data.dev_only === true;
+
+		/**
+		 * Only allow verified users to use this command?
+		 * @type {boolean}
+		 * @default false
+		 */
+		this.verified_only = data.verified_only === true;
 
 		/**
 		 * Array of permissions needed for a user to use this command

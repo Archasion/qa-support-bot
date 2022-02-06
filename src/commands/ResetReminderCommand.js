@@ -13,7 +13,6 @@ module.exports = class ResetReminderCommand extends Command {
 			},
 			manager_only: true,
 			moderator_only: true,
-			nda_only: false,
 			dev_only: true,
 			options: [
 				{

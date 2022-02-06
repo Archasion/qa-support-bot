@@ -14,9 +14,6 @@ module.exports = class BlacklistCommand extends Command {
 				threads: []
 			},
 			manager_only: true,
-			moderator_only: false,
-			nda_only: false,
-			dev_only: false,
 			options: [
 				{
 					name: "show",

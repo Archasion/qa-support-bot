@@ -24,7 +24,7 @@ module.exports = class TagCommand extends Command {
 			manager_only: true,
 			moderator_only: true,
 			nda_only: true,
-			dev_only: false,
+			dev_only: true,
 			options: [
 				{
 					name: "keyword",

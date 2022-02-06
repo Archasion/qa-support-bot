@@ -17,8 +17,6 @@ module.exports = class CloseTicketCommand extends Command {
 			},
 			manager_only: true,
 			moderator_only: true,
-			nda_only: false,
-			dev_only: false,
 			options: [
 				{
 					name: "reason",

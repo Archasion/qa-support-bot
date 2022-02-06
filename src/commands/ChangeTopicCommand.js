@@ -12,10 +12,6 @@ module.exports = class ChangeTopicCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			manager_only: false,
-			moderator_only: false,
-			nda_only: false,
-			dev_only: false,
 			options: [
 				{
 					description: "The new topic of the ticket",
