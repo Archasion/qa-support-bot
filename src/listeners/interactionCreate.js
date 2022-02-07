@@ -204,7 +204,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 						content: `The user is already timed out until <t:${parseInt(
 							member.communicationDisabledUntilTimestamp / 1000,
 							10
-						)}:f>)`,
+						)}:f>`,
 						ephemeral: true
 					});
 					return;
