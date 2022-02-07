@@ -67,12 +67,27 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					name: `Reported by ${user.tag} (${user.id})`,
 					iconURL: user.displayAvatarURL()
 				})
-				.setDescription(`Message Content:\n\`\`\`${message.content}\`\`\``)
+				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
 				.setFooter({
 					text: `Reported against ${message.author.tag} (${message.author.id})`,
 					iconURL: message.author.displayAvatarURL({ dynamic: true })
 				})
 				.setTimestamp();
+
+			const action_row = new MessageActionRow().addComponents(
+				new MessageButton()
+					.setCustomId("delete_message")
+					.setLabel("Mark as Resolved")
+					.setStyle("SUCCESS"),
+				new MessageButton()
+					.setCustomId("10_timeout_mod_alert")
+					.setLabel("Timeout [10m]")
+					.setStyle("DANGER"),
+				new MessageButton()
+					.setCustomId("30_timeout_mod_alert")
+					.setLabel("Timeout [30m]")
+					.setStyle("DANGER")
+			);
 
 			const message_url = new MessageActionRow().addComponents(
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
@@ -81,7 +96,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 			alert_thread.send({
 				content: "@here",
 				embeds: [embed],
-				components: [message_url]
+				components: [action_row, message_url]
 			});
 		}
 

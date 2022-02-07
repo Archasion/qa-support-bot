@@ -162,7 +162,75 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 			// Handle slash commands
 			this.client.commands.handle(interaction);
 		} else if (interaction.isButton()) {
-			if (custom_id.startsWith("download_test_csv_")) {
+			if (custom_id === "delete_message") {
+				if (!(await utils.isStaff(interaction.member))) {
+					interaction.reply({
+						content: "Only staff are able to interact with this",
+						ephemeral: true
+					});
+					return;
+				}
+
+				await interaction.message.delete();
+			} else if (custom_id.endsWith("_timeout_mod_alert")) {
+				if (!(await utils.isStaff(interaction.member))) {
+					interaction.reply({
+						content: "Only staff are able to interact with moderation alerts",
+						ephemeral: true
+					});
+					return;
+				}
+
+				const member_id = interaction.message.embeds[0].footer.text.slice(0, -1).split("(")[1];
+
+				let member;
+				try {
+					member = await interaction.guild.members.fetch(member_id);
+				} catch {
+					interaction.reply({ content: "Cannot find user by ID", ephemeral: true });
+					return;
+				}
+
+				if (!member.moderatable) {
+					interaction.reply({
+						content: "I do not have permission to timeout this user",
+						ephemeral: true
+					});
+					return;
+				}
+
+				if (member.communicationDisabledUntilTimestamp) {
+					interaction.reply({
+						content: `The user is already timed out until <t:${parseInt(
+							member.communicationDisabledUntilTimestamp / 1000,
+							10
+						)}:f>)`,
+						ephemeral: true
+					});
+					return;
+				}
+
+				const duration = parseInt(custom_id.slice(0, 2));
+				const reason = `Reason: "${interaction.message.embeds[0].fields[0].value.replaceAll(
+					"```",
+					""
+				)}"`;
+
+				try {
+					member.timeout(duration * 60000, reason);
+					interaction.reply({
+						content: `${member} (\`${member.id}\`) has been muted for **${duration} minutes**`,
+						ephemeral: true
+					});
+					interaction.message.delete();
+					return;
+				} catch {
+					interaction.reply({
+						content: `${member} (\`${member.id}\`) couldn't be muted`,
+						ephemeral: true
+					});
+				}
+			} else if (custom_id.startsWith("download_test_csv_")) {
 				const type = `${custom_id.split("_")[3]}_${custom_id.split("_")[4]}`;
 
 				let time_period_gt = new Date();
