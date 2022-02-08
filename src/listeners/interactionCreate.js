@@ -33,9 +33,9 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 		}
 
 		const handlePanel = async id => {
-			const caticket_row = await db.models.Category.findOne({ where: { id } });
+			const category_ticket_row = await db.models.Category.findOne({ where: { id } });
 
-			if (!caticket_row) {
+			if (!category_ticket_row) {
 				log.warn("Could not find a category with the ID given by a panel interaction");
 				return interaction.reply({
 					embeds: [
@@ -52,14 +52,14 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 			const ticket_channels = await db.models.Ticket.findAndCountAll({
 				where: {
-					category: caticket_row.id,
+					category: category_ticket_row.id,
 					creator: interaction.user.id,
 					open: true
 				}
 			});
 
-			if (ticket_channels.count >= caticket_row.max_per_member) {
-				if (caticket_row.max_per_member === 1) {
+			if (ticket_channels.count >= category_ticket_row.max_per_member) {
+				if (category_ticket_row.max_per_member === 1) {
 					return interaction.reply({
 						embeds: [
 							new MessageEmbed()
@@ -347,11 +347,11 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					`Ticket claimed by ${interaction.user.tag}`
 				);
 
-				const caticket_row = await db.models.Category.findOne({
+				const category_ticket_row = await db.models.Category.findOne({
 					where: { id: ticket_row.category }
 				});
 
-				for (const role of caticket_row.roles) {
+				for (const role of category_ticket_row.roles) {
 					await interaction.channel.permissionOverwrites.edit(
 						role,
 						{ VIEW_CHANNEL: false },
@@ -382,7 +382,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 				const components = new MessageActionRow();
 
-				if (caticket_row.claiming) {
+				if (category_ticket_row.claiming) {
 					components.addComponents(
 						new MessageButton()
 							.setCustomId("ticket.unclaim")
@@ -419,11 +419,11 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					`Ticket released by ${interaction.user.tag}`
 				);
 
-				const caticket_row = await db.models.Category.findOne({
+				const category_ticket_row = await db.models.Category.findOne({
 					where: { id: ticket_row.category }
 				});
 
-				for (const role of caticket_row.roles) {
+				for (const role of category_ticket_row.roles) {
 					await interaction.channel.permissionOverwrites.edit(
 						role,
 						{ VIEW_CHANNEL: true },
@@ -454,7 +454,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 				const components = new MessageActionRow();
 
-				if (caticket_row.claiming) {
+				if (category_ticket_row.claiming) {
 					components.addComponents(
 						new MessageButton()
 							.setCustomId("ticket.claim")

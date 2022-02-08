@@ -31,9 +31,9 @@ module.exports = class TicketManager extends EventEmitter {
 			topic = "";
 		}
 
-		const caticket_row = await db.models.Category.findOne({ where: { id: category_id } });
+		const category_ticket_row = await db.models.Category.findOne({ where: { id: category_id } });
 
-		if (!caticket_row) {
+		if (!category_ticket_row) {
 			throw new Error("Ticket category does not exist");
 		}
 
@@ -47,7 +47,7 @@ module.exports = class TicketManager extends EventEmitter {
 
 		const guild = this.client.guilds.cache.get(guild_id);
 		const creator = await guild.members.fetch(creator_id);
-		const name = caticket_row.name_format
+		const name = category_ticket_row.name_format
 			.replace(/{+\s?(user)?name\s?}+/gi, creator.displayName)
 			.replace(/{+\s?num(ber)?\s?}+/gi, number);
 
@@ -83,11 +83,11 @@ module.exports = class TicketManager extends EventEmitter {
 
 			topic = ticket_row.topic ? cryptr.decrypt(ticket_row.topic) : "";
 
-			if (caticket_row.image) {
-				await t_channel.send({ content: caticket_row.image });
+			if (category_ticket_row.image) {
+				await t_channel.send({ content: category_ticket_row.image });
 			}
 
-			const description = caticket_row.opening_message
+			const description = category_ticket_row.opening_message
 				.replace(/{+\s?(user)?name\s?}+/gi, creator.displayName)
 				.replace(/{+\s?(tag|ping|mention)?\s?}+/gi, creator.user.toString());
 			const embed = new MessageEmbed()
@@ -102,7 +102,7 @@ module.exports = class TicketManager extends EventEmitter {
 
 			const components = new MessageActionRow();
 
-			if (caticket_row.claiming) {
+			if (category_ticket_row.claiming) {
 				components.addComponents(
 					new MessageButton()
 						.setCustomId("ticket.claim")
@@ -124,15 +124,15 @@ module.exports = class TicketManager extends EventEmitter {
 
 			const mentions =
 				// prettier-ignore
-				caticket_row.ping instanceof Array && caticket_row.ping.length > 0
-					? caticket_row.ping
+				category_ticket_row.ping instanceof Array && category_ticket_row.ping.length > 0
+					? category_ticket_row.ping
 						.map(id =>
 							id === "everyone" ? "@everyone" : id === "here" ? "@here" : `<@&${id}>`
 						)
 						.join(", ")
 					: "";
 			const sent = await t_channel.send({
-				components: caticket_row.claiming || settings.close_button ? [components] : [],
+				components: category_ticket_row.claiming || settings.close_button ? [components] : [],
 				content: `${mentions}\n${creator.user.toString()} has created a new ticket`,
 				embeds: [embed]
 			});
@@ -148,7 +148,7 @@ module.exports = class TicketManager extends EventEmitter {
 					.catch(() => log.warn("Failed to delete system pin message"));
 			}
 
-			if (caticket_row.require_topic && topic.length === 0) {
+			if (category_ticket_row.require_topic && topic.length === 0) {
 				const collector_message = await t_channel.send({
 					embeds: [
 						new MessageEmbed()
