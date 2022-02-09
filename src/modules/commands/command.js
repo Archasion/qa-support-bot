@@ -23,6 +23,7 @@ module.exports = class Command {
 	 * @param {boolean} [data.nda_only] - Only allow NDA Testers to use this command?
 	 * @param {boolean} [data.dev_only] - Only allow developers to use this command?
 	 * @param {boolean} [data.verified_only] - Only allow verified users to use this command?
+	 * @param {boolean} [data.active_only] - Only allow active testers to use this command?
 	 * @param {string[]} [data.permissions] - Array of permissions needed for a user to use this command
 	 * @param {number} [data.cooldown] - The wait period (in seconds) to run the command again
 	 * @param {CommandOption[]} [data.options] - The command's options
@@ -85,6 +86,13 @@ module.exports = class Command {
 		 * @default false
 		 */
 		this.verified_only = data.verified_only === true;
+
+		/**
+		 * Only allow active testers to use this command?
+		 * @type {boolean}
+		 * @default false
+		 */
+		this.active_only = data.active_only === true;
 
 		/**
 		 * Array of permissions needed for a user to use this command

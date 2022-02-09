@@ -160,6 +160,14 @@ module.exports = class CommandManager {
 					});
 				}
 
+				if (command.active_only) {
+					cmd_permissions.push({
+						id: config.roles.active_tester,
+						permission: true,
+						type: "ROLE"
+					});
+				}
+
 				permissions.push({
 					id: g_cmd.id,
 					permissions: cmd_permissions
