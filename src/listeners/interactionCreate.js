@@ -211,10 +211,9 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				const duration = parseInt(custom_id.slice(0, 2));
-				const reason = `Reason: "${interaction.message.embeds[0].fields[0].value.replaceAll(
-					"```",
-					""
-				)}"`;
+				const reason = `(By ${interaction.user.tag} (${
+					interaction.user.id
+				})) Reason: "${interaction.message.embeds[0].fields[0].value.replaceAll("```", "")}"`;
 
 				try {
 					member.timeout(duration * 60000, reason);
