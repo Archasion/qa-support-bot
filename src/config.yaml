@@ -25,7 +25,6 @@ vcs:
   testing: "930165276547350529"
 
 roles:
-  qa_lead: "930160597717381140"
   server_administrator: "930160750276784179"
   manager: "930160716110000179"
   roblox_staff: "930160884846837791"
