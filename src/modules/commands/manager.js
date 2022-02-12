@@ -94,8 +94,6 @@ module.exports = class CommandManager {
 				});
 			});
 
-			const manager_roles = [config.roles.manager, config.roles.qa_lead];
-
 			const { developers } = config.users;
 
 			commands.forEach(async g_cmd => {
@@ -107,7 +105,8 @@ module.exports = class CommandManager {
 					command.moderator_only ||
 					command.dev_only ||
 					command.manager_only ||
-					command.verified_only
+					command.verified_only ||
+					command.active_only
 				) {
 					cmd_permissions.push({
 						id: guild.roles.everyone.id,
@@ -133,12 +132,10 @@ module.exports = class CommandManager {
 				}
 
 				if (command.manager_only) {
-					manager_roles.forEach(role_id => {
-						cmd_permissions.push({
-							id: role_id,
-							permission: true,
-							type: "ROLE"
-						});
+					cmd_permissions.push({
+						id: config.roles.manager,
+						permission: true,
+						type: "ROLE"
 					});
 				}
 
