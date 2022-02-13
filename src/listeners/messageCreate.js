@@ -76,20 +76,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			}
 		}
 
-		// ANCHOR TICKETS
-		const ticket_row = await db.models.Ticket.findOne({
-			where: { id: message.channel.id }
-		});
-
-		if (ticket_row) {
-			const ignore = [this.client.user.id, ticket_row.creator];
-			if (!ticket_row.first_response && !ignore.includes(message.author.id)) {
-				ticket_row.first_response = new Date();
-			}
-
-			ticket_row.last_message = new Date();
-			await ticket_row.save();
-		} else if (message.author.bot) return;
+		if (message.author.bot) return;
 
 		// ANCHOR FUNCTIONS
 

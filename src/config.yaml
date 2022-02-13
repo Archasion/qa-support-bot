@@ -6,6 +6,8 @@ colors:
   default_color: "#E0DBEE"
   success_color: "#84F584"
   error_color: "#202020"
+  close_ticket: "#6b456b"
+  change_topic: "#f5cd3d"
 
 images:
   avatar: "avatar.png"
@@ -17,6 +19,7 @@ urls:
 
 channels:
   sessions: "930165256473440297"
+  tickets: "942535089567436840"
   request: "930165245434011698"
   no_mic: "930159969775538217"
 

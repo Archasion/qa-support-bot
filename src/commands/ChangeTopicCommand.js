@@ -1,20 +1,25 @@
-const { MessageEmbed } = require("discord.js");
 const Command = require("../modules/commands/command");
+const Tickets = require("../mongodb/models/tickets");
 
-module.exports = class ChangeTopicCommand extends Command {
+const { MessageEmbed } = require("discord.js");
+const { TICKET_LOGS } = process.env;
+
+module.exports = class NewTicketCommand extends Command {
 	constructor(client) {
 		super(client, {
-			name: "change-topic",
-			description: "Change the topic of the ticket",
+			name: "change-ticket-topic",
+			description: "Change the topic of a ticket",
 			permissions: [],
 			ignored: {
 				roles: [],
 				channels: [],
 				threads: []
 			},
+			manager_only: true,
+			moderator_only: true,
 			options: [
 				{
-					description: "The new topic of the ticket",
+					description: "The new ticket topic",
 					name: "new_topic",
 					required: true,
 					type: Command.option_types.STRING
@@ -28,76 +33,75 @@ module.exports = class ChangeTopicCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const ticket = await db.models.Ticket.findOne({
-			where: { id: interaction.channel.id }
+		const ticket = await Tickets.findOne({
+			author: interaction.user.id,
+			active: true
 		});
-
-		const opening_message = await interaction.channel.messages.fetch(ticket.opening_message);
-		const member = await interaction.guild.members.fetch(ticket.creator);
-		const topic = interaction.options.getString("new_topic");
 
 		if (!ticket) {
-			return interaction.reply({
-				embeds: [
-					new MessageEmbed()
-						.setColor(config.colors.error_color)
-						.setTitle("This isn't a ticket channel")
-						.setDescription(
-							"Please use this command in the ticket channel you want to change the topic of."
-						)
-						.setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
-				],
+			interaction.reply({
+				content: "You do not have any active tickets",
 				ephemeral: true
 			});
+			return;
 		}
 
-		await ticket.update({
-			topic: cryptr.encrypt(topic)
+		const info = interaction.options.getString("new_topic").format();
+
+		// Check if the topic is the same
+		if (ticket.topic === info) {
+			interaction.reply({
+				content: "The topic is already set to this",
+				ephemeral: true
+			});
+			return;
+		}
+
+		const thread = await interaction.guild.channels.cache
+			.get(config.channels.tickets)
+			.threads.cache.get(ticket.thread);
+
+		// Update first message
+		let message;
+		try {
+			message = await thread.messages.fetch(ticket.first_message);
+		} catch {
+			interaction.reply({
+				content: "The original message with the topic could not be edited",
+				ephemeral: true
+			});
+			return;
+		}
+
+		const old_topic = message.embeds[0].fields[0].value;
+
+		message.embeds[0].fields[0].value = info;
+		message.edit({ content: message.content, embeds: message.embeds });
+
+		// Logging
+		const logging_embed = new MessageEmbed()
+
+			.setColor(config.colors.change_topic)
+			.setAuthor({
+				name: `${interaction.user.tag} (${interaction.member.displayName})`,
+				iconURL: interaction.user.displayAvatarURL()
+			})
+			.setDescription(`Changed the topic of a ticket: <#${ticket.thread}> (\`${thread.name}\`)`)
+			.addField("Old Topic", `\`\`\`${old_topic}\`\`\``)
+			.addField("New Topic", `\`\`\`${info}\`\`\``)
+			.setFooter({ text: `ID: ${interaction.user.id}` })
+			.setTimestamp();
+
+		interaction.guild.channels.cache.get(TICKET_LOGS).send({
+			embeds: [logging_embed]
 		});
 
-		await interaction.channel.setTopic(`${member} | ${topic}`, {
-			reason: "User updated ticket topic"
-		});
+		// Update database
+		await Tickets.updateOne({ _id: ticket._id }, { $set: { topic: info } });
 
-		const ticket_channel = await db.models.Category.findOne({
-			where: { id: ticket.category }
-		});
-
-		const description = ticket_channel.opening_message
-			.replace(/{+\s?(user)?name\s?}+/gi, member.displayName)
-			.replace(/{+\s?(tag|ping|mention)?\s?}+/gi, member.user.toString());
-
-		await opening_message.edit({
-			embeds: [
-				new MessageEmbed()
-					.setColor(config.colors.default_color)
-					.setAuthor({
-						name: member.user.username,
-						iconURL: member.user.displayAvatarURL()
-					})
-					.setDescription(description)
-					.addField("Topic", topic)
-					.setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
-			],
+		interaction.reply({
+			content: `Set the topic of <#${ticket.thread}> to:\n\`\`\`${info}\`\`\``,
 			ephemeral: true
 		});
-
-		await interaction.reply({
-			embeds: [
-				new MessageEmbed()
-					.setColor(config.colors.success_color)
-					.setAuthor({
-						name: interaction.user.username,
-						iconURL: interaction.user.displayAvatarURL()
-					})
-					.setTitle("Topic changed")
-					.setDescription("The topic of this ticket has been changed.")
-					.setFooter({ text: config.text.footer, iconURL: interaction.guild.iconURL() })
-			],
-			ephemeral: true
-		});
-
-		action.changeTopic(interaction.guild, interaction.user, ticket, topic);
-		log.info(`${interaction.user.tag} changed the topic of #${interaction.channel.name}`);
 	}
 };

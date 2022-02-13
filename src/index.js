@@ -28,8 +28,6 @@ process.on("unhandledRejection", error => {
 
 const ListenerLoader = require("./modules/listeners/loader");
 const CommandManager = require("./modules/commands/manager");
-const TicketManager = require("./modules/tickets/manager");
-const LoggingManager = require("./modules/action/manager");
 const DiscordUtils = require("./utils/discord");
 const Cryptr = require("cryptr");
 
@@ -66,8 +64,6 @@ class Bot extends Client {
 		(async () => {
 			global.cryptr = new Cryptr(process.env.DB_ENCRYPTION_KEY);
 			global.db = await require("./database")(this);
-			global.tickets = new TicketManager(this);
-			global.action = new LoggingManager(this);
 			global.utils = new DiscordUtils(this);
 
 			log.info("Connecting to Discord API...");

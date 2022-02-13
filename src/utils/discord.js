@@ -62,20 +62,6 @@ module.exports = class DiscordUtils {
 	}
 
 	/**
-	 * Fet a guild's settings
-	 * @param {string} id - The guild's ID
-	 * @returns {Promise<Model>}
-	 */
-	async getSettings(id) {
-		const data = { id };
-		const [settings] = await db.models.Guild.findOrCreate({
-			defaults: data,
-			where: data
-		});
-		return settings;
-	}
-
-	/**
 	 * Select a presence from the config
 	 * @returns {PresenceData}
 	 */
