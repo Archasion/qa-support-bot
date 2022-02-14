@@ -1,4 +1,5 @@
 const EventListener = require("../modules/listeners/listener");
+
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
 const { MODERATION_CHAT, NDA_APPLICATIONS } = process.env;
 
@@ -37,7 +38,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			}
 		}
 
-		// ANCHOR UNDERAGE
+		// Underage detector
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-2])(\s|$)/gi) &&
 			!message.member.roles.cache.has(config.roles.moderator) &&
@@ -46,7 +47,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			potentiallyUnderage();
 		}
 
-		// ANCHOR UNDERAGE [NDA]
+		// Underage detector [NDA]
 		if (
 			message.content.match(/i(\sa)?'?m\s?(only\s)?([8-9]|1[0-4])(\s|$)/gi) &&
 			!message.member.roles.cache.has(config.roles.moderator) &&
@@ -55,7 +56,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			potentiallyUnderageNDA();
 		}
 
-		// ANCHOR APPLICATION LEAK
+		// Application leak detector
 		if (
 			message.content.includes(process.env.NDA_FORM_KEY) &&
 			!message.member.roles.cache.has(config.roles.moderator)
@@ -63,7 +64,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			leakingApplication();
 		}
 
-		// ANCHOR VALIDATE APPLICATION
+		// Application validation [Active Tester]
 		if (message.channel.id === NDA_APPLICATIONS && message.author.bot) {
 			const username = message.embeds[0].author.name;
 			try {
@@ -76,9 +77,8 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			}
 		}
 
+		// Ignore bot input
 		if (message.author.bot) return;
-
-		// ANCHOR FUNCTIONS
 
 		/**
 		 * Response to an underage flag
@@ -99,13 +99,14 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
 				.setTimestamp();
 
-			const messageUrl = new MessageActionRow().addComponents(
+			const messageURL = new MessageActionRow().addComponents(
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
+			// Send the alert
 			message.guild.channels.cache.get(MODERATION_CHAT).send({
 				content: `<@&${config.roles.moderator}>`,
-				components: [messageUrl],
+				components: [messageURL],
 				embeds: [embed]
 			});
 		}
@@ -129,13 +130,14 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
 				.setTimestamp();
 
-			const messageUrl = new MessageActionRow().addComponents(
+			const messageURL = new MessageActionRow().addComponents(
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
+			// Send the alert
 			message.guild.channels.cache.get(MODERATION_CHAT).send({
 				content: `<@&${config.roles.moderator}>`,
-				components: [messageUrl],
+				components: [messageURL],
 				embeds: [embed]
 			});
 		}
@@ -159,13 +161,14 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
 				.setTimestamp();
 
-			const messageUrl = new MessageActionRow().addComponents(
+			const messageURL = new MessageActionRow().addComponents(
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
+			// Send the alert
 			message.guild.channels.cache.get(MODERATION_CHAT).send({
 				content: `<@&${config.roles.moderator}>`,
-				components: [messageUrl],
+				components: [messageURL],
 				embeds: [embed]
 			});
 		}

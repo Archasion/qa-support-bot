@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape */
 const EventListener = require("../modules/listeners/listener");
+
 const { MODERATION_CHAT, ACTIVE_TESTING_REQUESTS, NDA_TESTING_VC } = process.env;
 
 module.exports = class GuildScheduledEventDeleteEventListener extends EventListener {
@@ -8,10 +9,10 @@ module.exports = class GuildScheduledEventDeleteEventListener extends EventListe
 	}
 
 	async execute(event) {
-		event.guild.channels.cache
-			.get(MODERATION_CHAT)
-			.messages.fetch(ACTIVE_TESTING_REQUESTS)
+		// prettier-ignore
+		event.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
 			.then(async message => {
+				// Get the test in the message
 				const replaceRegex = new RegExp(
 					`\n\n>\\s${event.channel.id === NDA_TESTING_VC ? "🔒" : ""}.+<t:${
 						event.scheduledStartTimestamp / 1000
@@ -19,6 +20,7 @@ module.exports = class GuildScheduledEventDeleteEventListener extends EventListe
 					"gmis"
 				);
 
+				// Remove the test from the message
 				message.edit({ content: message.content.replace(replaceRegex, "") });
 			});
 	}

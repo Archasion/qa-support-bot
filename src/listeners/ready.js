@@ -15,8 +15,8 @@ module.exports = class ReadyEventListener extends EventListener {
 
 	async execute() {
 		log.success(`Connected to Discord as "${this.client.user.tag}"`);
-
 		log.info("Loading commands");
+
 		this.client.commands.load();
 		this.client.commands.publish();
 
@@ -42,6 +42,7 @@ module.exports = class ReadyEventListener extends EventListener {
 					startTime: event.scheduledStartTimestamp
 				}));
 
+				// Go through each event and add missing events to the message
 				events.forEach(event => {
 					const regex = new RegExp(
 						`\n\n>\\s${event.channel.id === NDA_TESTING_VC ? "🔒" : ""}.+<t:${
@@ -53,6 +54,7 @@ module.exports = class ReadyEventListener extends EventListener {
 					if (match) newTestMessage.push(match[0]);
 				});
 
+				// Add the new tests to the message
 				message.edit({
 					content: `__**Upcoming Tests!**__\n• Times displayed are when the test begins (announce tests an hour before times below)\n• If you would like to be added to a Google Calendar with test times (notifications 5 minutes before announcement time & 5 minutes before test starts), DM <@166694144310247424>${newTestMessage.join(
 						""
@@ -67,6 +69,7 @@ module.exports = class ReadyEventListener extends EventListener {
 			const reminderTime = reminder.end_time * 1000;
 			const now = Date.now();
 
+			// Check if the reminder is overdue
 			if (now >= reminderTime) {
 				await guild.channels.cache.get(reminder.channel).send({
 					content: `<@${reminder.author}>`,
@@ -82,8 +85,13 @@ module.exports = class ReadyEventListener extends EventListener {
 					]
 				});
 
-				await Reminders.deleteOne({ id: reminder.id });
-			} else {
+				// Remove reminder from the database
+				await Reminders.deleteOne({ _id: reminder._id });
+			}
+
+			// Store the reminder after startup (not overdue)
+			else {
+				// Create the global variable for the reminder
 				global[`reminder_${reminder.author}_${reminder.id}`] = setTimeout(async () => {
 					await guild.channels.cache.get(reminder.channel).send({
 						content: `<@${reminder.author}>`,
@@ -98,6 +106,7 @@ module.exports = class ReadyEventListener extends EventListener {
 						]
 					});
 
+					// Remove reminder from the database
 					await Reminders.deleteOne({ id: reminder.id });
 				}, reminderTime - now);
 			}

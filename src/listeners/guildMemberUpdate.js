@@ -9,32 +9,35 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 		super(client, { event: "guildMemberUpdate" });
 	}
 
-	async execute(old_member, new_member) {
+	async execute(oldMember, newMember) {
+		// Check if the member was given the active tester role
 		if (
-			!old_member.roles.cache.has(config.roles.active_tester) &&
-			new_member.roles.cache.has(config.roles.active_tester)
+			!oldMember.roles.cache.has(config.roles.active_tester) &&
+			newMember.roles.cache.has(config.roles.active_tester)
 		) {
-			const logging_channel = await new_member.guild.channels.fetch(MODERATION_CHAT);
+			const moderationChat = await newMember.guild.channels.fetch(MODERATION_CHAT);
 
 			const embed = new MessageEmbed()
 
 				.setColor(config.colors.default_color)
 				.setAuthor({
-					name: new_member.displayName,
-					iconURL: new_member.displayAvatarURL({ dynamic: true })
+					name: newMember.displayName,
+					iconURL: newMember.displayAvatarURL({ dynamic: true })
 				})
 				.setTitle("New Active Tester")
-				.setDescription(`Discord Tag: \`${new_member.user.tag}\``)
-				.setFooter({ text: `ID: ${new_member.id}` });
+				.setDescription(`Discord Tag: \`${newMember.user.tag}\``)
+				.setFooter({ text: `ID: ${newMember.id}` });
 
 			try {
-				const ID = await roblox.getIdFromUsername(new_member.displayName);
-				embed.description += `\nRoblox Account: [${new_member.displayName}](https://roblox.com/users/${ID}/profile)`;
+				// Get their Roblox profile (if applicable)
+				const ID = await roblox.getIdFromUsername(newMember.displayName);
+				embed.description += `\nRoblox Account: [${newMember.displayName}](https://roblox.com/users/${ID}/profile)`;
 			} catch {
 				log.error("Couldn't find user");
 			}
 
-			logging_channel.send({ embeds: [embed] });
+			// Send the notification
+			moderationChat.send({ embeds: [embed] });
 		}
 	}
 };

@@ -6,7 +6,6 @@ module.exports = class GuildCreateEventListener extends EventListener {
 	}
 
 	async execute(guild) {
-		log.info(`Added to "${guild.name}"`);
 		this.client.commands.publish(guild);
 	}
 };

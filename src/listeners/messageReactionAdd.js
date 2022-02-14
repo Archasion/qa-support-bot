@@ -1,7 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
+const Tests = require("./../mongodb/models/tests");
 
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const Tests = require("./../mongodb/models/tests");
 
 const {
 	TESTING_REQUESTS,
@@ -21,30 +21,30 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		let { message, emoji } = reaction;
 		message = await message.channel.messages.fetch(message.id);
 
-		const moderation_channel = message.guild.channels.cache.get(MODERATION_CHAT);
-		const alert_thread = await moderation_channel.threads.fetch(MODERATION_ALERTS);
-		const guild_member = await message.guild.members.fetch(user.id);
+		const moderationChat = message.guild.channels.cache.get(MODERATION_CHAT);
+		const alertThread = await moderationChat.threads.fetch(MODERATION_ALERTS);
+		const guildMember = await message.guild.members.fetch(user.id);
 
 		switch (emoji.name) {
 			case "📅": // Create event and message developer
 			case "🗓️":
-				if (!(await utils.isStaff(guild_member))) return;
+				if (!(await utils.isStaff(guildMember))) return;
 				if (message.channel.id !== TESTING_REQUESTS) return;
 				if (!message.author.bot) return;
-				if (guild_member.bot) return;
+				if (guildMember.bot) return;
 
 				createEvent(message);
 				break;
 
 			case "⚠️": // Notify staff
-				if (!(await utils.isNDA(guild_member))) return; // Used by NDA
+				if (!(await utils.isNDA(guildMember))) return; // Used by NDA
 				if (await utils.isStaff(await message.guild.members.fetch(message.author.id))) return; // Not used on staff
 				if (message.author.id === user.id) return; // Not used on self
 				if (message.author.bot) return; // Not used on a bot
-				if (guild_member.bot) return; // Not used by a bot
+				if (guildMember.bot) return; // Not used by a bot
 
 				// eslint-disable-next-line no-case-declarations
-				const check = alert_thread.messages.cache.filter(
+				const check = alertThread.messages.cache.filter(
 					alert_message =>
 						(alert_message.embeds[0]
 							? alert_message.embeds[0].footer.text.includes(message.author.id)
@@ -59,6 +59,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				break;
 		}
 
+		// Alert staff
 		async function notifyStaff(message) {
 			const embed = new MessageEmbed()
 
@@ -74,7 +75,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				})
 				.setTimestamp();
 
-			const action_row = new MessageActionRow().addComponents(
+			// Moderation buttons
+			const quickActions = new MessageActionRow().addComponents(
 				new MessageButton()
 					.setCustomId("delete_message")
 					.setLabel("Mark as Resolved")
@@ -89,54 +91,48 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					.setStyle("DANGER")
 			);
 
-			const message_url = new MessageActionRow().addComponents(
+			const messageURL = new MessageActionRow().addComponents(
 				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
 			);
 
-			alert_thread.send({
+			// Alert staff
+			alertThread.send({
 				content: "@here",
 				embeds: [embed],
-				components: [action_row, message_url]
+				components: [quickActions, messageURL]
 			});
 		}
 
+		// Create event for the testing request
 		async function createEvent(message) {
 			try {
-				const timestamp_regex = new RegExp(/⏰ <t:(\d+):F>/gims);
-				const platforms_regex = new RegExp(/🖥(.+)/gims);
+				const timestampRegex = new RegExp(/⏰ <t:(\d+):F>/gims);
+				const platformRegex = new RegExp(/🖥(.+)/gims);
 
 				const embed = message.embeds[0];
-				const game_title = embed.title;
+				const gameTitle = embed.title;
 				const type = embed.author.name;
-				const timestamp = timestamp_regex.exec(embed.description)[1] * 1000;
-				const platforms = platforms_regex.exec(embed.description)[1];
-				let test_type = "unknown";
-
-				switch (type) {
-					case "Public Test":
-						test_type = "public";
-						break;
-					case "NDA Test":
-						test_type = "nda";
-						break;
-				}
+				const timestamp = timestampRegex.exec(embed.description)[1] * 1000;
+				const platforms = platformRegex.exec(embed.description)[1];
+				const testType = type.split(" ")[0].toLowerCase();
 
 				let member;
 
+				// Fetch the game developer
 				if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
-					const user_id_regex = new RegExp(/<@!?(\d{17,19})>/gims);
-					const user_id = user_id_regex.exec(embed.fields[0].value)[1];
+					const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
+					const userID = userIDRegex.exec(embed.fields[0].value)[1];
 
-					member = await message.guild.members.fetch(user_id);
+					member = await message.guild.members.fetch(userID);
 				} else {
-					const username_regex = new RegExp(/Username:\s([\w\d_]+),/gims);
-					const username = username_regex.exec(embed.footer.text)[1];
+					const usernameRegex = new RegExp(/Username:\s([\w\d_]+),/gims);
+					const username = usernameRegex.exec(embed.footer.text)[1];
 
 					member = await message.guild.members.search({ query: username });
 					member = await member.first();
 				}
 
-				// ANCHOR Check if event exists
+				// Check if the event exists
 				const events = message.guild.scheduledEvents.cache.map(event => ({
 					startTime: event.scheduledStartTimestamp,
 					name: event.name,
@@ -145,9 +141,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				let check = false;
 
+				// Respond if the event exists
 				await events.forEach(event => {
 					if (event.name === type && event.startTime === timestamp) {
-						moderation_channel.send(
+						moderationChat.send(
 							`${user} Test already scheduled for <t:${
 								timestamp / 1000
 							}:F>\nhttps://discord.com/events/${message.guild.id}/${event.id}`
@@ -162,9 +159,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				let channel = config.vcs.testing;
 				let emoji = "";
 
+				// Set the emoji and store the test in the database
 				if (embed.color === 0xe67e22) {
 					await await Tests.create({
-						name: game_title,
+						name: gameTitle,
 						type: "accelerator",
 						url: embed.url,
 						date: new Date(timestamp)
@@ -177,13 +175,15 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					emoji = "🔒 ";
 				}
 
+				// Store the test in the database
 				await Tests.create({
-					name: game_title,
-					type: test_type,
+					name: gameTitle,
+					type: testType,
 					url: embed.url,
 					date: new Date(timestamp)
 				});
 
+				// Create the event
 				const testing_session = await message.guild.scheduledEvents.create({
 					privacyLevel: "GUILD_ONLY",
 					entityType: "VOICE",
@@ -194,15 +194,16 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 				});
 
-				const pinned_message = await moderation_channel.messages.fetch(ACTIVE_TESTING_REQUESTS);
+				const pinned_message = await moderationChat.messages.fetch(ACTIVE_TESTING_REQUESTS);
 
+				// Update the pinned message with the tests
 				pinned_message.edit({
-					content: `${pinned_message.content}\n\n> ${emoji}**${game_title}** <t:${
+					content: `${pinned_message.content}\n\n> ${emoji}**${gameTitle}** <t:${
 						timestamp / 1000
 					}:F>\n> ${message.url}`
 				});
 
-				const notification = `Hey there ${member}, we've reviewed your request for **${game_title}** to be tested by our **${
+				const notification = `Hey there ${member}, we've reviewed your request for **${gameTitle}** to be tested by our **${
 					type.split(" ")[0]
 				} team** on <t:${
 					timestamp / 1000
@@ -210,20 +211,19 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					message.guild.id
 				}/${testing_session.id}`;
 
+				// Message the developer
 				try {
 					member.send(notification);
-					moderation_channel.send(
-						`${user} The \`${type}\` for **${game_title}** has been scheduled for <t:${
+					moderationChat.send(
+						`${user} The \`${type}\` for **${gameTitle}** has been scheduled for <t:${
 							timestamp / 1000
 						}:F>\nhttps://discord.com/events/${message.guild.id}/${testing_session.id}`
 					);
-
-					message.react("✅");
 				} catch {
 					const channel = message.guild.channels.cache.get(config.channels.request);
 					channel.threads
 						.create({
-							name: game_title,
+							name: gameTitle,
 							autoArchiveDuration: 1440,
 							type: "GUILD_PRIVATE_THREAD",
 							invitable: false,
@@ -232,8 +232,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						.then(thread => {
 							thread.send(notification);
 
-							moderation_channel.send(
-								`${user} The \`${type}\` for **${game_title}** has been scheduled for <t:${
+							moderationChat.send(
+								`${user} The \`${type}\` for **${gameTitle}** has been scheduled for <t:${
 									timestamp / 1000
 								}:F> (messaged the user through a private thread: <#${
 									thread.id
@@ -242,13 +242,12 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								}`
 							);
 						});
-
-					message.react("✅");
 				}
-			} catch (er) {
-				console.log(er);
+
+				message.react("✅");
+			} catch {
 				message.react("❌");
-				await moderation_channel.send(`${user} could not accept the test.`);
+				await moderationChat.send(`${user} could not accept the test.`);
 			}
 		}
 	}

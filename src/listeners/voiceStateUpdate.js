@@ -1,4 +1,5 @@
 const EventListener = require("../modules/listeners/listener");
+
 const { NDA_NO_MIC, NDA_CHAT_VC, NDA_TESTING_VC } = process.env;
 
 module.exports = class VoiceStateUpdateEventListener extends EventListener {
@@ -6,28 +7,29 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		super(client, { event: "voiceStateUpdate" });
 	}
 
-	async execute(new_member, old_member) {
-		let old_state;
-		let new_state;
+	async execute(newMember, oldMember) {
+		let oldState;
+		let newState;
 
-		if (old_member.channelId) {
-			old_state = old_member.channelId;
+		if (oldMember.channelId) {
+			oldState = oldMember.channelId;
 		}
 
-		if (new_member.channelId) {
-			new_state = new_member.channelId;
+		if (newMember.channelId) {
+			newState = newMember.channelId;
 		}
 
-		const public_no_mic = await this.client.channels.cache.get(config.channels.no_mic);
-		const nda_no_mic = await this.client.channels.cache.get(NDA_NO_MIC);
+		const publicNoMic = this.client.channels.cache.get(config.channels.no_mic);
+		const NDANoMic = this.client.channels.cache.get(NDA_NO_MIC);
 
-		const public_vc = config.vcs.chat;
-		const public_testing_vc = config.vcs.testing;
+		const publicVC = config.vcs.chat;
+		const publicTestingVC = config.vcs.testing;
 
-		const user = await this.client.users.fetch(new_member.id);
+		const user = await this.client.users.fetch(newMember.id);
 
-		async function hideChannel(channel_to_hide) {
-			await channel_to_hide.permissionOverwrites.delete(
+		// Hide the no-mic channel
+		async function hideChannel(channelTohide) {
+			await channelTohide.permissionOverwrites.delete(
 				user,
 				"User left VC, no-mic is no longer needed"
 			);
@@ -35,24 +37,24 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 
 		// No-mic for public VC
 		if (
-			(old_state === public_vc && new_state !== public_vc) ||
-			(old_state === public_testing_vc && new_state !== public_testing_vc)
+			(oldState === publicVC && newState !== publicVC) ||
+			(oldState === publicTestingVC && newState !== publicTestingVC)
 		) {
-			await public_no_mic.permissionOverwrites.create(user, {
+			await publicNoMic.permissionOverwrites.create(user, {
 				VIEW_CHANNEL: true,
 				SEND_MESSAGES: true
 			});
-		} else hideChannel(public_no_mic);
+		} else hideChannel(publicNoMic);
 
 		// No-mic for NDA VC
 		if (
-			(old_state === NDA_CHAT_VC && new_state !== NDA_CHAT_VC) ||
-			(old_state === NDA_TESTING_VC && new_state !== NDA_TESTING_VC)
+			(oldState === NDA_CHAT_VC && newState !== NDA_CHAT_VC) ||
+			(oldState === NDA_TESTING_VC && newState !== NDA_TESTING_VC)
 		) {
-			await nda_no_mic.permissionOverwrites.create(user, {
+			await NDANoMic.permissionOverwrites.create(user, {
 				VIEW_CHANNEL: true,
 				SEND_MESSAGES: true
 			});
-		} else hideChannel(nda_no_mic);
+		} else hideChannel(NDANoMic);
 	}
 };

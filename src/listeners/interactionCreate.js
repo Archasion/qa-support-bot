@@ -1,7 +1,8 @@
 const EventListener = require("../modules/listeners/listener");
+const Tests = require("./../mongodb/models/tests");
+
 const { MessageAttachment } = require("discord.js");
 const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
-const Tests = require("./../mongodb/models/tests");
 
 module.exports = class InteractionCreateEventListener extends EventListener {
 	constructor(client) {
@@ -12,7 +13,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 	 * @param {Interaction} interaction
 	 */
 	async execute(interaction) {
-		const custom_id = interaction.customId;
+		const customID = interaction.customId;
 		log.debug(interaction);
 
 		const blacklist = {
@@ -20,6 +21,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 			members: Object.values(await MemberBlacklist.find()).map(obj => obj.id)
 		};
 
+		// Check if the user is blacklisted
 		const blacklisted =
 			blacklist.members.includes(interaction.user.id) ||
 			interaction.member?.roles.cache?.some(role => blacklist.roles.includes(role));
@@ -30,11 +32,16 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 			});
 		}
 
+		// Check if the interaction is a slash command
 		if (interaction.isCommand()) {
-			// Handle slash commands
 			this.client.commands.handle(interaction);
-		} else if (interaction.isButton()) {
-			if (custom_id === "delete_message") {
+		}
+
+		// Check if the interaction is a button
+		else if (interaction.isButton()) {
+			// Delete the message
+			if (customID === "delete_message") {
+				// Check if the user is a staff member
 				if (!(await utils.isStaff(interaction.member))) {
 					interaction.reply({
 						content: "Only staff are able to interact with this",
@@ -44,7 +51,11 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				await interaction.message.delete();
-			} else if (custom_id.endsWith("_timeout_mod_alert")) {
+			}
+
+			// Timeout the user (if used by staff)
+			else if (customID.endsWith("_timeout_mod_alert")) {
+				// Check if the user is a staff member
 				if (!(await utils.isStaff(interaction.member))) {
 					interaction.reply({
 						content: "Only staff are able to interact with moderation alerts",
@@ -53,16 +64,19 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					return;
 				}
 
-				const member_id = interaction.message.embeds[0].footer.text.slice(0, -1).split("(")[1];
+				// Get the member ID from the embed footer
+				const memberID = interaction.message.embeds[0].footer.text.slice(0, -1).split("(")[1];
 
+				// Fetch the member in the guild
 				let member;
 				try {
-					member = await interaction.guild.members.fetch(member_id);
+					member = await interaction.guild.members.fetch(memberID);
 				} catch {
 					interaction.reply({ content: "Cannot find user by ID", ephemeral: true });
 					return;
 				}
 
+				// Check if the client is able to timeout the member
 				if (!member.moderatable) {
 					interaction.reply({
 						content: "I do not have permission to timeout this user",
@@ -71,6 +85,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					return;
 				}
 
+				// Check if the member is already timed out
 				if (member.communicationDisabledUntilTimestamp) {
 					interaction.reply({
 						content: `The user is already timed out until <t:${parseInt(
@@ -82,17 +97,21 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					return;
 				}
 
-				const duration = parseInt(custom_id.slice(0, 2));
+				const duration = parseInt(customID.slice(0, 2));
 				const reason = `(By ${interaction.user.tag} (${
 					interaction.user.id
 				})) Reason: "${interaction.message.embeds[0].fields[0].value.replaceAll("```", "")}"`;
 
 				try {
+					// Timeout the member
 					member.timeout(duration * 60000, reason);
+
+					// Send the confirmation message
 					interaction.reply({
 						content: `${member} (\`${member.id}\`) has been muted for **${duration} minutes**`,
 						ephemeral: true
 					});
+
 					interaction.message.delete();
 					return;
 				} catch {
@@ -101,38 +120,53 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 						ephemeral: true
 					});
 				}
-			} else if (custom_id.startsWith("download_test_csv_")) {
-				const type = `${custom_id.split("_")[3]}_${custom_id.split("_")[4]}`;
+			}
 
-				let time_period_gt = new Date();
-				let time_period_lt = new Date();
+			// Download a .csv file with the testing data
+			else if (customID.startsWith("download_test_csv_")) {
+				// Check if the user is a staff member
+				if (!(await utils.isStaff(interaction.member))) {
+					interaction.reply({
+						content: "Only staff are able to download testing data",
+						ephemeral: true
+					});
+					return;
+				}
+
+				const type = `${customID.split("_")[3]}_${customID.split("_")[4]}`;
+
+				let timeGreaterThan = new Date();
+				let timeLowerThan = new Date();
 
 				let date = new Date();
 
 				switch (type) {
+					// Get the data from the current year
 					case "current_year":
-						time_period_gt = new Date(time_period_gt.getFullYear(), 0, 0);
-						time_period_lt = new Date(time_period_lt.getFullYear() + 1, 0, 1);
+						timeGreaterThan = new Date(timeGreaterThan.getFullYear(), 0, 0);
+						timeLowerThan = new Date(timeLowerThan.getFullYear() + 1, 0, 1);
 
 						date = date.getFullYear();
 						break;
 
+					// Get the data from all time
 					case "all_time":
-						time_period_gt = new Date(0);
-						time_period_lt = new Date(100 ** 7);
+						timeGreaterThan = new Date(0);
+						timeLowerThan = new Date(100 ** 7);
 
 						date = "all_time";
 						break;
 
+					// Get the data from the current month
 					default:
-						time_period_lt = new Date(
-							time_period_lt.getFullYear(),
-							time_period_lt.getMonth() + 1,
+						timeLowerThan = new Date(
+							timeLowerThan.getFullYear(),
+							timeLowerThan.getMonth() + 1,
 							1
 						);
-						time_period_gt = new Date(
-							time_period_gt.getFullYear(),
-							time_period_gt.getMonth(),
+						timeGreaterThan = new Date(
+							timeGreaterThan.getFullYear(),
+							timeGreaterThan.getMonth(),
 							0
 						);
 
@@ -142,26 +176,27 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 						break;
 				}
 
-				time_period_gt = time_period_gt.toISOString();
-				time_period_lt = time_period_lt.toISOString();
+				timeGreaterThan = timeGreaterThan.toISOString();
+				timeLowerThan = timeLowerThan.toISOString();
 
-				const tests = await Tests.find({ date: { $gt: time_period_gt, $lt: time_period_lt } });
+				const tests = await Tests.find({ date: { $gt: timeGreaterThan, $lt: timeLowerThan } });
 				const data = [];
 
+				// Write the formatted data to a .csv file
 				tests.forEach(game => {
-					const obj = data.findIndex(item => item.game_all.includes(`;"${game.name}")`));
-					if (obj !== -1) {
+					const testData = data.findIndex(item => item.game_all.includes(`;"${game.name}")`));
+					if (testData !== -1) {
 						switch (game.type) {
 							case "public":
-								data[obj].amount_public++;
-								data[obj].amount_all++;
+								data[testData].amount_public++;
+								data[testData].amount_all++;
 								break;
 							case "nda":
-								data[obj].amount_nda++;
-								data[obj].amount_all++;
+								data[testData].amount_nda++;
+								data[testData].amount_all++;
 								break;
 							case "accelerator":
-								data[obj].amount_accelerator++;
+								data[testData].amount_accelerator++;
 								break;
 						}
 					} else {
@@ -189,11 +224,13 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 					csvContent += `${row}\n`;
 				});
 
+				// Create the .csv file with the formatted data
 				const attachment = new MessageAttachment(
 					Buffer.from(csvContent, "utf8"),
 					`testing_sessions_${date}.csv`
 				);
 
+				// Send the .csv file to the user
 				interaction.reply({
 					content: "Import into **Google Sheets** or **Microsoft Excel**",
 					files: [attachment],

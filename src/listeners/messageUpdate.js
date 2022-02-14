@@ -5,15 +5,15 @@ module.exports = class MessageUpdateEventListener extends EventListener {
 		super(client, { event: "messageUpdate" });
 	}
 
-	async execute(oldm, newm) {
-		if (newm.partial) {
+	async execute(oldMessage, newMessage) {
+		if (newMessage.partial) {
 			try {
-				await newm.fetch();
+				await newMessage.fetch();
 			} catch (error) {
 				return log.error(error);
 			}
 		}
 
-		if (!newm.guild) return;
+		if (!newMessage.guild) return;
 	}
 };

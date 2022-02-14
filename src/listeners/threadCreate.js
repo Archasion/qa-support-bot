@@ -6,7 +6,9 @@ module.exports = class ThreadCreateEventListener extends EventListener {
 	}
 
 	async execute(thread) {
+		// Check if the public thread is created in session announcements
 		if (thread.parent.id === config.channels.sessions && thread.type === "GUILD_PUBLIC_THREAD") {
+			// Change the cooldown and send the opening message
 			setTimeout(() => {
 				thread.setRateLimitPerUser(120);
 				thread
