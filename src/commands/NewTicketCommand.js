@@ -83,7 +83,7 @@ module.exports = class NewTicketCommand extends Command {
 
 		// Send the opening message
 		const message = await ticket.send({
-			content: `<@&${config.roles.manager} > <@&${config.roles.moderator} > ${interaction.member}`,
+			content: `<@&${config.roles.manager}> <@&${config.roles.moderator}> ${interaction.member}`,
 			embeds: [embed]
 		});
 
