@@ -1,6 +1,6 @@
 max_listeners: 10
 debugging: false
-guild: "930159892906516480"
+guild: "271337114384334848"
 
 colors:
   default_color: "#E0DBEE"
@@ -18,27 +18,27 @@ urls:
   avatar_dev: "./src/media/avatar_dev.png"
 
 channels:
-  sessions: "930165256473440297"
-  tickets: "942535089567436840"
-  request: "930165245434011698"
-  no_mic: "930159969775538217"
+  sessions: "329688019101548545"
+  tickets: "942535089567436840" # Update
+  request: "928093660384493638"
+  no_mic: "883075170313576478"
 
 vcs:
-  chat: "930159893351137382"
-  testing: "930165276547350529"
+  chat: "329718436303208448"
+  testing: "329718580260110346"
 
 roles:
-  server_administrator: "930160750276784179"
-  manager: "930160716110000179"
-  roblox_staff: "930160884846837791"
-  server_moderator: "930160661114261564"
-  moderator: "930160777690742836"
-  accelerator: "930173203664482314"
-  nda_verified: "930160862327607306"
-  active_tester: "930185712454729729"
-  developer: "930160013698269264"
-  devforum_regular: "930185534796627970"
-  public: "930160924420096070"
+  server_administrator: "426438221535248385"
+  manager: "271338380317556749"
+  roblox_staff: "271752505875103755"
+  server_moderator: "914256342041133106"
+  moderator: "888937447793250325"
+  accelerator: "235566517121449985"
+  nda_verified: "281859085928759296"
+  active_tester: "902626244468822106"
+  developer: "886725859015274517"
+  devforum_regular: "839126676876558347"
+  public: "331612485700550657"
 
 users:
   developers: 
