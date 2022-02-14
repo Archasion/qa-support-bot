@@ -46,37 +46,44 @@ module.exports = class RoleDevelopersCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const dev_role = config.roles.developer;
+		const developerRole = config.roles.developer;
 		const action = interaction.options.getString("action");
 		let users = interaction.options.getString("users");
 
 		const unknown = [];
 		const success = [];
 
+		// Remove the developer role from all users
 		if (users.match(/^all|everyone|\*$/gi)) {
+			// Prevent adding the developer role to everyone
 			if (action === "Added") {
 				interaction.reply({ content: "Cannot add the role to everyone", ephemeral: true });
 				return;
 			}
 
 			let members = await interaction.guild.members.fetch();
-			members = members.filter(member => member.roles.cache.has(dev_role));
+			members = members.filter(member => member.roles.cache.has(developerRole));
 
+			// Go through each user with the developer role and remove it
 			for (const member of members.values()) {
 				try {
-					member.roles.remove(dev_role);
+					member.roles.remove(developerRole);
 					success.push(member.id);
 				} catch {
 					unknown.push(member.id);
 				}
 			}
-		} else {
+		}
+
+		// Go through each inputted user and give/remove their developer role
+		else {
 			users = users
 				.replaceAll(",", " ")
 				.replace(/[<@!>]/gi, "")
 				.replace(/\s+/gi, " ")
 				.split(" ");
 
+			// Filter the input by ID and/or username
 			for (const user of users) {
 				try {
 					if (user.match(/^\d{17,19}$/gi)) {
@@ -94,6 +101,7 @@ module.exports = class RoleDevelopersCommand extends Command {
 		}
 
 		// prettier-ignore
+		// Send the confirmation message
 		interaction.reply({
 			content: `${
 				success[0]
@@ -103,9 +111,10 @@ module.exports = class RoleDevelopersCommand extends Command {
 			ephemeral: true
 		});
 
+		// Toggle the developer role for the specified user
 		function toggleRole(member, action) {
-			if (action === "Added") member.roles.add(dev_role);
-			else member.roles.remove(dev_role);
+			if (action === "Added") member.roles.add(developerRole);
+			else member.roles.remove(developerRole);
 			success.push(member.id);
 		}
 	}

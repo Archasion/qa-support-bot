@@ -1,6 +1,7 @@
-const { MessageEmbed, Role } = require("discord.js");
 const Command = require("../modules/commands/command");
+
 const { RoleBlacklist, MemberBlacklist } = require("../mongodb/models/blacklist");
+const { MessageEmbed, Role } = require("discord.js");
 
 module.exports = class BlacklistCommand extends Command {
 	constructor(client) {
@@ -55,48 +56,57 @@ module.exports = class BlacklistCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
+		// Set the blacklist to the input from the database
 		const blacklist = {
 			roles: RoleBlacklist,
 			members: MemberBlacklist
 		};
 
 		switch (interaction.options.getSubcommand()) {
+			// Add the member or role to the blacklist
 			case "add": {
-				const member_or_role = interaction.options.getMentionable("member_or_role");
-				const type = member_or_role instanceof Role ? "role" : "member";
+				const memberOrRole = interaction.options.getMentionable("member_or_role");
+				const type = memberOrRole instanceof Role ? "role" : "member";
 
-				if (type === "member" && (await utils.isStaff(member_or_role))) {
+				// Check if the member is a staff member
+				if (type === "member" && (await utils.isStaff(memberOrRole))) {
 					return interaction.reply({
 						embeds: [
 							new MessageEmbed()
 								.setColor(config.colors.error_color)
 								.setTitle("You can't blacklist this member")
 								.setDescription(
-									`${member_or_role.toString()} is a staff member and cannot be blacklisted.`
+									`${memberOrRole.toString()} is a staff member and cannot be blacklisted.`
 								)
 						],
 						ephemeral: true
 					});
 				}
 
+				// Add the member to the database
 				if (type === "member") {
 					MemberBlacklist.create({
-						name: member_or_role.user.tag,
-						id: member_or_role.id
-					});
-				} else {
-					RoleBlacklist.create({
-						name: member_or_role.name,
-						id: member_or_role.id
+						name: memberOrRole.user.tag,
+						id: memberOrRole.id
 					});
 				}
 
+				// Add the role to the database
+				else {
+					RoleBlacklist.create({
+						name: memberOrRole.name,
+						id: memberOrRole.id
+					});
+				}
+
+				// String builder
 				const description = [];
 
 				description.push(type === "member" ? "<@" : "<@&");
-				description.push(member_or_role.id);
+				description.push(memberOrRole.id);
 				description.push("> has been added to the blacklist. ");
 
+				// Update description based on input
 				if (type === "member") {
 					description.push("They will no longer be able to interact with the bot.");
 				} else {
@@ -105,6 +115,7 @@ module.exports = class BlacklistCommand extends Command {
 					);
 				}
 
+				// Send the confirmation message
 				await interaction.reply({
 					embeds: [
 						new MessageEmbed()
@@ -118,38 +129,42 @@ module.exports = class BlacklistCommand extends Command {
 				break;
 			}
 
+			// Remove the member or role from the blacklist
 			case "remove": {
-				const member_or_role = interaction.options.getMentionable("member_or_role");
-				const type = member_or_role instanceof Role ? "role" : "member";
+				const memberOrRole = interaction.options.getMentionable("member_or_role");
+				const type = memberOrRole instanceof Role ? "role" : "member";
 
+				// Try to remove the member or role from the database
 				try {
 					if (type === "member") {
-						await MemberBlacklist.deleteMany({ id: member_or_role.id });
+						await MemberBlacklist.deleteMany({ id: memberOrRole.id });
 					} else {
-						await RoleBlacklist.deleteMany({ id: member_or_role.id });
+						await RoleBlacklist.deleteMany({ id: memberOrRole.id });
 					}
-				} catch (error) {
-					console.log(error);
+				} catch {
 					return interaction.reply({
 						content: `Could not remove <@${type === "member" ? "" : "&"}${
-							member_or_role.id
+							memberOrRole.id
 						}> from the blacklist`,
 						ephemeral: true
 					});
 				}
 
+				// String builder
 				const description = [];
 
 				description.push(type === "member" ? "<@" : "<@&");
-				description.push(member_or_role.id);
+				description.push(memberOrRole.id);
 				description.push("> has been removed from the blacklist. ");
 
+				// Update description based on input
 				if (type === "member") {
 					description.push("They can now use the bot again.");
 				} else {
 					description.push("Members with this role can now use the bot again.");
 				}
 
+				// Send the confirmation message
 				await interaction.reply({
 					embeds: [
 						new MessageEmbed()
@@ -162,7 +177,9 @@ module.exports = class BlacklistCommand extends Command {
 				break;
 			}
 
+			// Show a list of blacklisted members and/or roles
 			case "show": {
+				// Check if the blacklist is empty
 				if (blacklist.members.length === 0 && blacklist.roles.length === 0) {
 					return interaction.reply({
 						embeds: [
@@ -180,6 +197,7 @@ module.exports = class BlacklistCommand extends Command {
 				const members = Object.values(await MemberBlacklist.find()).map(obj => `• <@${obj.id}>`);
 				const roles = Object.values(await RoleBlacklist.find()).map(obj => `• <@&${obj.id}>`);
 
+				// Respond with the list of blacklisted members and/or roles
 				return interaction.reply({
 					embeds: [
 						new MessageEmbed()

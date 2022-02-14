@@ -1,9 +1,8 @@
-const { MessageEmbed } = require("discord.js");
 const Command = require("../modules/commands/command");
-
 const yaml = require("js-yaml");
 const fs = require("fs");
 
+const { MessageEmbed } = require("discord.js");
 const { path } = require("../utils/fs");
 
 const fileContents = fs.readFileSync(path("/src/tags.yaml"), "utf8");
@@ -53,6 +52,7 @@ module.exports = class TagCommand extends Command {
 		const target = interaction.options.getUser("targeted_user");
 
 		try {
+			// Send the FAQ message (content from tags.yaml)
 			interaction.reply({
 				content: target ? `${target}` : null,
 				embeds: [

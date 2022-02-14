@@ -2,9 +2,10 @@ const Command = require("../modules/commands/command");
 const Reminders = require("../mongodb/models/reminders");
 const ms = require("ms");
 
-let uniqueID;
-
 const { MessageEmbed } = require("discord.js");
+
+let isDuplicate = true;
+let uniqueID;
 
 module.exports = class RemindCommand extends Command {
 	constructor(client) {
@@ -52,14 +53,12 @@ module.exports = class RemindCommand extends Command {
 			});
 		}
 
-		let checkID = true;
-
 		// Generate random ID, regenerate if it already exists
-		while (checkID) {
+		while (isDuplicate) {
 			uniqueID = "";
 			uniqueID = Math.random().toString(36).substring(2, 9);
 
-			checkID = await Reminders.findOne({
+			isDuplicate = await Reminders.findOne({
 				id: uniqueID
 			});
 		}
@@ -82,6 +81,7 @@ module.exports = class RemindCommand extends Command {
 
 		// Store timeout in a global variable
 		global[`reminder_${interaction.user.id}_${uniqueID}`] = setTimeout(async () => {
+			// Send the reminder
 			await interaction.channel.send({
 				content: interaction.member.toString(),
 				embeds: [
@@ -95,12 +95,12 @@ module.exports = class RemindCommand extends Command {
 				]
 			});
 
+			// Reset the reminder once the timeout is done
 			await Reminders.deleteOne({ id: uniqueID });
-
 			delete global[`reminder_${interaction.user.id}_${uniqueID}`];
 		}, duration);
 
-		// Confirm reminder
+		// Send confirmation message
 		await interaction.reply({
 			embeds: [
 				new MessageEmbed()

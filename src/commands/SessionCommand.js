@@ -1,4 +1,5 @@
 const Command = require("../modules/commands/command");
+
 const { NDA_SESSIONS, TESTING_REQUESTS, ACCELERATOR_CHAT_VC } = process.env;
 
 module.exports = class SessionCommand extends Command {
@@ -55,29 +56,26 @@ module.exports = class SessionCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const message_id = interaction.options.getString("message_id");
-		const requests = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
-		const message = await requests.messages.fetch(message_id);
+		const testingRequestID = interaction.options.getString("message_id");
+		const requestsChannel = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
+		const testingRequest = await requestsChannel.messages.fetch(testingRequestID);
 
-		if (!message) {
+		// Check if the message exists
+		if (!testingRequest) {
 			interaction.reply({ content: "Could not find the request", ephemeral: true });
 			return;
 		}
 
-		if (message.channel.id !== TESTING_REQUESTS) {
-			interaction.reply({ content: "The message must be a testing request", ephemeral: true });
-			return;
-		}
-
-		if (!message.author.bot) {
+		// Check if the message author is a bot
+		if (!testingRequest.author.bot) {
 			interaction.reply({ content: "The message must belong to the bot", ephemeral: true });
 			return;
 		}
 
-		const create_thread = interaction.options.getBoolean("create_thread");
-
+		const createThread = interaction.options.getBoolean("create_thread");
 		let type = interaction.options.getString("action");
 
+		// The type of announcement to make
 		switch (type) {
 			case "notice":
 				type = "Notice Template";
@@ -90,31 +88,35 @@ module.exports = class SessionCommand extends Command {
 				break;
 		}
 
-		const embed = message.embeds[0];
-		let announcement_channel = null;
+		const embed = testingRequest.embeds[0];
+		let announcementChannel = null;
 
+		// Check the type of the test
 		switch (embed.author.name) {
 			case "Public Test":
-				announcement_channel = config.channels.sessions;
+				announcementChannel = config.channels.sessions;
 				break;
 			case "NDA Test":
-				announcement_channel = NDA_SESSIONS;
+				announcementChannel = NDA_SESSIONS;
 				break;
 		}
 
 		if (embed.color === 0xe67e22) {
-			announcement_channel = ACCELERATOR_CHAT_VC;
+			announcementChannel = ACCELERATOR_CHAT_VC;
 		}
 
-		announcement_channel = interaction.guild.channels.cache.get(announcement_channel);
-
-		if (!announcement_channel) {
+		// Check if the announcement channel is null
+		if (!announcementChannel) {
 			interaction.reply({ content: "Could not find the announcement channel", ephemeral: true });
 		}
 
-		const fetch = await announcement_channel.messages.fetch({ limit: 1 });
+		announcementChannel = interaction.guild.channels.cache.get(announcementChannel);
+
+		// Get the latest message in the announcement channel
+		const fetch = await announcementChannel.messages.fetch({ limit: 1 });
 
 		if (fetch.size > 0) {
+			// Check if the announcement already exists
 			if (fetch.first().content === announcement) {
 				interaction.reply({
 					content: "An announcement has already been sent for this session",
@@ -127,6 +129,7 @@ module.exports = class SessionCommand extends Command {
 		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
 		try {
+			// Get the announcement
 			announcement = embed.fields
 				.filter(
 					field =>
@@ -142,8 +145,10 @@ module.exports = class SessionCommand extends Command {
 			return;
 		}
 
-		announcement_channel.send({ content: announcement }).then(async message => {
-			if (type === "Start Template" && create_thread) {
+		// Send the announcement
+		announcementChannel.send({ content: announcement }).then(async message => {
+			// Check if a thread is requested for the start announcement
+			if (type === "Start Template" && createThread) {
 				await message.startThread({
 					name: embed.title,
 					autoArchiveDuration: 4320,
@@ -153,6 +158,7 @@ module.exports = class SessionCommand extends Command {
 			}
 		});
 
+		// Send the confirmation message
 		interaction.reply({ content: "Successfully sent the announcement", ephemeral: true });
 	}
 };

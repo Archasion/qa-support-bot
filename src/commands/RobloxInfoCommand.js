@@ -1,9 +1,10 @@
 /* eslint-disable no-unused-expressions */
 const Command = require("../modules/commands/command");
 const roblox = require("noblox.js");
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 const { MessageEmbed } = require("discord.js");
+
+const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 module.exports = class RobloxInfoCommand extends Command {
 	constructor(client) {
@@ -46,11 +47,10 @@ module.exports = class RobloxInfoCommand extends Command {
 
 		interaction.deferReply({ ephemeral: !publicResult });
 
-		// Fetch the trust level of the user through the API
+		// Fetch the trust level of the user through the discourse API
 		const response = await fetch(`https://devforum.roblox.com/users/${username}.json`);
 		const { user } = await response.json();
 
-		/** @param {number} TL The user's trust level on the developer forum (https://roblox.devforum.com) */
 		const TL = user ? user.trust_level : 0;
 
 		try {
@@ -64,17 +64,19 @@ module.exports = class RobloxInfoCommand extends Command {
 
 			const accountCreationTimestamp = parseInt(Date.parse(info.joinDate) / 1000);
 
+			// Add the user's display name if set
 			if (info.displayName !== info.username) {
 				info.displayName += ` (@${info.username})`;
 			}
 
-			// Add known group ranks to agknowledgements
 			for (const group of groups) {
 				// prettier-ignore
+				// Check how many groups the user is a tester in
 				if (group.Role.match(/(?:(?<=^|\s)(?:test(?:er|ing)?)|(?:q\/?a|(?:play|game| )test(?:er|ing)?))/gi)) {
 					testerInGroups++;
 				}
 
+				// Check the user'srank in preset groups (acknowledgements)
 				switch (group.Id) {
 					case 3055661:
 						agknowledgements.push("NDA Verified Tester");
@@ -114,7 +116,7 @@ module.exports = class RobloxInfoCommand extends Command {
 				}
 			}
 
-			// Add the user's trust level to agknowledgements (if 1+)
+			// Check the user's trust level on the developer forum (acknowledgements)
 			switch (TL) {
 				case 1:
 					agknowledgements.push("DevForum Member");
@@ -154,7 +156,7 @@ module.exports = class RobloxInfoCommand extends Command {
 				.setFooter({ text: `ID: ${ID}` })
 				.setTimestamp();
 
-			// Add a description to a field (if there is one)
+			// Add the "About Me" description to a field (if applicable)
 			if (info.blurb) {
 				embed.fields.push({
 					name: "Description",
@@ -163,7 +165,7 @@ module.exports = class RobloxInfoCommand extends Command {
 				});
 			}
 
-			// Add the agknowledgements to a field (if there are any)
+			// Add the agknowledgements to a field (if applicable)
 			if (agknowledgements[0]) {
 				embed.fields.push({
 					name: "Acknowledgements",

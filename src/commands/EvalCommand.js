@@ -1,5 +1,6 @@
-const { MessageEmbed } = require("discord.js");
 const Command = require("../modules/commands/command");
+
+const { MessageEmbed } = require("discord.js");
 
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
@@ -38,6 +39,7 @@ module.exports = class EvalCommand extends Command {
 		const codeToEvaluate = interaction.options.getString("code");
 		const publicResult = interaction.options.getBoolean("public") ?? false;
 
+		// Prevent evaluation of environmental code
 		if (codeToEvaluate.match(/(env|DISCORD_TOKEN|DB_ENCRYPTION_KEY|NDA_FORM_KEY)/gi)) {
 			return interaction.reply({
 				content: "Cannot evaluate code that contains sensitive information.",
@@ -48,12 +50,14 @@ module.exports = class EvalCommand extends Command {
 		const embed = new MessageEmbed().setColor(config.colors.default_color);
 
 		try {
+			// Evaluate the code
 			let evaluatedCode = eval(codeToEvaluate);
 
-			if (typeof evaluatedCode === "object") {
+			// Stringify the result if it's an object
+			if (typeof evaluatedCode === "object")
 				evaluatedCode = JSON.stringify(evaluatedCode, null, "\t");
-			}
 
+			// Respond with an error if the result type is invalid
 			if (
 				typeof evaluatedCode !== "string" &&
 				typeof evaluatedCode !== "number" &&
@@ -74,6 +78,7 @@ module.exports = class EvalCommand extends Command {
 			embed.setTimestamp();
 		}
 
+		// Send the result
 		return interaction.reply({
 			embeds: [embed],
 			ephemeral: !publicResult

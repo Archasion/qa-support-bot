@@ -64,7 +64,7 @@ module.exports = class NewTicketCommand extends Command {
 			.get(config.channels.tickets)
 			.threads.cache.get(ticket.thread);
 
-		const logging_embed = new MessageEmbed()
+		const loggingEmbed = new MessageEmbed()
 
 			.setColor(config.colors.close_ticket)
 			.setAuthor({
@@ -82,7 +82,7 @@ module.exports = class NewTicketCommand extends Command {
 			.filter(message => !message.author.bot)
 			.forEach(message => {
 				const messageTimestamp = new Date(message.createdAt);
-				const messageToLog = []; // New string builder
+				const messageToLog = []; // String builder
 
 				messageToLog.push(
 					`[${messageTimestamp.getHours()}:${messageTimestamp.getMinutes()}:${messageTimestamp.getSeconds()}]`
@@ -93,6 +93,7 @@ module.exports = class NewTicketCommand extends Command {
 			});
 
 		if (contentToLog[0]) {
+			// Create .txt file
 			contentToLog = [
 				new MessageAttachment(
 					Buffer.from(contentToLog.join("\n"), "utf8"),
@@ -101,18 +102,19 @@ module.exports = class NewTicketCommand extends Command {
 			];
 		}
 
-		// Send to logs
+		// Log the action
 		await interaction.guild.channels.cache.get(TICKET_LOGS).send({
-			embeds: [logging_embed],
+			embeds: [loggingEmbed],
 			files: contentToLog
 		});
 
-		// Close the ticket
+		// Close the ticket thread
 		thread.delete({ reason: "Closed by a moderator" });
 
 		// Update database
 		await Tickets.updateOne({ _id: ticket._id }, { $set: { active: false } });
 
+		// Send the confirmation message
 		interaction.reply({
 			content: `Ticket ${number} has been closed`,
 			ephemeral: true

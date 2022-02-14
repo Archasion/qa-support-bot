@@ -1,6 +1,8 @@
 const Command = require("../modules/commands/command");
 const roblox = require("noblox.js");
 
+let ID;
+
 module.exports = class WhoisCommand extends Command {
 	constructor(client) {
 		super(client, {
@@ -34,6 +36,7 @@ module.exports = class WhoisCommand extends Command {
 		let member = await interaction.guild.members.search({ query: username });
 		member = member.first();
 
+		// Check if the member exists
 		if (!member) {
 			interaction.reply({
 				content: `Could not find anyone with the username **${username}**`,
@@ -42,14 +45,14 @@ module.exports = class WhoisCommand extends Command {
 			return;
 		}
 
+		// Check if the member is verified
 		if (!member.roles.cache.has(config.roles.public)) {
 			interaction.reply({ content: `**${member.displayName}** is not verified`, ephemeral: true });
 			return;
 		}
 
-		let ID;
-
 		try {
+			// The the Roblox user ID from username
 			ID = await roblox.getIdFromUsername(username);
 		} catch {
 			interaction.reply({
@@ -59,6 +62,7 @@ module.exports = class WhoisCommand extends Command {
 			return;
 		}
 
+		// Send the information
 		await interaction.reply({
 			content: `${member} (\`${member.id}\`) is verified as **${member.displayName}**\n<https://roblox.com/users/${ID}/profile>`,
 			ephemeral: true

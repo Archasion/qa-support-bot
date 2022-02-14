@@ -171,6 +171,7 @@ module.exports = class EmbedCommand extends Command {
 	async execute(interaction) {
 		const embed = new MessageEmbed();
 
+		// Preset values
 		const customEmbed = {
 			color: null,
 			content: null,
@@ -198,6 +199,7 @@ module.exports = class EmbedCommand extends Command {
 			button_url: null
 		};
 
+		// Set each value as the input
 		for (const key of Object.keys(customEmbed)) {
 			try {
 				customEmbed[key] = interaction.options.getString(key);
@@ -230,8 +232,7 @@ module.exports = class EmbedCommand extends Command {
 
 		let { content, color, field_inline_1, field_inline_2, field_inline_3 } = customEmbed;
 
-		// ANCHOR Validation
-
+		// Validate the input
 		if (color) {
 			if (!color.match(/(#|(0x))?([a-f]|[0-9]){6}/gi)) {
 				return interaction.reply({
@@ -287,6 +288,7 @@ module.exports = class EmbedCommand extends Command {
 				});
 			}
 
+			// Add the button onto the message
 			actionRow.push(
 				new MessageActionRow().addComponents(
 					new MessageButton().setLabel(button).setStyle("LINK").setURL(button_url)
@@ -298,8 +300,7 @@ module.exports = class EmbedCommand extends Command {
 		field_inline_2 ??= false;
 		field_inline_3 ??= false;
 
-		// ANCHOR Errors
-
+		// Errors
 		if (
 			!author &&
 			!title &&
@@ -384,8 +385,7 @@ module.exports = class EmbedCommand extends Command {
 			});
 		}
 
-		// ANCHOR Embed Building
-
+		// Build the embed
 		embed.setColor(color);
 		embed.setURL(title_url);
 		embed.setThumbnail(thumbnail);
@@ -427,11 +427,13 @@ module.exports = class EmbedCommand extends Command {
 			embed.setTimestamp();
 		}
 
+		// Send the confirmation message
 		await interaction.reply({
 			content: "The embed has been created",
 			ephemeral: true
 		});
 
+		// Send the embed
 		await interaction.channel.send({
 			content,
 			embeds: [embed],

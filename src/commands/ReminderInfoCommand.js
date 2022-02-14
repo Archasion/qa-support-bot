@@ -35,11 +35,13 @@ module.exports = class ReminderInfoCommand extends Command {
 	async execute(interaction) {
 		const reminderID = interaction.options.getString("reminder_id");
 
+		// Get the specified reminder
 		const reminder = await Reminders.findOne({
 			author: interaction.user.id,
 			id: reminderID
 		});
 
+		// Check if the reminder exists
 		if (!reminder) {
 			interaction.reply({
 				content: `The reminder ID could not be resolved (\`${reminderID}\`).`,
@@ -48,6 +50,7 @@ module.exports = class ReminderInfoCommand extends Command {
 			return;
 		}
 
+		// Construct the embed with the reminder information
 		const embed = new MessageEmbed()
 			.setColor(config.colors.default_color)
 			.setAuthor({
@@ -62,6 +65,7 @@ module.exports = class ReminderInfoCommand extends Command {
 			])
 			.setFooter({ text: `Reminder ID: ${reminder.id}` });
 
+		// Send the information
 		await interaction.reply({
 			embeds: [embed],
 			ephemeral: true

@@ -33,41 +33,44 @@ module.exports = class NewTicketCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
+		// Check if there are any tickets in the database
 		if ((await Tickets.countDocuments()) !== 0) {
-			const check_limit = await Tickets.findOne({
+			const checkLimit = await Tickets.findOne({
 				author: interaction.user.id,
 				active: true
-			}); // Check if the user has an active ticket
+			});
 
-			if (check_limit) {
+			// Check if the user has an active ticket
+			if (checkLimit) {
 				interaction.reply({
-					content: `You already have an active ticket: <#${check_limit.thread}>`,
+					content: `You already have an active ticket: <#${checkLimit.thread}>`,
 					ephemeral: true
 				});
 				return;
 			}
 
-			amount = (await Tickets.countDocuments()) + 1; // Get the ticket count
+			// Get the ticket count
+			amount = (await Tickets.countDocuments()) + 1;
 		}
 
-		// Creating the ticket
 		const info = interaction.options.getString("topic").format();
-		const ticket_channel = interaction.guild.channels.cache.get(config.channels.tickets);
+		const ticketParent = interaction.guild.channels.cache.get(config.channels.tickets);
 
-		const ticket = await ticket_channel.threads.create({
+		// Create the ticket
+		const ticket = await ticketParent.threads.create({
 			name: `Ticket ${amount}`,
 			autoArchiveDuration: 60,
-			type: "GUILD_PUBLIC_THREAD",
-			// invitable: false,
+			type: "GUILD_PUBLIC_THREAD", // TODO Change to GUILD_PRIVATE_THREAD
+			// invitable: false, // TODO Uncomment
 			reason: `New ticket: ${info}`
 		});
 
+		// Send the confirmation message
 		interaction.reply({
 			content: `Your ticket has been created: <#${ticket.id}> (\`${ticket.name}\`)`,
 			ephemeral: true
 		});
 
-		// Sending message in ticket channel
 		const embed = new MessageEmbed()
 
 			.setColor(config.colors.default_color)
@@ -77,12 +80,13 @@ module.exports = class NewTicketCommand extends Command {
 			)
 			.addField("Topic", info);
 
+		// Send the opening message
 		const message = await ticket.send({
 			content: `<@&${config.roles.manager} > <@&${config.roles.moderator} > ${interaction.member}`,
 			embeds: [embed]
 		});
 
-		// Storing information in database
+		// Store the ticket information in the database
 		await Tickets.create({
 			count: amount,
 			thread: ticket.id,
@@ -92,8 +96,7 @@ module.exports = class NewTicketCommand extends Command {
 			active: true
 		});
 
-		// Logging
-		const logging_embed = new MessageEmbed()
+		const loggingEmbed = new MessageEmbed()
 
 			.setColor(config.colors.default_color)
 			.setAuthor({
@@ -105,8 +108,9 @@ module.exports = class NewTicketCommand extends Command {
 			.setFooter({ text: `ID: ${interaction.user.id}` })
 			.setTimestamp();
 
+		// Log the action
 		interaction.guild.channels.cache.get(TICKET_LOGS).send({
-			embeds: [logging_embed]
+			embeds: [loggingEmbed]
 		});
 	}
 };

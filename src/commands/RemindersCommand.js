@@ -26,18 +26,23 @@ module.exports = class RemindersCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
+		// Get all reminders belonging to the user
 		const reminders = await Reminders.find({ author: interaction.user.id });
-
 		const embed = new MessageEmbed().setColor(config.colors.default_color).setTitle("Reminders");
 
+		// Response for no reminders
 		if (reminders.length === 0) {
 			embed.setDescription("You do not have any reminders set!");
-		} else {
+		}
+
+		// Add a field for each reminder
+		else {
 			reminders.forEach(reminder => {
 				embed.addField(`\`${reminder.id}\` <t:${reminder.end_time}:f>`, reminder.text);
 			});
 		}
 
+		// Respond with the list of reminders (if applicable)
 		await interaction.reply({
 			embeds: [embed],
 			ephemeral: true

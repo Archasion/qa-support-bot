@@ -15,7 +15,7 @@ module.exports = class MessageCommand extends Command {
 			dev_only: true,
 			options: [
 				{
-					name: "content",
+					name: "text",
 					description: "The content of the message",
 					required: true,
 					type: Command.option_types.STRING
@@ -29,13 +29,15 @@ module.exports = class MessageCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const content = interaction.options.getString("content").format();
+		const text = interaction.options.getString("text").format();
 
+		// Send the confirmation message
 		await interaction.reply({
 			content: "The message has been sent",
 			ephemeral: true
 		});
 
-		await interaction.channel.send({ content });
+		// Send the message
+		await interaction.channel.send({ content: text });
 	}
 };

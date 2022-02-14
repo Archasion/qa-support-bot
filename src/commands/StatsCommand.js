@@ -45,45 +45,45 @@ module.exports = class StatsCommand extends Command {
 	async execute(interaction) {
 		let option = interaction.options.getString("time_period");
 
-		let time_period_gt = new Date();
-		let time_period_lt = new Date();
+		let timeGreaterThan = new Date();
+		let timeLowerThan = new Date();
 
 		let date = new Date();
 
 		switch (option) {
+			// Set the duration to the current year
 			case "current_year":
-				time_period_gt = new Date(time_period_gt.getFullYear(), 0, 0);
-				time_period_lt = new Date(time_period_lt.getFullYear() + 1, 0, 1);
+				timeGreaterThan = new Date(timeGreaterThan.getFullYear(), 0, 0);
+				timeLowerThan = new Date(timeLowerThan.getFullYear() + 1, 0, 1);
 
 				date = date.getFullYear();
 				break;
 
+			// Set the duration to all time
 			case "all_time":
-				time_period_gt = new Date(0);
-				time_period_lt = new Date(100 ** 7);
+				timeGreaterThan = new Date(0);
+				timeLowerThan = new Date(100 ** 7);
 
 				date = "All Time";
 				break;
 
+			// Set the duration to current month
 			default:
-				time_period_lt = new Date(
-					time_period_lt.getFullYear(),
-					time_period_lt.getMonth() + 1,
-					1
-				);
-				time_period_gt = new Date(time_period_gt.getFullYear(), time_period_gt.getMonth(), 0);
+				timeLowerThan = new Date(timeLowerThan.getFullYear(), timeLowerThan.getMonth() + 1, 1);
+				timeGreaterThan = new Date(timeGreaterThan.getFullYear(), timeGreaterThan.getMonth(), 0);
 
 				date = `${date.toLocaleString("default", { month: "long" })} ${date.getFullYear()}`;
 				option = "current_month";
 				break;
 		}
 
-		time_period_gt = time_period_gt.toISOString();
-		time_period_lt = time_period_lt.toISOString();
+		timeGreaterThan = timeGreaterThan.toISOString();
+		timeLowerThan = timeLowerThan.toISOString();
 
+		// Get the total number of public tests
 		const public_tests = await Tests.countDocuments({
 			type: "public",
-			date: { $gt: time_period_gt, $lt: time_period_lt }
+			date: { $gt: timeGreaterThan, $lt: timeLowerThan }
 		});
 
 		const embed = new MessageEmbed()
@@ -95,32 +95,36 @@ module.exports = class StatsCommand extends Command {
 				} run in this server (${date})`
 			);
 
+		// Get the total number of all tests (if used by NDA)
 		if (await utils.isNDA(interaction.member)) {
 			const total = await Tests.countDocuments({
 				type: { $in: ["public", "nda"] },
-				date: { $gt: time_period_gt, $lt: time_period_lt }
+				date: { $gt: timeGreaterThan, $lt: timeLowerThan }
 			});
 
-			const nda_tests = await Tests.countDocuments({
+			// Number of NDA tests
+			const NDATests = await Tests.countDocuments({
 				type: "nda",
-				date: { $gt: time_period_gt, $lt: time_period_lt }
+				date: { $gt: timeGreaterThan, $lt: timeLowerThan }
 			});
 
-			const accelerator_tests = await Tests.countDocuments({
+			// Number of accelerator tests
+			const acceleratorTests = await Tests.countDocuments({
 				type: "accelerator",
-				date: { $gt: time_period_gt, $lt: time_period_lt }
+				date: { $gt: timeGreaterThan, $lt: timeLowerThan }
 			});
 
 			embed.description = null;
 			embed.setTitle(`Testing Statistics (${date})`);
 			embed.addField("Public Tests", public_tests.format(), true);
-			embed.addField("NDA Tests", nda_tests.format(), true);
-			embed.addField("Accelerator Tests", accelerator_tests.format(), true);
+			embed.addField("NDA Tests", NDATests.format(), true);
+			embed.addField("Accelerator Tests", acceleratorTests.format(), true);
 			embed.setFooter({ text: `Total Tests: ${total.format()}` });
 		}
 
 		let download = [];
 
+		// Add the option to download a .csv file containing all of the information if used by staff
 		if (await utils.isStaff(interaction.member)) {
 			download = [
 				new MessageActionRow().addComponents(
@@ -132,6 +136,7 @@ module.exports = class StatsCommand extends Command {
 			];
 		}
 
+		// Send the statistics
 		interaction.reply({
 			embeds: [embed],
 			components: download,
