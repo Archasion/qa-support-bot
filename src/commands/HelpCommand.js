@@ -12,7 +12,8 @@ module.exports = class HelpCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			verified_only: true,
+			// verified_only: true,
+			nda_only: true,
 			permissions: [],
 			options: []
 		});
