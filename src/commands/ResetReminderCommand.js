@@ -14,7 +14,6 @@ module.exports = class ResetReminderCommand extends Command {
 			},
 			manager_only: true,
 			moderator_only: true,
-			dev_only: true,
 			options: [
 				{
 					name: "reminder_id",
