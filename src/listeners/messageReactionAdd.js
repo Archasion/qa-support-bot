@@ -65,7 +65,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				.setColor(config.colors.default_color)
 				.setAuthor({
 					name: `Reported by ${user.tag} (${user.id})`,
-					iconURL: user.displayAvatarURL()
+					iconURL: user.displayAvatarURL({ dynamic: true })
 				})
 				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
 				.setFooter({

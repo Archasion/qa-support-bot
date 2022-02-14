@@ -84,7 +84,7 @@ module.exports = class NewTicketCommand extends Command {
 			.setColor(config.colors.change_topic)
 			.setAuthor({
 				name: `${interaction.user.tag} (${interaction.member.displayName})`,
-				iconURL: interaction.user.displayAvatarURL()
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 			})
 			.setDescription(`Changed the topic of a ticket: <#${ticket.thread}> (\`${thread.name}\`)`)
 			.addField("Old Topic", `\`\`\`${old_topic}\`\`\``)

@@ -63,7 +63,6 @@ class Bot extends Client {
 
 		(async () => {
 			global.cryptr = new Cryptr(process.env.DB_ENCRYPTION_KEY);
-			global.db = await require("./database")(this);
 			global.utils = new DiscordUtils(this);
 
 			log.info("Connecting to Discord API...");

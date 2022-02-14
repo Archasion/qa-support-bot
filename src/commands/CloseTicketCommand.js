@@ -69,7 +69,7 @@ module.exports = class NewTicketCommand extends Command {
 			.setColor(config.colors.close_ticket)
 			.setAuthor({
 				name: `${interaction.user.tag} (${interaction.member.displayName})`,
-				iconURL: interaction.user.displayAvatarURL()
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 			})
 			.setDescription(`Closed a ticket: \`${thread.name}\``)
 			.setFooter({ text: `ID: ${interaction.user.id}` })

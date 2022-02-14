@@ -98,7 +98,7 @@ module.exports = class NewTicketCommand extends Command {
 			.setColor(config.colors.default_color)
 			.setAuthor({
 				name: `${interaction.user.tag} (${interaction.member.displayName})`,
-				iconURL: interaction.user.displayAvatarURL()
+				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 			})
 			.setDescription(`Created a new ticket: <#${ticket.id}> (\`${ticket.name}\`)`)
 			.addField("Topic", `\`\`\`${info}\`\`\``)

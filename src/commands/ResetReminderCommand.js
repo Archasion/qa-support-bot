@@ -1,3 +1,4 @@
+const Reminders = require("../mongodb/models/reminders");
 const Command = require("../modules/commands/command");
 
 module.exports = class ResetReminderCommand extends Command {
@@ -18,7 +19,7 @@ module.exports = class ResetReminderCommand extends Command {
 				{
 					name: "reminder_id",
 					description:
-						"The ID of the reminder to remove (seperate using commas to reset multiple reminders)",
+						"The ID of the reminder to remove (seperate using commas/spaces to reset multiple reminders)",
 					required: true,
 					type: Command.option_types.STRING
 				}
@@ -31,34 +32,56 @@ module.exports = class ResetReminderCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const reminder_ids = interaction.options.getString("reminder_id").replace(/\s+/g, "").split(",");
+		let reminderIDs = interaction.options.getString("reminder_id");
 
-		reminder_ids.forEach(async reminder_id => {
-			const reminder = await db.models.Reminder.findOne({
-				where: {
-					user_id: interaction.user.id,
-					reminder_id
+		if (!reminderIDs.match(/\*|all/gi)) {
+			// Remove specific reminders
+			reminderIDs = reminderIDs
+				.replaceAll(",", " ")
+				.replace(/[<@!>]/gi, "")
+				.replace(/\s+/gi, " ")
+				.split(" ");
+
+			reminderIDs.forEach(async reminderID => {
+				const reminder = await Reminders.findOne({
+					author: interaction.user.id,
+					id: reminderID
+				});
+
+				if (!reminder) {
+					interaction.reply({
+						content: `Cannot resolve the reminder ID: ${reminderID}`,
+						ephemeral: true
+					});
+					return;
 				}
+
+				clearTimeout(global[`reminder_${interaction.user.id}_${reminderID}`]);
+				delete global[`reminder_${interaction.user.id}_${reminderID}`];
+
+				await Reminders.deleteOne({ id: reminderID });
 			});
 
-			if (!reminder) {
-				return interaction.reply({
-					content: `Cannot resolve the reminder ID: ${reminder_id}`,
-					ephemeral: true
-				});
-			}
+			await interaction.reply({
+				content: `The following reminder${reminderIDs.length > 1 ? "s" : ""} ha${
+					reminderIDs.length > 1 ? "ve" : "s"
+				} been reset: \`${reminderIDs.join("`, `")}\``,
+				ephemeral: true
+			});
+		} else {
+			// Remove all reminders
+			const reminders = await Reminders.find({ author: interaction.user.id });
 
-			await clearTimeout(global[`reminder_${interaction.user.id}_${reminder.reminder_id}`]);
-			delete global[`reminder_${interaction.user.id}_${reminder.reminder_id}`];
+			reminders.forEach(async reminder => {
+				clearTimeout(global[`reminder_${interaction.user.id}_${reminder.id}`]);
+				delete global[`reminder_${interaction.user.id}_${reminder.id}`];
+			});
 
-			await reminder.destroy();
-		});
-
-		await interaction.reply({
-			content: `The following reminder${reminder_ids.length > 1 ? "s" : ""} ha${
-				reminder_ids.length > 1 ? "ve" : "s"
-			} been reset: \`${reminder_ids.join("`, `")}\``,
-			ephemeral: true
-		});
+			await Reminders.deleteMany({ author: interaction.user.id });
+			await interaction.reply({
+				content: "All reminders have been reset",
+				ephemeral: true
+			});
+		}
 	}
 };

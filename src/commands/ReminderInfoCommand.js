@@ -1,4 +1,6 @@
+const Reminders = require("../mongodb/models/reminders");
 const Command = require("../modules/commands/command");
+
 const { MessageEmbed } = require("discord.js");
 
 module.exports = class ReminderInfoCommand extends Command {
@@ -31,35 +33,34 @@ module.exports = class ReminderInfoCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const reminder = await db.models.Reminder.findOne({
-			where: {
-				user_id: interaction.user.id,
-				reminder_id: interaction.options.getString("reminder_id")
-			}
+		const reminderID = interaction.options.getString("reminder_id");
+
+		const reminder = await Reminders.findOne({
+			author: interaction.user.id,
+			id: reminderID
 		});
 
 		if (!reminder) {
-			return interaction.reply({
-				content: `The reminder ID could not be resolved (\`${interaction.options.getString(
-					"reminder_id"
-				)}\`).`,
+			interaction.reply({
+				content: `The reminder ID could not be resolved (\`${reminderID}\`).`,
 				ephemeral: true
 			});
+			return;
 		}
 
 		const embed = new MessageEmbed()
 			.setColor(config.colors.default_color)
 			.setAuthor({
-				name: interaction.member.nickname,
+				name: interaction.member.displayName,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 			})
 			.setFields([
-				{ name: "Channel", value: `<#${reminder.channel_id}>`, inline: true },
-				{ name: "Set On", value: `<t:${reminder.before}:f>`, inline: true },
-				{ name: "Alert On", value: `<t:${reminder.after}:f>`, inline: true },
-				{ name: "Reminder", value: reminder.message, inline: false }
+				{ name: "Channel", value: `<#${reminder.channel}>`, inline: true },
+				{ name: "Set On", value: `<t:${reminder.start_time}:f>`, inline: true },
+				{ name: "Alert On", value: `<t:${reminder.end_time}:f>`, inline: true },
+				{ name: "Reminder", value: reminder.text, inline: false }
 			])
-			.setFooter({ text: `Reminder ID: ${reminder.reminder_id}` });
+			.setFooter({ text: `Reminder ID: ${reminder.id}` });
 
 		await interaction.reply({
 			embeds: [embed],

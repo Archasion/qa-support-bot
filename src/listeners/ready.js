@@ -1,7 +1,9 @@
 /* eslint-disable no-useless-escape */
 const EventListener = require("../modules/listeners/listener");
-const { MessageEmbed } = require("discord.js");
+const Reminders = require("../mongodb/models/reminders");
+
 const { MODERATION_CHAT, ACTIVE_TESTING_REQUESTS, NDA_TESTING_VC } = process.env;
+const { MessageEmbed } = require("discord.js");
 
 module.exports = class ReadyEventListener extends EventListener {
 	constructor(client) {
@@ -18,6 +20,7 @@ module.exports = class ReadyEventListener extends EventListener {
 		this.client.commands.load();
 		this.client.commands.publish();
 
+		// Presence
 		if (config.presence.options.length > 1) {
 			const { selectPresence } = require("../utils/discord");
 			setInterval(() => {
@@ -26,6 +29,7 @@ module.exports = class ReadyEventListener extends EventListener {
 			}, config.presence.duration * 1000);
 		}
 
+		// Update tests
 		const guild = this.client.guilds.cache.get(config.guild);
 		guild.channels.cache
 			.get(MODERATION_CHAT)
@@ -56,44 +60,46 @@ module.exports = class ReadyEventListener extends EventListener {
 				});
 			});
 
-		const reminders = await db.models.Reminder.findAll();
-		await reminders.forEach(async reminder => {
-			const after = reminder.after * 1000;
+		// Check for missed reminders
+		const reminders = await Reminders.find();
+
+		reminders.forEach(async reminder => {
+			const reminderTime = reminder.end_time * 1000;
 			const now = Date.now();
 
-			if (now >= after) {
-				await guild.channels.cache.get(reminder.channel_id).send({
-					content: `<@${reminder.user_id}>`,
+			if (now >= reminderTime) {
+				await guild.channels.cache.get(reminder.channel).send({
+					content: `<@${reminder.author}>`,
 					embeds: [
 						new MessageEmbed()
 							.setColor(config.colors.error_color)
 							.setTitle("Reminder [LATE]")
 							.setDescription(
-								`You asked me to give you a reminder <t:${reminder.before}:R> (<t:${reminder.before}:f>)`
+								`You asked me to give you a reminder <t:${reminder.start_time}:R> (<t:${reminder.start_time}:f>)`
 							)
-							.addField("Reminder", reminder.message)
-							.setFooter({ text: `${now - after}ms late` })
+							.addField("Reminder", reminder.text)
+							.setFooter({ text: `${now - reminderTime}ms late` })
 					]
 				});
 
-				await reminder.destroy();
+				await Reminders.deleteOne({ id: reminder.id });
 			} else {
-				global[`reminder_${reminder.user_id}_${reminder.reminder_id}`] = setTimeout(async () => {
-					await guild.channels.cache.get(reminder.channel_id).send({
-						content: `<@${reminder.user_id}>`,
+				global[`reminder_${reminder.author}_${reminder.id}`] = setTimeout(async () => {
+					await guild.channels.cache.get(reminder.channel).send({
+						content: `<@${reminder.author}>`,
 						embeds: [
 							new MessageEmbed()
 								.setColor(config.colors.default_color)
 								.setTitle("Reminder")
 								.setDescription(
-									`You asked me to give you a reminder <t:${reminder.before}:R> (<t:${reminder.before}:f>)`
+									`You asked me to give you a reminder <t:${reminder.start_time}:R> (<t:${reminder.start_time}:f>)`
 								)
-								.addField("Reminder", reminder.message)
+								.addField("Reminder", reminder.text)
 						]
 					});
 
-					await reminder.destroy();
-				}, after - now);
+					await Reminders.deleteOne({ id: reminder.id });
+				}, reminderTime - now);
 			}
 		});
 	}

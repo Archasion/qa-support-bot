@@ -1,4 +1,6 @@
+const Reminders = require("../mongodb/models/reminders");
 const Command = require("../modules/commands/command");
+
 const { MessageEmbed } = require("discord.js");
 
 module.exports = class RemindersCommand extends Command {
@@ -24,17 +26,15 @@ module.exports = class RemindersCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const reminders = await db.models.Reminder.findAll({
-			where: { user_id: interaction.user.id }
-		});
+		const reminders = await Reminders.find({ author: interaction.user.id });
 
 		const embed = new MessageEmbed().setColor(config.colors.default_color).setTitle("Reminders");
 
 		if (reminders.length === 0) {
 			embed.setDescription("You do not have any reminders set!");
 		} else {
-			await reminders.forEach(reminder => {
-				embed.addField(`\`${reminder.reminder_id}\` <t:${reminder.after}:f>`, reminder.message);
+			reminders.forEach(reminder => {
+				embed.addField(`\`${reminder.id}\` <t:${reminder.end_time}:f>`, reminder.text);
 			});
 		}
 

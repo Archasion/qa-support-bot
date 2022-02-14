@@ -1,6 +1,10 @@
 const Command = require("../modules/commands/command");
-const { MessageEmbed } = require("discord.js");
+const Reminders = require("../mongodb/models/reminders");
 const ms = require("ms");
+
+let uniqueID;
+
+const { MessageEmbed } = require("discord.js");
 
 module.exports = class RemindCommand extends Command {
 	constructor(client) {
@@ -38,10 +42,9 @@ module.exports = class RemindCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const reminderProfile = await db.models.Reminder.findAll({
-			where: { user_id: interaction.user.id }
-		});
+		const reminderProfile = await Reminders.find({ author: interaction.user.id });
 
+		// Check if the user has reached the limit of 5 reminders
 		if (reminderProfile.length >= 5) {
 			return interaction.reply({
 				content: "You have too many reminders, you can clear them using `/reset-reminders`",
@@ -49,38 +52,36 @@ module.exports = class RemindCommand extends Command {
 			});
 		}
 
-		const random = "abcdefghijklmnopqrstuvwxyz0123456789";
-		let checkId = true;
-		let id = "";
+		let checkID = true;
 
-		while (checkId) {
-			id = "";
+		// Generate random ID, regenerate if it already exists
+		while (checkID) {
+			uniqueID = "";
+			uniqueID = Math.random().toString(36).substring(2, 9);
 
-			for (let i = 0; i < 7; i++) {
-				id += random.charAt(Math.floor(Math.random() * (random.length - 1)));
-			}
-
-			checkId = await db.models.Reminder.findOne({
-				where: { reminder_id: id }
+			checkID = await Reminders.findOne({
+				id: uniqueID
 			});
 		}
 
 		const duration = ms(interaction.options.getString("duration"));
 		const message = interaction.options.getString("message");
 
-		const timestampAfter = parseInt((Date.now() + duration) / 1000);
-		const timestampBefore = parseInt(Date.now() / 1000);
+		const start = parseInt(Date.now() / 1000);
+		const end = parseInt((Date.now() + duration) / 1000);
 
-		await db.models.Reminder.create({
-			user_id: interaction.user.id,
-			reminder_id: id,
-			channel_id: interaction.channel.id,
-			message,
-			before: timestampBefore,
-			after: timestampAfter
+		// Store reminder in database
+		await Reminders.create({
+			id: uniqueID,
+			author: interaction.user.id,
+			channel: interaction.channel.id,
+			start_time: start,
+			end_time: end,
+			text: message
 		});
 
-		global[`reminder_${interaction.user.id}_${id}`] = setTimeout(async () => {
+		// Store timeout in a global variable
+		global[`reminder_${interaction.user.id}_${uniqueID}`] = setTimeout(async () => {
 			await interaction.channel.send({
 				content: interaction.member.toString(),
 				embeds: [
@@ -88,35 +89,25 @@ module.exports = class RemindCommand extends Command {
 						.setColor(config.colors.default_color)
 						.setTitle("Reminder")
 						.setDescription(
-							`You asked me to give you a reminder <t:${timestampBefore}:R> (<t:${timestampBefore}:f>)`
+							`You asked me to give you a reminder <t:${start}:R> (<t:${start}:f>)`
 						)
 						.addField("Reminder", message)
 				]
 			});
 
-			const reminderToRemove = await db.models.Reminder.findOne({
-				where: {
-					user_id: interaction.user.id,
-					reminder_id: id
-				}
-			});
+			await Reminders.deleteOne({ id: uniqueID });
 
-			if (reminderToRemove) {
-				reminderToRemove.destroy();
-			}
-
-			delete global[`reminder_${interaction.user.id}_${id}`];
+			delete global[`reminder_${interaction.user.id}_${uniqueID}`];
 		}, duration);
 
+		// Confirm reminder
 		await interaction.reply({
 			embeds: [
 				new MessageEmbed()
 					.setColor(config.colors.default_color)
-					.setDescription(
-						`Okay! I will remind you <t:${timestampAfter}:R> (<t:${timestampAfter}:f>)`
-					)
+					.setDescription(`Okay! I will remind you <t:${end}:R> (<t:${end}:f>)`)
 					.addField("Reminder", message)
-					.setFooter({ text: `Reminder ID: ${id}` })
+					.setFooter({ text: `Reminder ID: ${uniqueID}` })
 			],
 			ephemeral: true
 		});
