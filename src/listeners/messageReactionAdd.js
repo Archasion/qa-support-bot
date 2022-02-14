@@ -27,6 +27,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 		switch (emoji.name) {
 			case "📅": // Create event and message developer
+			case "📆":
 			case "🗓️":
 				if (!(await utils.isStaff(guildMember))) return;
 				if (message.channel.id !== TESTING_REQUESTS) return;
