@@ -245,9 +245,9 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						});
 				}
 
-				message.react("✅");
+				message.react("912042941181227078");
 			} catch {
-				message.react("❌");
+				message.react("912837490585513994");
 				await moderationChat.send(`${user} could not accept the test.`);
 			}
 		}
