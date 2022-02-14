@@ -74,10 +74,6 @@ module.exports = class BlacklistCommand extends Command {
 								.setDescription(
 									`${member_or_role.toString()} is a staff member and cannot be blacklisted.`
 								)
-								.setFooter({
-									text: config.text.footer,
-									iconURL: interaction.guild.iconURL()
-								})
 						],
 						ephemeral: true
 					});
@@ -115,10 +111,6 @@ module.exports = class BlacklistCommand extends Command {
 							.setColor(config.colors.success_color)
 							.setTitle(`Added ${type} to blacklist`)
 							.setDescription(description.join(""))
-							.setFooter({
-								text: config.text.footer,
-								iconURL: interaction.guild.iconURL()
-							})
 					],
 					ephemeral: true
 				});
@@ -164,10 +156,6 @@ module.exports = class BlacklistCommand extends Command {
 							.setColor(config.colors.success_color)
 							.setTitle(`Removed ${type} from blacklist`)
 							.setDescription(description.join(""))
-							.setFooter({
-								text: config.text.footer,
-								iconURL: interaction.guild.iconURL()
-							})
 					],
 					ephemeral: true
 				});
@@ -184,10 +172,6 @@ module.exports = class BlacklistCommand extends Command {
 								.setDescription(
 									"There are no members or roles blacklisted. Type `/blacklist add` to add a member or role to the blacklist."
 								)
-								.setFooter({
-									text: config.text.footer,
-									iconURL: interaction.guild.iconURL()
-								})
 						],
 						ephemeral: true
 					});
@@ -203,10 +187,6 @@ module.exports = class BlacklistCommand extends Command {
 							.setTitle("Blacklisted members and roles")
 							.addField("Members", members.join("\n") || "None")
 							.addField("Roles", roles.join("\n") || "None")
-							.setFooter({
-								text: config.text.footer,
-								iconURL: interaction.guild.iconURL()
-							})
 					],
 					ephemeral: true
 				});

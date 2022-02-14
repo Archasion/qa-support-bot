@@ -46,11 +46,6 @@ users:
     - "697765709580599406" # Archasion 2
     - "180803410306662401" # Spencer
 
-text:
-  opening_message: "Hello {name}, thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#922957941395570748> and the <#922957941395570748> channels to see if they answer your question."
-  ticket_name: "ticket-{number}"
-  footer: "Roblox QA Team"
-
 presence:
   randomize: true
   duration: 60
