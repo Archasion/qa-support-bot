@@ -225,7 +225,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					channel.threads
 						.create({
 							name: gameTitle,
-							autoArchiveDuration: 1440,
+							autoArchiveDuration: 1440, // 1 Day
 							type: "GUILD_PRIVATE_THREAD",
 							invitable: false,
 							reason: "Unable to message author regarding a testing request."

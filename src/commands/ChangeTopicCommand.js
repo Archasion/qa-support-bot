@@ -15,8 +15,7 @@ module.exports = class NewTicketCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			manager_only: true,
-			moderator_only: true,
+			verified_only: true,
 			options: [
 				{
 					description: "The new ticket topic",

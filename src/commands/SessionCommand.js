@@ -46,6 +46,11 @@ module.exports = class SessionCommand extends Command {
 					name: "create_thread",
 					description: "Create a thread for the session",
 					type: Command.option_types.BOOLEAN
+				},
+				{
+					name: "form_url",
+					description: "Add a URL to a form if the developer requests one",
+					type: Command.option_types.STRING
 				}
 			]
 		});
@@ -57,6 +62,7 @@ module.exports = class SessionCommand extends Command {
 	 */
 	async execute(interaction) {
 		const testingRequestID = interaction.options.getString("message_id");
+		const formURL = interaction.options.getString("form_url");
 		const requestsChannel = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
 		const testingRequest = await requestsChannel.messages.fetch(testingRequestID);
 
@@ -112,20 +118,6 @@ module.exports = class SessionCommand extends Command {
 
 		announcementChannel = interaction.guild.channels.cache.get(announcementChannel);
 
-		// Get the latest message in the announcement channel
-		const fetch = await announcementChannel.messages.fetch({ limit: 1 });
-
-		if (fetch.size > 0) {
-			// Check if the announcement already exists
-			if (fetch.first().content === announcement) {
-				interaction.reply({
-					content: "An announcement has already been sent for this session",
-					ephemeral: true
-				});
-				return;
-			}
-		}
-
 		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
 		try {
@@ -145,13 +137,31 @@ module.exports = class SessionCommand extends Command {
 			return;
 		}
 
+		if (formURL && type === "Start Template") {
+			announcement += `\n\nReport Bugs/Feedback Here:\n${formURL}`;
+		}
+
+		// Get the latest message in the announcement channel
+		const fetch = await announcementChannel.messages.fetch({ limit: 1 });
+
+		if (fetch.size > 0) {
+			// Check if the announcement already exists
+			if (fetch.first().content === announcement) {
+				interaction.reply({
+					content: "An announcement has already been sent for this session",
+					ephemeral: true
+				});
+				return;
+			}
+		}
+
 		// Send the announcement
 		announcementChannel.send({ content: announcement }).then(async message => {
 			// Check if a thread is requested for the start announcement
 			if (type === "Start Template" && createThread) {
 				await message.startThread({
 					name: embed.title,
-					autoArchiveDuration: 4320,
+					autoArchiveDuration: 4320, // 3 Days
 					type: "GUILD_PUBLIC_THREAD",
 					reason: `Testing has begun for ${embed.title}`
 				});

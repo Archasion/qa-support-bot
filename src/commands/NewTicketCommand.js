@@ -17,6 +17,7 @@ module.exports = class NewTicketCommand extends Command {
 				channels: [],
 				threads: []
 			},
+			verified_only: true,
 			options: [
 				{
 					description: "The topic of the ticket",
@@ -59,9 +60,9 @@ module.exports = class NewTicketCommand extends Command {
 		// Create the ticket
 		const ticket = await ticketParent.threads.create({
 			name: `Ticket ${amount}`,
-			autoArchiveDuration: 60,
-			type: "GUILD_PUBLIC_THREAD", // TODO Change to GUILD_PRIVATE_THREAD
-			// invitable: false, // TODO Uncomment
+			autoArchiveDuration: 10080, // 7 Days
+			type: "GUILD_PRIVATE_THREAD",
+			invitable: false,
 			reason: `New ticket: ${info}`
 		});
 
