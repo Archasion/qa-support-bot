@@ -170,10 +170,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					});
 
 					channel = ACCELERATOR_CHAT_VC;
-					emoji = "🥕 ";
-				} else if (type === "NDA Test") {
+					emoji = "<:accelerator:941804781830283396> ";
+				} else if (type === "NDA Verified Test") {
 					channel = NDA_TESTING_VC;
-					emoji = "🔒 ";
+					emoji = "<:nda:905799212350992475> ";
 				}
 
 				// Store the test in the database

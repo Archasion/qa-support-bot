@@ -102,7 +102,7 @@ module.exports = class SessionCommand extends Command {
 			case "Public Test":
 				announcementChannel = config.channels.sessions;
 				break;
-			case "NDA Test":
+			case "NDA Verified Test":
 				announcementChannel = NDA_SESSIONS;
 				break;
 		}
