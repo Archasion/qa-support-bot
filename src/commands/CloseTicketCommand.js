@@ -66,7 +66,7 @@ module.exports = class NewTicketCommand extends Command {
 
 		const loggingEmbed = new MessageEmbed()
 
-			.setColor(config.colors.close_ticket)
+			.setColor(0xf55f5f) // Red
 			.setAuthor({
 				name: `${interaction.user.tag} (${interaction.member.displayName})`,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })

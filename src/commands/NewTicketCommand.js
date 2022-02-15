@@ -100,7 +100,7 @@ module.exports = class NewTicketCommand extends Command {
 
 		const loggingEmbed = new MessageEmbed()
 
-			.setColor(config.colors.default_color)
+			.setColor(config.colors.success_color)
 			.setAuthor({
 				name: `${interaction.user.tag} (${interaction.member.displayName})`,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
