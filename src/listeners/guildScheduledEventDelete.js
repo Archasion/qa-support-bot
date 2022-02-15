@@ -13,8 +13,9 @@ module.exports = class GuildScheduledEventDeleteEventListener extends EventListe
 		event.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
 			.then(async message => {
 				// Get the test in the message
+				// prettier-ignore
 				const replaceRegex = new RegExp(
-					`\n\n>\\s${event.channel.id === NDA_TESTING_VC ? "🔒" : ""}.+<t:${
+					`\n\n>\\s${event.channel.id === NDA_TESTING_VC ? "<:nda:905799212350992475>" : ""}.+<t:${
 						event.scheduledStartTimestamp / 1000
 					}:F>\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`,
 					"gmis"
