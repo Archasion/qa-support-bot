@@ -38,7 +38,7 @@ module.exports = class RoleDevelopersCommand extends Command {
 					name: "users",
 					description:
 						"A comma/space seperated list of users that the action is used on (Mention, username, or ID)",
-					required: true,
+					required: false,
 					type: Command.option_types.STRING
 				}
 			]
@@ -53,6 +53,14 @@ module.exports = class RoleDevelopersCommand extends Command {
 		const developerRole = config.roles.developer;
 		const action = interaction.options.getString("action");
 		let users = interaction.options.getString("users");
+
+		if (action !== "view" && !users) {
+			interaction.reply({
+				content: "You must specify a list of users to add or remove the role from",
+				ephemeral: true
+			});
+			return;
+		}
 
 		const unknown = [];
 		const success = [];
