@@ -157,6 +157,7 @@ module.exports = class SessionCommand extends Command {
 
 		// Send the announcement
 		announcementChannel.send({ content: announcement }).then(async message => {
+			message.react("284099057348247562"); // Thumbs up
 			// Check if a thread is requested for the start announcement
 			if (type === "Start Template" && createThread) {
 				await message.startThread({
