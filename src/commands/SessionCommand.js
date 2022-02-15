@@ -23,15 +23,15 @@ module.exports = class SessionCommand extends Command {
 					required: true,
 					choices: [
 						{
-							name: "Notice",
+							name: "Notice (Pre-Announcement)",
 							value: "notice"
 						},
 						{
-							name: "Start",
+							name: "Start (Start of Test)",
 							value: "start"
 						},
 						{
-							name: "Conclude",
+							name: "Conclude (End of Test)",
 							value: "conclude"
 						}
 					]

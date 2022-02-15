@@ -8,10 +8,10 @@ const { path } = require("../utils/fs");
 const fileContents = fs.readFileSync(path("/src/tags.yaml"), "utf8");
 const tags = yaml.load(fileContents);
 
-module.exports = class TagCommand extends Command {
+module.exports = class FAQCommand extends Command {
 	constructor(client) {
 		super(client, {
-			name: "tag",
+			name: "faq",
 			description: "Reply with the answer to a common question",
 			permissions: [],
 			ignored: {
