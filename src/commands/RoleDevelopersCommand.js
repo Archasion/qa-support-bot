@@ -15,13 +15,6 @@ module.exports = class RoleDevelopersCommand extends Command {
 			moderator_only: true,
 			options: [
 				{
-					name: "users",
-					description:
-						"A comma/space seperated list of users that the action is used on (Mention, username, or ID)",
-					required: true,
-					type: Command.option_types.STRING
-				},
-				{
 					name: "action",
 					description: "Add or remove the role",
 					required: true,
@@ -34,8 +27,19 @@ module.exports = class RoleDevelopersCommand extends Command {
 						{
 							name: "Remove Role",
 							value: "Removed"
+						},
+						{
+							name: "View Members with Role",
+							value: "view"
 						}
 					]
+				},
+				{
+					name: "users",
+					description:
+						"A comma/space seperated list of users that the action is used on (Mention, username, or ID)",
+					required: true,
+					type: Command.option_types.STRING
 				}
 			]
 		});
@@ -54,7 +58,7 @@ module.exports = class RoleDevelopersCommand extends Command {
 		const success = [];
 
 		// Remove the developer role from all users
-		if (users.match(/^all|everyone|\*$/gi)) {
+		if (users.match(/^all|everyone|\*$/gi) || action === "view") {
 			// Prevent adding the developer role to everyone
 			if (action === "Added") {
 				interaction.reply({ content: "Cannot add the role to everyone", ephemeral: true });
@@ -67,7 +71,7 @@ module.exports = class RoleDevelopersCommand extends Command {
 			// Go through each user with the developer role and remove it
 			for (const member of members.values()) {
 				try {
-					member.roles.remove(developerRole);
+					if (action === "Removed") member.roles.remove(developerRole);
 					success.push(member.id);
 				} catch {
 					unknown.push(member.id);
@@ -98,6 +102,16 @@ module.exports = class RoleDevelopersCommand extends Command {
 					unknown.push(user);
 				}
 			}
+		}
+
+		if (action === "view") {
+			interaction.reply({
+				content: `There ${success.length === 1 ? "is" : "are"} **${success.length}** member${
+					success.length === 1 ? "" : "s"
+				} with the <@&${developerRole}> role: <@${success.join(">, <@")}>`,
+				ephemeral: true
+			});
+			return;
 		}
 
 		// prettier-ignore
