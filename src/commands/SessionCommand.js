@@ -120,21 +120,23 @@ module.exports = class SessionCommand extends Command {
 
 		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
-		try {
-			// Get the announcement
-			announcement = embed.fields
-				.filter(
-					field =>
-						field.name.includes(type) &&
-						field.name.slice(type.length + 4, -3) <= parseInt(Date.now() / 1000)
-				)[0]
-				.value.replaceAll("```", "");
-		} catch {
-			interaction.reply({
-				content: "It is too early to post the anouncement",
-				ephemeral: true
-			});
-			return;
+		if (type) {
+			try {
+				// Get the announcement
+				announcement = embed.fields
+					.filter(
+						field =>
+							field.name.includes(type) &&
+							field.name.slice(type.length + 4, -3) <= parseInt(Date.now() / 1000)
+					)[0]
+					.value.replaceAll("```", "");
+			} catch {
+				interaction.reply({
+					content: "It is too early to post the anouncement",
+					ephemeral: true
+				});
+				return;
+			}
 		}
 
 		if (formURL && type === "Start Template") {
