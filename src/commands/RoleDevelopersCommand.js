@@ -62,13 +62,15 @@ module.exports = class RoleDevelopersCommand extends Command {
 			return;
 		}
 
+		if (action === "view" && !users) users = "temporary";
+
 		const unknown = [];
 		const success = [];
 
 		// Remove the developer role from all users
 		if (users.match(/^all|everyone|\*$/gi) || action === "view") {
-			// Prevent adding the developer role to everyone
 			if (action === "Added") {
+				// Prevent adding the developer role to everyone
 				interaction.reply({ content: "Cannot add the role to everyone", ephemeral: true });
 				return;
 			}
