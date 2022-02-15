@@ -19,7 +19,7 @@ module.exports = class TagCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			cooldown: 60,
+			cooldown: 20,
 			manager_only: true,
 			moderator_only: true,
 			nda_only: true,
