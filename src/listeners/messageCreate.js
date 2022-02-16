@@ -53,7 +53,10 @@ module.exports = class MessageCreateEventListener extends EventListener {
 					if (input.includes(word)) remove = true;
 				}
 
-				if (input.length <= 3 && !input.match(/^(?:\^+|y[eu][sp]|no)$/gims)) remove = true;
+				if (message.attachments.size === 0) {
+					if (input.length <= 3 && !input.match(/^(?:\^+|y[eu][sp]|no)$/gims)) remove = true;
+				}
+
 				if (remove) return message.delete();
 			}
 		}
