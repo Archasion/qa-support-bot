@@ -9,7 +9,8 @@ const {
 	ACTIVE_TESTING_REQUESTS,
 	NDA_TESTING_VC,
 	ACCELERATOR_CHAT_VC,
-	MODERATION_ALERTS
+	MODERATION_ALERTS,
+	REQUEST_DISCUSSION_THREAD
 } = process.env;
 
 module.exports = class MessageReactionAddEventListener extends EventListener {
@@ -22,6 +23,9 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		message = await message.channel.messages.fetch(message.id);
 
 		const moderationChat = message.guild.channels.cache.get(MODERATION_CHAT);
+		const discussionThread = message.guild.channels.cache
+			.get(TESTING_REQUESTS)
+			.thread.cache.get(REQUEST_DISCUSSION_THREAD);
 		const alertThread = await moderationChat.threads.fetch(MODERATION_ALERTS);
 		const guildMember = await message.guild.members.fetch(user.id);
 
@@ -145,7 +149,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				// Respond if the event exists
 				await events.forEach(event => {
 					if (event.name === type && event.startTime === timestamp) {
-						moderationChat.send(
+						discussionThread.send(
 							`${user} Test already scheduled for <t:${
 								timestamp / 1000
 							}:F>\nhttps://discord.com/events/${message.guild.id}/${event.id}`
@@ -215,7 +219,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				// Message the developer
 				try {
 					member.send(notification);
-					moderationChat.send(
+					discussionThread.send(
 						`${user} The \`${type}\` for **${gameTitle}** has been scheduled for <t:${
 							timestamp / 1000
 						}:F>\nhttps://discord.com/events/${message.guild.id}/${testing_session.id}`
@@ -233,7 +237,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						.then(thread => {
 							thread.send(notification);
 
-							moderationChat.send(
+							discussionThread.send(
 								`${user} The \`${type}\` for **${gameTitle}** has been scheduled for <t:${
 									timestamp / 1000
 								}:F> (messaged the user through a private thread: <#${
@@ -248,7 +252,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				message.react("912042941181227078");
 			} catch {
 				message.react("912837490585513994");
-				await moderationChat.send(`${user} could not accept the test.`);
+				await discussionThread.send(`${user} could not accept the test.`);
 			}
 		}
 	}
