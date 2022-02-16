@@ -9,14 +9,9 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 
 	async execute(newMember, oldMember) {
 		let oldState;
-		let newState;
 
 		if (oldMember.channelId) {
 			oldState = oldMember.channelId;
-		}
-
-		if (newMember.channelId) {
-			newState = newMember.channelId;
 		}
 
 		const publicNoMic = this.client.channels.cache.get(config.channels.no_mic);
@@ -36,10 +31,7 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		}
 
 		// No-mic for public VC
-		if (
-			(oldState === publicVC && newState !== publicVC) ||
-			(oldState === publicTestingVC && newState !== publicTestingVC)
-		) {
+		if (oldState === publicVC || oldState === publicTestingVC) {
 			await publicNoMic.permissionOverwrites.create(user, {
 				VIEW_CHANNEL: true,
 				SEND_MESSAGES: true
@@ -47,10 +39,7 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		} else hideChannel(publicNoMic);
 
 		// No-mic for NDA VC
-		if (
-			(oldState === NDA_CHAT_VC && newState !== NDA_CHAT_VC) ||
-			(oldState === NDA_TESTING_VC && newState !== NDA_TESTING_VC)
-		) {
+		if (oldState === NDA_CHAT_VC || oldState === NDA_TESTING_VC) {
 			await NDANoMic.permissionOverwrites.create(user, {
 				VIEW_CHANNEL: true,
 				SEND_MESSAGES: true
