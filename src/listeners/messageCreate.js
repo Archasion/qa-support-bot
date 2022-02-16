@@ -11,8 +11,27 @@ module.exports = class MessageCreateEventListener extends EventListener {
 	async execute(message) {
 		if (!message.guild) return;
 
-		// ANCHOR Automatic deletion
+		// #verify
+		if (message.channel.id === "436232260392452102") {
+			if (await utils.isStaff(message.member)) return;
+			if (!message.content.toLowerCase().includes("!verify")) {
+				message
+					.reply({
+						content: "Please use `!verify` to verify your account.",
+						allowedMentions: {
+							repliedUser: true
+						}
+					})
+					.then(response => {
+						setTimeout(() => {
+							response.delete().catch(() => log.error("Couldn't delete the response"));
+						}, 8000); // 8 seconds
+					});
+			}
+		}
+
 		if (message.channel.type === "GUILD_PUBLIC_THREAD") {
+			// ANCHOR Automatic deletion
 			if (message.channel.parent.id === config.channels.sessions) {
 				// Sentence includes word(s)
 				// prettier-ignore
