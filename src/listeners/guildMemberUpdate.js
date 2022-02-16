@@ -15,7 +15,9 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 			!oldMember.roles.cache.has(config.roles.active_tester) &&
 			newMember.roles.cache.has(config.roles.active_tester)
 		) {
-			const moderationChat = await newMember.guild.channels.fetch(MODERATION_CHAT);
+			const moderationThread = await newMember.guild.channels.cache
+				.get(MODERATION_CHAT)
+				.threads.cache.get("943409502835867668");
 
 			const embed = new MessageEmbed()
 
@@ -37,7 +39,7 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 			}
 
 			// Send the notification
-			moderationChat.send({ embeds: [embed] });
+			moderationThread.send({ embeds: [embed] });
 		}
 	}
 };
