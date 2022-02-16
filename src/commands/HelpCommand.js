@@ -38,13 +38,25 @@ module.exports = class HelpCommand extends Command {
 			}
 
 			// Validate the user's rank
-			if (command.moderator_only) return isModerator;
-			if (command.manager_only) return isManager;
-			if (command.dev_only) return isDeveloper;
-			if (command.verified_only) return isVerified;
-			if (command.nda_only) return isNDA;
+			if (
+				(command.moderator_only && isModerator) ||
+				(command.manager_only && isManager) ||
+				(command.verified_only && isVerified) ||
+				(command.nda_only && isNDA) ||
+				(command.dev_only && isDeveloper)
+			)
+				return true;
 
-			return true;
+			if (
+				!command.moderator_only &&
+				!command.manager_only &&
+				!command.verified_only &&
+				!command.nda_only &&
+				!command.dev_only
+			)
+				return true;
+
+			return false;
 		});
 
 		// Create a list of commands the user has access to
