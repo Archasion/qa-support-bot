@@ -14,6 +14,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		// #verify
 		if (message.channel.id === "436232260392452102") {
 			if (await utils.isStaff(message.member)) return;
+			if (message.author.bot) return;
 			if (!message.content.toLowerCase().includes("!verify")) {
 				message
 					.reply({
