@@ -30,20 +30,22 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 			);
 		}
 
-		// No-mic for public VC
-		if (oldState === publicVC || oldState === publicTestingVC) {
-			await publicNoMic.permissionOverwrites.create(user, {
-				VIEW_CHANNEL: true,
-				SEND_MESSAGES: true
-			});
-		} else hideChannel(publicNoMic);
+		if (!(await utils.isStaff(newMember))) {
+			// No-mic for public VC
+			if (oldState === publicVC || oldState === publicTestingVC) {
+				await publicNoMic.permissionOverwrites.create(user, {
+					VIEW_CHANNEL: true,
+					SEND_MESSAGES: true
+				});
+			} else hideChannel(publicNoMic);
 
-		// No-mic for NDA VC
-		if (oldState === NDA_CHAT_VC || oldState === NDA_TESTING_VC) {
-			await NDANoMic.permissionOverwrites.create(user, {
-				VIEW_CHANNEL: true,
-				SEND_MESSAGES: true
-			});
-		} else hideChannel(NDANoMic);
+			// No-mic for NDA VC
+			if (oldState === NDA_CHAT_VC || oldState === NDA_TESTING_VC) {
+				await NDANoMic.permissionOverwrites.create(user, {
+					VIEW_CHANNEL: true,
+					SEND_MESSAGES: true
+				});
+			} else hideChannel(NDANoMic);
+		}
 	}
 };
