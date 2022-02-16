@@ -25,7 +25,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		const moderationChat = message.guild.channels.cache.get(MODERATION_CHAT);
 		const discussionThread = message.guild.channels.cache
 			.get(TESTING_REQUESTS)
-			.thread.cache.get(REQUEST_DISCUSSION_THREAD);
+			.threads.cache.get(REQUEST_DISCUSSION_THREAD);
 		const alertThread = await moderationChat.threads.fetch(MODERATION_ALERTS);
 		const guildMember = await message.guild.members.fetch(user.id);
 
