@@ -148,7 +148,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				// Respond if the event exists
 				await events.forEach(event => {
-					if (event.name === type && event.startTime === timestamp) {
+					if (
+						(event.name === type || event.name === embed.title) &&
+						event.startTime === timestamp
+					) {
 						discussionThread.send(
 							`${user} Test already scheduled for <t:${
 								timestamp / 1000
@@ -195,7 +198,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					name: type,
 					channel: message.guild.channels.cache.get(channel),
 					scheduledStartTime: new Date(timestamp).toISOString(),
-					scheduledEndTime: new Date(timestamp + 6000000).toISOString(),
+					scheduledEndTime: new Date(timestamp + 3600000).toISOString(),
 					description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 				});
 
