@@ -29,6 +29,7 @@ module.exports = class HelpCommand extends Command {
 		const isManager = await utils.isManager(interaction.member);
 		const isDeveloper = await utils.isDeveloper(interaction.member);
 		const isVerified = await utils.isVerified(interaction.member);
+		const isNDA = await utils.isNDA(interaction.member);
 
 		const commands = this.manager.commands.filter(command => {
 			// Validate the user's permissions
@@ -41,6 +42,7 @@ module.exports = class HelpCommand extends Command {
 			if (command.manager_only) return isManager;
 			if (command.dev_only) return isDeveloper;
 			if (command.verified_only) return isVerified;
+			if (command.nda_only) return isNDA;
 
 			return true;
 		});
