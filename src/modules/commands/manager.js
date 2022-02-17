@@ -3,7 +3,7 @@ const { Collection, MessageEmbed } = require("discord.js");
 const fs = require("fs");
 const { path } = require("../../utils/fs");
 
-const { MemberBlacklist, RoleBlacklist } = require("./../../mongodb/models/blacklist");
+const { MemberBlacklist, RoleBlacklist, COMMAND_LOGS } = require("./../../mongodb/models/blacklist");
 
 /**
  * Manages the loading and execution of commands
@@ -318,6 +318,21 @@ module.exports = class CommandManager {
 		try {
 			log.commands(`Executing "${command.name}" command (invoked by ${interaction.user.tag})`);
 			await command.execute(interaction); // Execute the command
+
+			const embed = new MessageEmbed()
+
+				.setColor(config.colors.default_color)
+				.setAuthor({
+					name: interaction.user.tag,
+					iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+				})
+				.setDescription(
+					`\`${command.name}\` has been executed by **${interaction.member.displayName}**`
+				)
+				.setFooter({ text: `ID: ${interaction.user.id}` });
+
+			const loggingChannel = interaction.guild.channels.cache.get(COMMAND_LOGS);
+			loggingChannel.send({ embeds: [embed] });
 		} catch (e) {
 			log.warn(`An error occurred whilst executing the ${command.name} command`);
 			log.error(e);
