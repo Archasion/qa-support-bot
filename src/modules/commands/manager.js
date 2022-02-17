@@ -328,7 +328,7 @@ module.exports = class CommandManager {
 					iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 				})
 				.setDescription(
-					`\`${command.name}\` has been executed by **${interaction.member.displayName}** in <#${interaction.channel.id}>`
+					`\`/${command.name}\` has been executed by **${interaction.member.displayName}** in <#${interaction.channel.id}>`
 				)
 				.setFooter({ text: `ID: ${interaction.user.id}` })
 				.setTimestamp();
