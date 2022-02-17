@@ -11,6 +11,9 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 
 	async execute(oldMember, newMember) {
 		// Check if the member was given the active tester role
+		oldMember = oldMember.guild.members.cache.get(oldMember.id);
+		newMember = newMember.guild.members.cache.get(newMember.id);
+
 		if (
 			!oldMember.roles.cache.has(config.roles.active_tester) &&
 			newMember.roles.cache.has(config.roles.active_tester)
