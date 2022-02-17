@@ -3,7 +3,8 @@ const { Collection, MessageEmbed } = require("discord.js");
 const fs = require("fs");
 const { path } = require("../../utils/fs");
 
-const { MemberBlacklist, RoleBlacklist, COMMAND_LOGS } = require("./../../mongodb/models/blacklist");
+const { MemberBlacklist, RoleBlacklist } = require("./../../mongodb/models/blacklist");
+const { COMMAND_LOGS } = process.env;
 
 /**
  * Manages the loading and execution of commands
@@ -327,9 +328,10 @@ module.exports = class CommandManager {
 					iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 				})
 				.setDescription(
-					`\`${command.name}\` has been executed by **${interaction.member.displayName}**`
+					`\`${command.name}\` has been executed by **${interaction.member.displayName}** in <#${interaction.channel.id}>`
 				)
-				.setFooter({ text: `ID: ${interaction.user.id}` });
+				.setFooter({ text: `ID: ${interaction.user.id}` })
+				.setTimestamp();
 
 			const loggingChannel = interaction.guild.channels.cache.get(COMMAND_LOGS);
 			loggingChannel.send({ embeds: [embed] });
