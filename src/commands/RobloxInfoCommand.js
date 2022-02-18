@@ -17,8 +17,7 @@ module.exports = class RobloxInfoCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			manager_only: true,
-			moderator_only: true,
+			nda_only: true,
 			options: [
 				{
 					description: "The Roblox username to get information about.",
@@ -43,6 +42,14 @@ module.exports = class RobloxInfoCommand extends Command {
 	async execute(interaction) {
 		const publicResult = interaction.options.getBoolean("public") ?? false;
 		const username = interaction.options.getString("username");
+
+		if (publicResult && !(await utils.isStaff(interaction.member))) {
+			interaction.reply({
+				content: `Only members with the <@&${config.roles.moderator}> role and above can send this message publicly.`,
+				ephemeral: true
+			});
+			return;
+		}
 
 		interaction.deferReply({ ephemeral: !publicResult });
 
