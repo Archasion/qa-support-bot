@@ -23,6 +23,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		message = await message.channel.messages.fetch(message.id);
 
 		const moderationChat = message.guild.channels.cache.get(MODERATION_CHAT);
+		const testingRequests = message.guild.channels.cache.get(TESTING_REQUESTS);
 		const discussionThread = message.guild.channels.cache
 			.get(TESTING_REQUESTS)
 			.threads.cache.get(REQUEST_DISCUSSION_THREAD);
@@ -202,7 +203,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
 				});
 
-				const pinned_message = await moderationChat.messages.fetch(ACTIVE_TESTING_REQUESTS);
+				const pinned_message = await testingRequests.messages.fetch(ACTIVE_TESTING_REQUESTS);
 
 				// Update the pinned message with the tests
 				pinned_message.edit({
