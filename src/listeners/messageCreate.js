@@ -128,7 +128,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
 			// Send the alert
 			message.guild.channels.cache.get(MODERATION_CHAT).send({
-				content: `<@&${config.roles.moderator}>`,
+				content: `<@&${config.roles.moderator}> <@&${config.roles.manager}>`,
 				components: [messageURL],
 				embeds: [embed]
 			});
@@ -159,7 +159,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
 			// Send the alert
 			message.guild.channels.cache.get(MODERATION_CHAT).send({
-				content: `<@&${config.roles.moderator}>`,
+				content: `<@&${config.roles.manager}>`,
 				components: [messageURL],
 				embeds: [embed]
 			});
@@ -190,7 +190,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
 			// Send the alert
 			message.guild.channels.cache.get(MODERATION_CHAT).send({
-				content: `<@&${config.roles.moderator}>`,
+				content: `<@&${config.roles.moderator}> <@&${config.roles.manager}>`,
 				components: [messageURL],
 				embeds: [embed]
 			});
