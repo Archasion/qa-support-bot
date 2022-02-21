@@ -43,14 +43,10 @@ module.exports = class ReadyEventListener extends EventListener {
 				}));
 
 				// Go through each event and add missing events to the message
+				// prettier-ignore
 				events.forEach(event => {
 					const regex = new RegExp(
-						`\n\n>\\s${
-							event.channel.id === NDA_TESTING_VC ? "<:nda:905799212350992475>" : ""
-						}.+<t:${
-							event.startTime / 1000
-						}:F>\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`,
-						"gmis"
+						`\n\n>\s${event.channel.id === NDA_TESTING_VC ? "<:nda:905799212350992475>" : ""}.+<t:${event.startTime / 1000}:F>\n>\shttps:\/\/discord\.com\/channels(?:\/\d{17,19}){3}`, "gmis"
 					);
 					const match = regex.exec(messageContent);
 					if (match) newTestMessage.push(match[0]);
