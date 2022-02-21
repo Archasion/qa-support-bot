@@ -254,7 +254,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				}
 
 				message.react("912042941181227078");
-			} catch {
+			} catch (error) {
+				console.log(error);
 				message.react("912837490585513994");
 				await discussionThread.send(`${user} could not accept the test.`);
 			}
