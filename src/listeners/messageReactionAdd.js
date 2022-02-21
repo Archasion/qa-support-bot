@@ -133,6 +133,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				} else {
 					const usernameText = embed.footer.text.replace(/[^\w\d_]+/gi, "");
 					const usernameRegex = new RegExp(/Username\s([\w\d_]+),/gims);
+					console.log(usernameText);
+					console.log(usernameRegex.exec(usernameText));
 					const username = usernameRegex.exec(usernameText)[1];
 
 					member = await message.guild.members.search({ query: username });
