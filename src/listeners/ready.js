@@ -2,7 +2,7 @@
 const EventListener = require("../modules/listeners/listener");
 const Reminders = require("../mongodb/models/reminders");
 
-const { MODERATION_CHAT, ACTIVE_TESTING_REQUESTS, NDA_TESTING_VC } = process.env;
+const { TESTING_REQUESTS, ACTIVE_TESTING_REQUESTS, NDA_TESTING_VC } = process.env;
 const { MessageEmbed } = require("discord.js");
 
 module.exports = class ReadyEventListener extends EventListener {
@@ -32,7 +32,7 @@ module.exports = class ReadyEventListener extends EventListener {
 		// Update tests
 		const guild = this.client.guilds.cache.get(config.guild);
 		guild.channels.cache
-			.get(MODERATION_CHAT)
+			.get(TESTING_REQUESTS)
 			.messages.fetch(ACTIVE_TESTING_REQUESTS)
 			.then(async message => {
 				const newTestMessage = [];
