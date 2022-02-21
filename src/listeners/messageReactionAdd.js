@@ -131,11 +131,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 					member = await message.guild.members.fetch(userID);
 				} else {
-					const usernameText = embed.footer.text.replace(/[^\w\d_\s]+/gi, "");
-					const usernameRegex = new RegExp(/Username\s([\w\d_]+)\sDiscord/gims);
-					console.log(usernameText);
-					console.log(usernameRegex.exec(usernameText));
-					const username = usernameRegex.exec(usernameText)[1];
+					const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
+					const username = usernameRegex.exec(embed.footer.text)[1];
 
 					member = await message.guild.members.search({ query: username });
 					member = await member.first();
