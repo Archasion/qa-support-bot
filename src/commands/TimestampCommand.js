@@ -21,7 +21,7 @@ module.exports = class TimestampCommand extends Command {
 	async execute(interaction) {
 		interaction.reply({
 			content:
-				"Feel free to use website to build timestamps: https://archasion.github.io/Discord-Timestamp-Builder/",
+				"Feel free to use website to build timestamps:\nhttps://archasion.github.io/Discord-Timestamp-Builder/",
 			ephemeral: true
 		});
 	}
