@@ -17,7 +17,7 @@ module.exports = class RobloxInfoCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			nda_only: true,
+			verified_only: true,
 			options: [
 				{
 					description: "The Roblox username to get information about.",
