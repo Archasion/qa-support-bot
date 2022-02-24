@@ -157,6 +157,14 @@ module.exports = class TicketCommand extends Command {
 
 			// ANCHOR Close ticket
 			case "close":
+				if (!(await utils.isStaff(interaction.member))) {
+					interaction.reply({
+						content: "Only moderators+ are able to close tickets.",
+						ephemeral: true
+					});
+					return;
+				}
+
 				const number = interaction.options.getString("ticket");
 
 				// Check if the input is a number
