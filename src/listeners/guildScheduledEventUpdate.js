@@ -8,8 +8,8 @@ module.exports = class GuildScheduledEventUpdateEventListener extends EventListe
 		super(client, { event: "guildScheduledEventUpdate" });
 	}
 
-	async execute(oldEvent, newEvent) {
-		if (newEvent.isCompleted()) {
+	async execute(oldEvent) {
+		if (oldEvent.isCompleted()) {
 			// prettier-ignore
 			oldEvent.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
 				.then(async message => {
