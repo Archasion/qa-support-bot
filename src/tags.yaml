@@ -15,7 +15,7 @@ choices:
     value: "old_qa_hat"
   - name: "Image Perms"
     value: "image_perms"
-  - name: "Roblox admins"
+  - name: "Roblox Admins"
     value: "roblox_admins"
 
 valiant_awards: "Testers can earn two items from this group: The [Valiant Top Hat of Testing](https://www.roblox.com/catalog/8199693419/) and the [Valiant Valkyrie of Testing](https://www.roblox.com/catalog/7781687598/).\n \nThe [Valiant Top Hat of Testing](https://www.roblox.com/catalog/8199693419/)  is awarded to testers that show an extreme amount of dedication and effort into the group by attending testing sessions and reporting quality feedback.\n \nThe [Valiant Valkyrie of Testing](https://www.roblox.com/catalog/7781687598/) is awarded to testers that show an even more extreme amount of dedication and effort into the group by going above and beyond what is expected of a tester.\n \nThese items are **not** awarded to testers for becoming <@&281859085928759296>. While these items do not require the <@&281859085928759296> role, these items are notably difficult to obtain."
