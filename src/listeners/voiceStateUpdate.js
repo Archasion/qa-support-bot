@@ -38,7 +38,11 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		} else hideChannel(publicNoMic);
 
 		// No-mic for NDA VC
-		if (oldState === NDA_CHAT_VC || oldState === NDA_TESTING_VC) {
+		if (
+			oldState === NDA_CHAT_VC ||
+			oldState === NDA_TESTING_VC ||
+			oldState === "927277344866058310"
+		) {
 			await NDANoMic.permissionOverwrites.create(user, {
 				SEND_MESSAGES: true
 			});
