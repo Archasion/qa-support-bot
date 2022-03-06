@@ -225,7 +225,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					message.guild.id
 				}/${testing_session.id}`;
 
-				// Try to the developer
+				// Try to message the developer
 				try {
 					member.send(notification);
 					discussionThread.send(

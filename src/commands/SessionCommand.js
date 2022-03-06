@@ -181,7 +181,34 @@ module.exports = class SessionCommand extends Command {
 			}
 		});
 
+		// Role developer
+		let member;
+		let roleMessage = "";
+		if (type === "Start Template") {
+			// Fetch the game developer
+			if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
+				const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
+				const userID = userIDRegex.exec(embed.fields[0].value)[1];
+
+				member = await testingRequest.guild.members.fetch(userID);
+			} else {
+				const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
+				const username = usernameRegex.exec(embed.footer.text)[1];
+
+				member = await testingRequest.guild.members.search({ query: username });
+				member = await member.first();
+			}
+		}
+
+		if (member) {
+			member.roles.add(config.roles.developer);
+			roleMessage = `\nThe developer role has been added to ${member}`;
+		}
+
 		// Send the confirmation message
-		interaction.reply({ content: "Successfully sent the announcement", ephemeral: true });
+		interaction.reply({
+			content: `Successfully sent the announcement${roleMessage}`,
+			ephemeral: true
+		});
 	}
 };
