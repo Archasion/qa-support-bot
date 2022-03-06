@@ -87,6 +87,15 @@ module.exports = class SessionCommand extends Command {
 		const createThread = interaction.options.getBoolean("create_thread");
 		let type = interaction.options.getString("action");
 
+		if (type === "notice" && forceAnnounce) {
+			interaction.reply({
+				content:
+					"Please announce manually, forced notice announcements will have incorrect timestamps.",
+				ephemeral: true
+			});
+			return;
+		}
+
 		// The type of announcement to make
 		switch (type) {
 			case "notice":
