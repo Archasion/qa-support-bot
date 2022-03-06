@@ -103,6 +103,8 @@ module.exports = class SessionCommand extends Command {
 		const embed = testingRequest.embeds[0];
 		let announcementChannel = null;
 
+		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
+
 		// Check whether it is too early to post the announcement
 		if (type) {
 			try {
@@ -146,8 +148,6 @@ module.exports = class SessionCommand extends Command {
 		}
 
 		announcementChannel = interaction.guild.channels.cache.get(announcementChannel);
-
-		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
 		if (formURL && type === "Start Template") {
 			announcement += `\n\nReport Bugs/Feedback Here:\n${formURL}`;
