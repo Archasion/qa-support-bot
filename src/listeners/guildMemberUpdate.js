@@ -2,7 +2,7 @@ const EventListener = require("../modules/listeners/listener");
 const roblox = require("noblox.js");
 
 const { MessageEmbed } = require("discord.js");
-const { MODERATION_CHAT } = process.env;
+const { MODERATION_CHAT, NDA_CHAT, VERIFIED_RULES, VERIFIED_INFO } = process.env;
 
 module.exports = class GuildMemberUpdateEventListener extends EventListener {
 	constructor(client) {
@@ -13,6 +13,16 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 		// Check if the member was given the active tester role
 		oldMember = oldMember.guild.members.cache.get(oldMember.id);
 		newMember = newMember.guild.members.cache.get(newMember.id);
+
+		if (
+			!oldMember.roles.cache.has(config.roles.nda_verified) &&
+			newMember.roles.cache.has(config.roles.nda_verified)
+		) {
+			const NDAChat = newMember.guild.channels.cache.get(NDA_CHAT);
+			NDAChat.send(
+				`Welcome ${newMember} to the NDA Team! Please make sure you read <#${VERIFIED_RULES}> as well as <#${VERIFIED_INFO}>. All regular rules also apply.`
+			);
+		}
 
 		if (
 			!oldMember.roles.cache.has(config.roles.active_tester) &&

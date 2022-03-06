@@ -1,6 +1,6 @@
 const EventListener = require("../modules/listeners/listener");
 
-const { NDA_NO_MIC, NDA_CHAT_VC, NDA_TESTING_VC } = process.env;
+const { NDA_NO_MIC, NDA_CHAT_VC, NDA_TESTING_VC, VERIFIED_STAGE } = process.env;
 
 module.exports = class VoiceStateUpdateEventListener extends EventListener {
 	constructor(client) {
@@ -38,11 +38,7 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		} else hideChannel(publicNoMic);
 
 		// No-mic for NDA VC
-		if (
-			oldState === NDA_CHAT_VC ||
-			oldState === NDA_TESTING_VC ||
-			oldState === "927277344866058310"
-		) {
+		if (oldState === NDA_CHAT_VC || oldState === NDA_TESTING_VC || oldState === VERIFIED_STAGE) {
 			await NDANoMic.permissionOverwrites.create(user, {
 				SEND_MESSAGES: true
 			});
