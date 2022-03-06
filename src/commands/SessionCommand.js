@@ -104,16 +104,19 @@ module.exports = class SessionCommand extends Command {
 		let announcementChannel = null;
 
 		// Check whether it is too early to post the announcement
-		if (type && !forceAnnounce) {
+		if (type) {
 			try {
 				// Get the announcement
-				announcement = embed.fields
-					.filter(
+				announcement = embed.fields;
+				if (!forceAnnounce) {
+					announcement = announcement.filter(
 						field =>
 							field.name.includes(type) &&
 							field.name.slice(type.length + 4, -3) <= parseInt(Date.now() / 1000)
-					)[0]
-					.value.split("```")[1];
+					)[0];
+				}
+
+				announcement = announcement.value.split("```")[1];
 			} catch {
 				interaction.reply({
 					content: "It is too early to post the anouncement",
