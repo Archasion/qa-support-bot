@@ -122,22 +122,6 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				const platforms = platformRegex.exec(embed.description)[1];
 				const testType = type.split(" ")[0].toLowerCase();
 
-				let member;
-
-				// Fetch the game developer
-				if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
-					const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
-					const userID = userIDRegex.exec(embed.fields[0].value)[1];
-
-					member = await message.guild.members.fetch(userID);
-				} else {
-					const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
-					const username = usernameRegex.exec(embed.footer.text)[1];
-
-					member = await message.guild.members.search({ query: username });
-					member = await member.first();
-				}
-
 				// Check if the event exists
 				const events = message.guild.scheduledEvents.cache.map(event => ({
 					startTime: event.scheduledStartTimestamp,
@@ -212,6 +196,27 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					}:F>\n> ${message.url}`
 				});
 
+				let member;
+
+				// Fetch the game developer
+				if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
+					const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
+					const userID = userIDRegex.exec(embed.fields[0].value)[1];
+
+					member = await message.guild.members.fetch(userID);
+				} else {
+					const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
+					const username = usernameRegex.exec(embed.footer.text)[1];
+
+					member = await message.guild.members.search({ query: username });
+					member = await member.first();
+				}
+
+				if (!member) {
+					message.react("912837490585513994");
+					return;
+				}
+
 				const notification = `Hey there ${member}, we've reviewed your request for **${gameTitle}** to be tested by our **${
 					type.split(" ")[0]
 				} team** on <t:${
@@ -220,7 +225,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					message.guild.id
 				}/${testing_session.id}`;
 
-				// Message the developer
+				// Try to the developer
 				try {
 					member.send(notification);
 					discussionThread.send(
