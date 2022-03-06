@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 
-const { NDA_SESSIONS, TESTING_REQUESTS, ACCELERATOR_CHAT_VC } = process.env;
+const { NDA_SESSIONS, TESTING_REQUESTS } = process.env;
 
 module.exports = class SessionCommand extends Command {
 	constructor(client) {
@@ -51,6 +51,11 @@ module.exports = class SessionCommand extends Command {
 					name: "form_url",
 					description: "Add a URL to a form if the developer requests one",
 					type: Command.option_types.STRING
+				},
+				{
+					name: "force_announce",
+					description: "Bypass the announcement time restriction.",
+					type: Command.option_types.BOOLEAN
 				}
 			]
 		});
@@ -61,6 +66,7 @@ module.exports = class SessionCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
+		const forceAnnounce = interaction.options.getBoolean("force_announce");
 		const testingRequestID = interaction.options.getString("message_id");
 		const formURL = interaction.options.getString("form_url");
 		const requestsChannel = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
@@ -97,30 +103,8 @@ module.exports = class SessionCommand extends Command {
 		const embed = testingRequest.embeds[0];
 		let announcementChannel = null;
 
-		// Check the type of the test
-		switch (embed.author.name) {
-			case "Public Test":
-				announcementChannel = config.channels.sessions;
-				break;
-			case "NDA Verified Test":
-				announcementChannel = NDA_SESSIONS;
-				break;
-		}
-
-		if (embed.color === 0xe67e22) {
-			announcementChannel = ACCELERATOR_CHAT_VC;
-		}
-
-		// Check if the announcement channel is null
-		if (!announcementChannel) {
-			interaction.reply({ content: "Could not find the announcement channel", ephemeral: true });
-		}
-
-		announcementChannel = interaction.guild.channels.cache.get(announcementChannel);
-
-		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
-
-		if (type) {
+		// Check whether it is too early to post the announcement
+		if (type && !forceAnnounce) {
 			try {
 				// Get the announcement
 				announcement = embed.fields
@@ -138,6 +122,25 @@ module.exports = class SessionCommand extends Command {
 				return;
 			}
 		}
+
+		// Check the type of the test
+		switch (embed.author.name) {
+			case "Public Test":
+				announcementChannel = config.channels.sessions;
+				break;
+			case "NDA Verified Test":
+				announcementChannel = NDA_SESSIONS;
+				break;
+		}
+
+		// Check if the announcement channel is null
+		if (!announcementChannel) {
+			interaction.reply({ content: "Could not find the announcement channel", ephemeral: true });
+		}
+
+		announcementChannel = interaction.guild.channels.cache.get(announcementChannel);
+
+		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
 		if (formURL && type === "Start Template") {
 			announcement += `\n\nReport Bugs/Feedback Here:\n${formURL}`;

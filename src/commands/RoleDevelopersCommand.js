@@ -115,6 +115,14 @@ module.exports = class RoleDevelopersCommand extends Command {
 		}
 
 		if (action === "view") {
+			if (!success) {
+				interaction.reply({
+					content: `There are no users with the ${developerRole} role`,
+					ephemeral: true
+				});
+				return;
+			}
+
 			interaction.reply({
 				content: `There ${success.length === 1 ? "is" : "are"} **${success.length}** member${
 					success.length === 1 ? "" : "s"
