@@ -19,11 +19,8 @@ module.exports = class FAQCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			cooldown: 20,
-			manager_only: true,
-			moderator_only: true,
-			nda_only: true,
-			// active_only: true,
+			cooldown: 5,
+			verified_only: true,
 			options: [
 				{
 					name: "keyword",
@@ -49,11 +46,12 @@ module.exports = class FAQCommand extends Command {
 	async execute(interaction) {
 		const keyword = interaction.options.getString("keyword").toLowerCase();
 		const target = interaction.options.getUser("targeted_user");
+		const publicMessage = (await utils.isNDA(interaction.member)) && target;
 
 		try {
 			// Send the FAQ message (content from tags.yaml)
 			interaction.reply({
-				content: target ? `${target}` : null,
+				content: publicMessage ? `${target}` : null,
 				embeds: [
 					new MessageEmbed()
 						.setColor(config.colors.default_color)
@@ -62,7 +60,8 @@ module.exports = class FAQCommand extends Command {
 							text: `Invoked by ${interaction.member.displayName}`,
 							iconURL: interaction.user.avatarURL()
 						})
-				]
+				],
+				ephemeral: !publicMessage
 			});
 		} catch {
 			interaction.reply({
