@@ -173,7 +173,7 @@ module.exports = class RoleCommand extends Command {
 		interaction.reply({
 			content: `${
 				success[0]
-					? `${action} the developer role ${action === "Added" ? "to" : "from"}: <@${success.join(">, <@")}>`
+					? `${action} the <@&${selectedRole}> role ${action === "Added" ? "to" : "from"}: <@${success.join(">, <@")}>`
 					: ""
 			}${unknown[0] ? `\nCouldn't recognize the following input: ${unknown.join(", ")}` : ""}`,
 			ephemeral: true
