@@ -1,10 +1,10 @@
 const Command = require("../modules/commands/command");
 
-module.exports = class RoleDevelopersCommand extends Command {
+module.exports = class RoleCommand extends Command {
 	constructor(client) {
 		super(client, {
-			name: "role-developers",
-			description: "Add the @Developer role to the specified users",
+			name: "role",
+			description: "Add/Remove a role to the specified users",
 			permissions: [],
 			ignored: {
 				roles: [],
@@ -35,6 +35,22 @@ module.exports = class RoleDevelopersCommand extends Command {
 					]
 				},
 				{
+					name: "role",
+					description: "The role to add/remove",
+					required: true,
+					type: Command.option_types.STRING,
+					choices: [
+						{
+							name: "Developer",
+							value: config.roles.developer
+						},
+						{
+							name: "Image Perms",
+							value: config.roles.image_perms
+						}
+					]
+				},
+				{
 					name: "users",
 					description:
 						"A comma/space seperated list of users that the action is used on (Mention, username, or ID)",
@@ -50,9 +66,29 @@ module.exports = class RoleDevelopersCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const developerRole = config.roles.developer;
+		const selectedRole = interaction.options.getString("role");
 		const action = interaction.options.getString("action");
 		let users = interaction.options.getString("users");
+
+		if (action === "view" && selectedRole === config.roles.image_perms) {
+			interaction.reply({
+				content: "You cannot view the members of this role",
+				ephemeral: true
+			});
+			return;
+		}
+
+		if (
+			action === "Removed" &&
+			users.match(/^all|everyone|\*$/gi) &&
+			selectedRole === config.roles.image_perms
+		) {
+			interaction.reply({
+				content: "This role cannot be removed from everyone",
+				ephemeral: true
+			});
+			return;
+		}
 
 		if (action !== "view" && !users) {
 			interaction.reply({
@@ -76,12 +112,12 @@ module.exports = class RoleDevelopersCommand extends Command {
 			}
 
 			let members = await interaction.guild.members.fetch();
-			members = members.filter(member => member.roles.cache.has(developerRole));
+			members = members.filter(member => member.roles.cache.has(selectedRole));
 
 			// Go through each user with the developer role and remove it
 			for (const member of members.values()) {
 				try {
-					if (action === "Removed") member.roles.remove(developerRole);
+					if (action === "Removed") member.roles.remove(selectedRole);
 					success.push(member.id);
 				} catch {
 					unknown.push(member.id);
@@ -117,7 +153,7 @@ module.exports = class RoleDevelopersCommand extends Command {
 		if (action === "view") {
 			if (success.length === 0) {
 				interaction.reply({
-					content: `There are no users with the <@&${developerRole}> role`,
+					content: `There are no users with the <@&${selectedRole}> role`,
 					ephemeral: true
 				});
 				return;
@@ -126,7 +162,7 @@ module.exports = class RoleDevelopersCommand extends Command {
 			interaction.reply({
 				content: `There ${success.length === 1 ? "is" : "are"} **${success.length}** member${
 					success.length === 1 ? "" : "s"
-				} with the <@&${developerRole}> role: <@${success.join(">, <@")}>`,
+				} with the <@&${selectedRole}> role: <@${success.join(">, <@")}>`,
 				ephemeral: true
 			});
 			return;
@@ -145,8 +181,8 @@ module.exports = class RoleDevelopersCommand extends Command {
 
 		// Toggle the developer role for the specified user
 		function toggleRole(member, action) {
-			if (action === "Added") member.roles.add(developerRole);
-			else member.roles.remove(developerRole);
+			if (action === "Added") member.roles.add(selectedRole);
+			else member.roles.remove(selectedRole);
 			success.push(member.id);
 		}
 	}
