@@ -1,6 +1,7 @@
 const Command = require("../modules/commands/command");
 
-const { NDA_SESSIONS, TESTING_REQUESTS } = process.env;
+const { NDA_SESSIONS, TESTING_REQUESTS, NDA_TESTING_VC, ACCELERATOR_CHAT_VC, ACCELERATOR_SESSIONS } =
+	process.env;
 
 module.exports = class SessionCommand extends Command {
 	constructor(client) {
@@ -71,6 +72,7 @@ module.exports = class SessionCommand extends Command {
 		const formURL = interaction.options.getString("form_url");
 		const requestsChannel = await interaction.guild.channels.cache.get(TESTING_REQUESTS);
 		const testingRequest = await requestsChannel.messages.fetch(testingRequestID);
+		const timestampRegex = new RegExp(/<t:(\d+):F>/gims);
 
 		// Check if the message exists
 		if (!testingRequest) {
@@ -112,6 +114,8 @@ module.exports = class SessionCommand extends Command {
 		const embed = testingRequest.embeds[0];
 		let announcementChannel = null;
 
+		const startTimestamp = timestampRegex.exec(embed.description)[1] * 1000;
+
 		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
 		// Check whether it is too early to post the announcement
@@ -142,18 +146,26 @@ module.exports = class SessionCommand extends Command {
 		}
 
 		// Check the type of the test
+		let testingVC;
 		switch (embed.author.name) {
 			case "Public Test":
 				announcementChannel = config.channels.sessions;
+				testingVC = config.vcs.testing;
 				break;
 			case "NDA Verified Test":
 				announcementChannel = NDA_SESSIONS;
+				testingVC = NDA_TESTING_VC;
 				break;
+		}
+
+		if (embed.color === 0xe67e22) {
+			testingVC = ACCELERATOR_CHAT_VC;
+			announcementChannel = ACCELERATOR_SESSIONS;
 		}
 
 		// Check if the announcement channel is null
 		if (!announcementChannel) {
-			interaction.reply({ content: "Could not find the announcement channel", ephemeral: true });
+			interaction.reply({ content: "Couldn't find the announcement channel", ephemeral: true });
 		}
 
 		announcementChannel = interaction.guild.channels.cache.get(announcementChannel);
@@ -212,6 +224,26 @@ module.exports = class SessionCommand extends Command {
 		if (member) {
 			member.roles.add(config.roles.developer);
 			roleMessage = `\nThe developer role has been added to ${member}`;
+		}
+
+		if (type === "Notice Template") {
+			await interaction.guild.scheduledEvents.cache.forEach(async event => {
+				if (event.scheduledStartTimestamp === startTimestamp && event.channelId === testingVC) {
+					event.setName(embed.title);
+				}
+			});
+		} else if (type === "Start Template") {
+			await interaction.guild.scheduledEvents.cache.forEach(async event => {
+				if (event.scheduledStartTimestamp === startTimestamp && event.channelId === testingVC) {
+					event.setStatus("ACTIVE");
+				}
+			});
+		} else {
+			await interaction.guild.scheduledEvents.cache.forEach(async event => {
+				if (event.scheduledStartTimestamp === startTimestamp && event.channelId === testingVC) {
+					event.setStatus("COMPLETED");
+				}
+			});
 		}
 
 		// Send the confirmation message

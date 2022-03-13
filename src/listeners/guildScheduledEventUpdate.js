@@ -8,14 +8,14 @@ module.exports = class GuildScheduledEventUpdateEventListener extends EventListe
 		super(client, { event: "guildScheduledEventUpdate" });
 	}
 
-	async execute(oldEvent) {
-		if (oldEvent.isCompleted() || oldEvent.isCancelled()) {
+	async execute(oldEvent, newEvent) {
+		if (newEvent.status.match("ACTIVE|COMPLETED")) {
 			// prettier-ignore
-			oldEvent.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
+			newEvent.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
 				.then(async message => {
 					// Get the test in the message
 					// prettier-ignore
-					const replaceRegex = new RegExp(`\\n\\n>\\s[^\\n]+<t:${oldEvent.scheduledStartTimestamp / 1000}:F>\\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`, "gmis");
+					const replaceRegex = new RegExp(`\\n\\n>\\s[^\\n]+<t:${newEvent.scheduledStartTimestamp / 1000}:F>\\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`, "gmis");
 
 					// Remove the test from the message
 					message.edit({ content: message.content.replace(replaceRegex, "") });
