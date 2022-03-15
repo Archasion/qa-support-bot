@@ -46,7 +46,7 @@ module.exports = class FAQCommand extends Command {
 	async execute(interaction) {
 		const keyword = interaction.options.getString("keyword").toLowerCase();
 		const target = interaction.options.getUser("targeted_user");
-		const publicMessage = (await utils.isNDA(interaction.member)) && target;
+		const publicMessage = (await utils.isActive(interaction.member)) && target;
 
 		try {
 			// Send the FAQ message (content from tags.yaml)

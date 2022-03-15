@@ -26,6 +26,15 @@ module.exports = class DiscordUtils {
 	}
 
 	/**
+	 * Check if a guild member is an active tester
+	 * @param {GuildMember} member - the guild member
+	 * @returns {boolean}
+	 */
+	async isActive(member) {
+		return member.roles.cache.some(role => role.id === config.roles.active_tester);
+	}
+
+	/**
 	 * Check if a guild member is a moderator
 	 * @param {GuildMember} member - the guild member
 	 * @returns {boolean}
