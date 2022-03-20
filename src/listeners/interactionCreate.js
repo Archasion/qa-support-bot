@@ -65,7 +65,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				// Get the member ID from the embed footer
-				const memberID = interaction.message.embeds[0].footer.text.slice(0, -1).split("(")[1];
+				const memberID = interaction.message.embeds[0].author.name.slice(0, -1).split("(")[1];
 
 				// Fetch the member in the guild
 				let member;
