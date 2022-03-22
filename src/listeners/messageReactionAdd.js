@@ -221,7 +221,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 					type.split(" ")[0]
 				} team** on <t:${
 					timestamp / 1000
-				}:F> (Local Time) and have decided to approve the request, feel free to **contact** a staff member if you have any questions regarding your testing session.\n\nEvent URL:\nhttps://discord.com/${
+				}:F> (Local Time) and have decided to approve the request, feel free to **contact** a staff member if you have any questions regarding your testing session.\n\nEvent URL:\nhttps://discord.com/events/${
 					message.guild.id
 				}/${testing_session.id}`;
 
