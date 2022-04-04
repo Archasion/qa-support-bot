@@ -1,7 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
 
 const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
-const { MODERATION_CHAT, NDA_APPLICATIONS } = process.env;
+const { MODERATION_CHAT, NDA_APPLICATIONS, MESSAGE_LOGS } = process.env;
 
 module.exports = class MessageCreateEventListener extends EventListener {
 	constructor(client) {
@@ -10,6 +10,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
 	async execute(message) {
 		if (!message.guild) return;
+		const messageLogs = message.guild.channels.cache.get(MESSAGE_LOGS);
 
 		// #verify
 		if (message.channel.id === "436232260392452102") {
@@ -43,7 +44,33 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			message.attachments.forEach(attachment => {
 				const fileExtension = attachment.name.split(".").pop();
 
-				if (!whitelistedFileExtensions.includes(fileExtension)) message.delete();
+				if (!whitelistedFileExtensions.includes(fileExtension)) {
+					const embed = new MessageEmbed()
+
+						.setColor(config.colors.default_color)
+						.setAuthor({
+							name: message.author.tag,
+							iconURL: message.author.displayAvatarURL()
+						})
+						.setTitle("Message Deleted")
+						.setDescription(
+							`Message sent by ${message.member} deleted in <#${message.channel.id}>`
+						)
+						.addField({
+							name: "Reason",
+							value: `File extension not in the whitelist: \`${fileExtension}\``
+						})
+						.setFooter({
+							text: message.author.id,
+							iconURL: message.author.displayAvatarURL()
+						})
+						.setTimestamp();
+
+					messageLogs.send({ embeds: [embed] });
+
+					message.delete();
+					return;
+				}
 			});
 		}
 
