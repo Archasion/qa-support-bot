@@ -56,10 +56,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 						.setDescription(
 							`Message sent by ${message.member} deleted in <#${message.channel.id}>`
 						)
-						.addField({
-							name: "Reason",
-							value: `File extension not in the whitelist: \`${fileExtension}\``
-						})
+						.addField("Reason", `File extension not in the whitelist: \`${fileExtension}\``)
 						.setFooter({
 							text: message.author.id,
 							iconURL: message.author.displayAvatarURL()
