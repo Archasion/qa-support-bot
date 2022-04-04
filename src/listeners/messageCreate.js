@@ -58,7 +58,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 						)
 						.addField("Reason", `File extension not in the whitelist: \`${fileExtension}\``)
 						.setFooter({
-							text: message.author.id,
+							text: `ID: ${message.author.id}`,
 							iconURL: message.author.displayAvatarURL()
 						})
 						.setTimestamp();
