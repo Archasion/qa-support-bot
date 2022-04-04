@@ -31,6 +31,22 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			}
 		}
 
+		// Attachment filter
+		// prettier-ignore
+		const whitelistedFileExtensions = ["jpg", "jpeg", "png", "gif", "gifv", "webm", "mp4", "wav", "mp3", "ogg", "mov", "flac"];
+
+		if (
+			message.attachments.size > 0 &&
+			!message.author.bot &&
+			!(await utils.isStaff(message.member))
+		) {
+			message.attachments.forEach(attachment => {
+				const fileExtension = attachment.name.split(".").pop();
+
+				if (!whitelistedFileExtensions.includes(fileExtension)) message.delete();
+			});
+		}
+
 		if (message.channel.type === "GUILD_PUBLIC_THREAD") {
 			// ANCHOR Automatic deletion
 			if (message.channel.parent.id === config.channels.sessions) {
