@@ -4,9 +4,6 @@ const ms = require("ms");
 
 const { MessageEmbed } = require("discord.js");
 
-let isDuplicate = true;
-let uniqueID;
-
 module.exports = class RemindCommand extends Command {
 	constructor(client) {
 		super(client, {
@@ -42,6 +39,9 @@ module.exports = class RemindCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
+		let isDuplicate = true;
+		let uniqueID;
+
 		const reminderProfile = await Reminders.find({ author: interaction.user.id });
 
 		// Check if the user has reached the limit of 5 reminders
