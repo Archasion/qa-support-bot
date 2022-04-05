@@ -79,8 +79,20 @@ module.exports = class ResetReminderCommand extends Command {
 			// Get all reminders belonging to the user
 			const reminders = await Reminders.find({ author: interaction.user.id });
 
+			if (!reminders) {
+				interaction.reply({
+					content: "You do not have any reminders set",
+					ephemeral: true
+				});
+				return;
+			}
+
+			const reminderList = [];
+
 			// Go through each reminder and delete them
 			reminders.forEach(async reminder => {
+				reminderList.push(reminder.id);
+
 				clearTimeout(global[`reminder_${interaction.user.id}_${reminder.id}`]);
 				delete global[`reminder_${interaction.user.id}_${reminder.id}`];
 			});
@@ -90,7 +102,9 @@ module.exports = class ResetReminderCommand extends Command {
 
 			// Respond with confirmation
 			await interaction.reply({
-				content: "All reminders have been reset",
+				content: `Reminders with the following IDs have been reset: \`${reminderList.join(
+					"` `"
+				)}\``,
 				ephemeral: true
 			});
 		}
