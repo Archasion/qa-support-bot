@@ -16,7 +16,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		if (message.channel.id === "436232260392452102") {
 			if (await utils.isStaff(message.member)) return;
 			if (message.author.bot) return;
-			if (!message.content.toLowerCase().includes("!verify")) {
+			if (!message.content.match("^!(?:re|un)?verify$")) {
 				message
 					.reply({
 						content: "Please use `!verify` to verify your account.",
