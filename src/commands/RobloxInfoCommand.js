@@ -130,9 +130,6 @@ module.exports = class RobloxInfoCommand extends Command {
 				case 2:
 					agknowledgements.push("DevForum Regular");
 					break;
-				case 3:
-					agknowledgements.push("DevForum Editor");
-					break;
 				case 4:
 					agknowledgements.push("DevForum Leader");
 					break;
