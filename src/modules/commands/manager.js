@@ -240,7 +240,7 @@ module.exports = class CommandManager {
 			return interaction.reply({
 				embeds: [
 					new MessageEmbed()
-						.setColor(config.colors.error_color)
+						.setColor(config.colors.error)
 						.setTitle("Error")
 						.setDescription(
 							`You do not have the permissions required to use this command:\n${perms}`
