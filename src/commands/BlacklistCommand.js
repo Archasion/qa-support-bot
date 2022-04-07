@@ -119,7 +119,7 @@ module.exports = class BlacklistCommand extends Command {
 				await interaction.reply({
 					embeds: [
 						new MessageEmbed()
-							.setColor(config.colors.success_color)
+							.setColor(config.colors.success)
 							.setTitle(`Added ${type} to blacklist`)
 							.setDescription(description.join(""))
 					],
@@ -168,7 +168,7 @@ module.exports = class BlacklistCommand extends Command {
 				await interaction.reply({
 					embeds: [
 						new MessageEmbed()
-							.setColor(config.colors.success_color)
+							.setColor(config.colors.success)
 							.setTitle(`Removed ${type} from blacklist`)
 							.setDescription(description.join(""))
 					],
