@@ -3,9 +3,9 @@ debugging: false
 guild: "271337114384334848"
 
 colors:
-  default_color: "#E0DBEE"
-  success_color: "#84F584"
-  error_color: "#202020"
+  default: "#E0DBEE"
+  success: "#84F584"
+  error: "#202020"
   close_ticket: "#6b456b"
   change_topic: "#f5cd3d"
 
@@ -52,7 +52,7 @@ presence:
   duration: 60
   options:
     - type: PLAYING
-      activity: "/new-ticket"
+      activity: "/ticket create"
     - type: PLAYING
       activity: "with tickets"
     - type: WATCHING
