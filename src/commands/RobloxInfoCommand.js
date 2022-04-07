@@ -137,7 +137,7 @@ module.exports = class RobloxInfoCommand extends Command {
 
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setTitle(info.displayName)
 				.setURL(`https://www.roblox.com/users/${ID}/profile`)
 				.setThumbnail(

@@ -88,7 +88,7 @@ module.exports = class StatsCommand extends Command {
 
 		const embed = new MessageEmbed()
 
-			.setColor(config.colors.default_color)
+			.setColor(config.colors.default)
 			.setDescription(
 				`There ha${public_tests === 1 ? "s" : "ve"} been **${public_tests.format()}** test${
 					public_tests === 1 ? "" : "s"

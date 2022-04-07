@@ -24,7 +24,7 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setAuthor({
 					name: newMember.displayName,
 					iconURL: newMember.displayAvatarURL({ dynamic: true })

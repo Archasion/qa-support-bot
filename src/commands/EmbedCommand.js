@@ -241,7 +241,7 @@ module.exports = class EmbedCommand extends Command {
 				});
 			}
 		} else {
-			color = config.colors.default_color;
+			color = config.colors.default;
 		}
 
 		if (author_url) {

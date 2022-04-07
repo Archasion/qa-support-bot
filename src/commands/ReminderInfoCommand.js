@@ -51,7 +51,7 @@ module.exports = class ReminderInfoCommand extends Command {
 
 		// Construct the embed with the reminder information
 		const embed = new MessageEmbed()
-			.setColor(config.colors.default_color)
+			.setColor(config.colors.default)
 			.setAuthor({
 				name: interaction.member.displayName,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })

@@ -56,7 +56,7 @@ module.exports = class FAQCommand extends Command {
 				content: publicMessage ? `${target}` : null,
 				embeds: [
 					new MessageEmbed()
-						.setColor(config.colors.default_color)
+						.setColor(config.colors.default)
 						.setDescription(tags[keyword])
 						.setFooter({
 							text: `Invoked by ${interaction.member.displayName}`,

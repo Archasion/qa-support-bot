@@ -111,7 +111,7 @@ module.exports = class TicketCommand extends Command {
 
 				const embed = new MessageEmbed()
 
-					.setColor(config.colors.default_color)
+					.setColor(config.colors.default)
 					.setTitle(`Hello ${interaction.member.displayName}!`)
 					.setDescription(
 						"Thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#928087044671045652> and the <#928088826591719444> channels to see if they answer your question."

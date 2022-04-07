@@ -92,7 +92,7 @@ module.exports = class ReadyEventListener extends EventListener {
 						content: `<@${reminder.author}>`,
 						embeds: [
 							new MessageEmbed()
-								.setColor(config.colors.default_color)
+								.setColor(config.colors.default)
 								.setTitle("Reminder")
 								.setDescription(
 									`You asked me to give you a reminder <t:${reminder.start_time}:R> (<t:${reminder.start_time}:f>)`

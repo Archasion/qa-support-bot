@@ -69,7 +69,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		async function notifyStaff(message) {
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setAuthor({
 					name: `Reported against ${message.author.tag} (${message.author.id})`,
 					iconURL: message.author.displayAvatarURL({ dynamic: true })

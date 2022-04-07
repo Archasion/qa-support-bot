@@ -27,7 +27,7 @@ module.exports = class RemindersCommand extends Command {
 	async execute(interaction) {
 		// Get all reminders belonging to the user
 		const reminders = await Reminders.find({ author: interaction.user.id });
-		const embed = new MessageEmbed().setColor(config.colors.default_color).setTitle("Reminders");
+		const embed = new MessageEmbed().setColor(config.colors.default).setTitle("Reminders");
 
 		// Response for no reminders
 		if (reminders.length === 0) {

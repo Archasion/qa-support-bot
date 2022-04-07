@@ -71,7 +71,7 @@ module.exports = class HelpCommand extends Command {
 		await interaction.reply({
 			embeds: [
 				new MessageEmbed()
-					.setColor(config.colors.default_color)
+					.setColor(config.colors.default)
 					.setTitle("Help")
 					.setDescription(
 						"The commands you have access to are listed below. To create a ticket, type `/new-ticket`."

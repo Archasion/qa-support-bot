@@ -322,7 +322,7 @@ module.exports = class CommandManager {
 
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setAuthor({
 					name: interaction.user.tag,
 					iconURL: interaction.user.displayAvatarURL({ dynamic: true })

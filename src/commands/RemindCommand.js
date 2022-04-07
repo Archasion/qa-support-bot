@@ -85,7 +85,7 @@ module.exports = class RemindCommand extends Command {
 				content: interaction.member.toString(),
 				embeds: [
 					new MessageEmbed()
-						.setColor(config.colors.default_color)
+						.setColor(config.colors.default)
 						.setTitle("Reminder")
 						.setDescription(
 							`You asked me to give you a reminder <t:${start}:R> (<t:${start}:f>)`
@@ -103,7 +103,7 @@ module.exports = class RemindCommand extends Command {
 		await interaction.reply({
 			embeds: [
 				new MessageEmbed()
-					.setColor(config.colors.default_color)
+					.setColor(config.colors.default)
 					.setDescription(`Okay! I will remind you <t:${end}:R> (<t:${end}:f>)`)
 					.addField("Reminder", message)
 					.setFooter({ text: `Reminder ID: ${uniqueID}` })

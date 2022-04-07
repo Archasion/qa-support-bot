@@ -184,7 +184,7 @@ module.exports = class BlacklistCommand extends Command {
 					return interaction.reply({
 						embeds: [
 							new MessageEmbed()
-								.setColor(config.colors.default_color)
+								.setColor(config.colors.default)
 								.setTitle("Blacklisted members and roles")
 								.setDescription(
 									"There are no members or roles blacklisted. Type `/blacklist add` to add a member or role to the blacklist."
@@ -201,7 +201,7 @@ module.exports = class BlacklistCommand extends Command {
 				return interaction.reply({
 					embeds: [
 						new MessageEmbed()
-							.setColor(config.colors.default_color)
+							.setColor(config.colors.default)
 							.setTitle("Blacklisted members and roles")
 							.addField("Members", members.join("\n") || "None")
 							.addField("Roles", roles.join("\n") || "None")

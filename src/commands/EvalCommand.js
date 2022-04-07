@@ -47,7 +47,7 @@ module.exports = class EvalCommand extends Command {
 			});
 		}
 
-		const embed = new MessageEmbed().setColor(config.colors.default_color);
+		const embed = new MessageEmbed().setColor(config.colors.default);
 
 		try {
 			// Evaluate the code

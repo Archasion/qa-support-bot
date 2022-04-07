@@ -47,7 +47,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				if (!whitelistedFileExtensions.includes(fileExtension)) {
 					const embed = new MessageEmbed()
 
-						.setColor(config.colors.default_color)
+						.setColor(config.colors.default)
 						.setAuthor({
 							name: message.author.tag,
 							iconURL: message.author.displayAvatarURL()
@@ -152,7 +152,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		async function potentiallyUnderage() {
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setDescription(`${message.author} has been flagged.`)
 				.setFooter({
 					text: `ID: ${message.author.id}`,
@@ -183,7 +183,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		async function potentiallyUnderageNDA() {
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setDescription(`${message.author} has been flagged.`)
 				.setFooter({
 					text: `ID: ${message.author.id}`,
@@ -214,7 +214,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		async function leakingApplication() {
 			const embed = new MessageEmbed()
 
-				.setColor(config.colors.default_color)
+				.setColor(config.colors.default)
 				.setDescription(`${message.author} has been flagged.`)
 				.setFooter({
 					text: `ID: ${message.author.id}`,
