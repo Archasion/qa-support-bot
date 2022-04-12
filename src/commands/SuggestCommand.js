@@ -75,10 +75,15 @@ module.exports = class SuggestCommand extends Command {
 
 		// Send the suggestion
 		try {
-			channel.send({
-				content: mention[0] ? `<${mention.join("> <@&")}>` : null,
-				embeds: [embed]
-			});
+			channel
+				.send({
+					content: mention[0] ? `<${mention.join("> <@&")}>` : null,
+					embeds: [embed]
+				})
+				.then(message => {
+					message.react("284099057348247562");
+					message.react("284099017414148096");
+				});
 
 			interaction.reply({
 				content:
