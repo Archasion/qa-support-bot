@@ -63,7 +63,7 @@ module.exports = class SuggestCommand extends Command {
 
 			.setColor(config.colors.default)
 			.setAuthor({
-				name: `${interaction.author.tag} (${interaction.member.displayName})`,
+				name: `${interaction.user.tag} (${interaction.member.displayName})`,
 				iconURL: interaction.author.displayAvatarURL({ dynamic: true })
 			})
 			.setTitle(type)
