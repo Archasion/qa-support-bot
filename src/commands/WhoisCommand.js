@@ -14,7 +14,7 @@ module.exports = class WhoisCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			verified_only: true,
+			public_only: true,
 			options: [
 				{
 					name: "username",

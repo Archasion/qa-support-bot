@@ -106,7 +106,7 @@ module.exports = class CommandManager {
 					command.moderator_only ||
 					command.dev_only ||
 					command.manager_only ||
-					command.verified_only ||
+					command.public_only ||
 					command.active_only
 				) {
 					cmd_permissions.push({
@@ -150,7 +150,7 @@ module.exports = class CommandManager {
 					});
 				}
 
-				if (command.verified_only) {
+				if (command.public_only) {
 					cmd_permissions.push({
 						id: config.roles.public,
 						permission: true,

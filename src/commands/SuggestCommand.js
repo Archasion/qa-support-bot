@@ -12,7 +12,7 @@ module.exports = class SuggestCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			verified_only: true,
+			public_only: true,
 			options: [
 				{
 					name: "type",

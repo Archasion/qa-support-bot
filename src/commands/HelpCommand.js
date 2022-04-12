@@ -12,7 +12,7 @@ module.exports = class HelpCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			verified_only: true,
+			public_only: true,
 			permissions: [],
 			options: []
 		});
@@ -40,7 +40,7 @@ module.exports = class HelpCommand extends Command {
 			if (
 				(command.moderator_only && isModerator) ||
 				(command.manager_only && isManager) ||
-				(command.verified_only && isVerified) ||
+				(command.public_only && isVerified) ||
 				(command.nda_only && isNDA) ||
 				(command.dev_only && isDeveloper)
 			)
@@ -49,7 +49,7 @@ module.exports = class HelpCommand extends Command {
 			if (
 				!command.moderator_only &&
 				!command.manager_only &&
-				!command.verified_only &&
+				!command.public_only &&
 				!command.nda_only &&
 				!command.dev_only
 			)

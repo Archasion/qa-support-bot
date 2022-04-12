@@ -18,7 +18,7 @@ module.exports = class TicketCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			verified_only: true,
+			public_only: true,
 			options: [
 				{
 					description: "Create a new ticket",

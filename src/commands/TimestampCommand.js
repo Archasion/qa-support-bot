@@ -6,7 +6,7 @@ module.exports = class TimestampCommand extends Command {
 			name: "timestamp",
 			description: "Links to a website that builds timestamps.",
 			permissions: [],
-			verified_only: true,
+			public_only: true,
 			ignored: {
 				roles: [],
 				channels: [],

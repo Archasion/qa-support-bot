@@ -13,7 +13,7 @@ module.exports = class StatsCommand extends Command {
 				channels: [],
 				threads: []
 			},
-			verified_only: true,
+			public_only: true,
 			options: [
 				{
 					name: "time_period",

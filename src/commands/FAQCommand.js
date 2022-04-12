@@ -20,7 +20,7 @@ module.exports = class FAQCommand extends Command {
 				threads: []
 			},
 			cooldown: 5,
-			verified_only: true,
+			public_only: true,
 			options: [
 				{
 					name: "keyword",
