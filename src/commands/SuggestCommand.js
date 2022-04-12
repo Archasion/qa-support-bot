@@ -77,7 +77,7 @@ module.exports = class SuggestCommand extends Command {
 		try {
 			channel
 				.send({
-					content: mention[0] ? `<${mention.join("> <@&")}>` : null,
+					content: mention[0] ? `<@&${mention.join("> <@&")}>` : null,
 					embeds: [embed]
 				})
 				.then(message => {
