@@ -64,11 +64,11 @@ module.exports = class SuggestCommand extends Command {
 			.setColor(config.colors.default)
 			.setAuthor({
 				name: `${interaction.user.tag} (${interaction.member.displayName})`,
-				iconURL: interaction.author.displayAvatarURL({ dynamic: true })
+				iconURL: interaction.member.displayAvatarURL({ dynamic: true })
 			})
 			.setTitle(type)
 			.setDescription(suggestion)
-			.setFooter({ text: `ID: ${interaction.author.id}` })
+			.setFooter({ text: `ID: ${interaction.user.id}` })
 			.setTimestamp();
 
 		// Send the suggestion
