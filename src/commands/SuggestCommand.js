@@ -1,4 +1,6 @@
 const Command = require("../modules/commands/command");
+
+const { MODERATION_CHAT, BOT_FEEDBACK } = process.env;
 const { MessageEmbed } = require("discord.js");
 
 module.exports = class SuggestCommand extends Command {
@@ -22,7 +24,7 @@ module.exports = class SuggestCommand extends Command {
 					choices: [
 						{
 							name: "QA Utility Bot Feedback",
-							value: "bot test"
+							value: "bot"
 						}
 					]
 				},
@@ -49,7 +51,10 @@ module.exports = class SuggestCommand extends Command {
 		// Configuring the properties to meet the suggestion type
 		switch (type) {
 			case "bot":
-				channel = interaction.guild.members.cache.get(config.users.developers[0]);
+				channel = interaction.guild.channels.cache
+					.get(MODERATION_CHAT)
+					.threads.cache.get(BOT_FEEDBACK);
+
 				type = "QA Utility Bot Feedback";
 				break;
 		}
