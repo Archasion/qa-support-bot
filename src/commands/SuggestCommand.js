@@ -44,6 +44,7 @@ module.exports = class SuggestCommand extends Command {
 	 */
 	async execute(interaction) {
 		const suggestion = interaction.options.getString("suggestion");
+		const mention = [];
 
 		let type = interaction.options.getString("type");
 		let channel;
@@ -55,6 +56,7 @@ module.exports = class SuggestCommand extends Command {
 					.get(MODERATION_CHAT)
 					.threads.cache.get(BOT_FEEDBACK);
 
+				mention.push(config.roles.bot_developer);
 				type = "QA Utility Bot Feedback";
 				break;
 		}
@@ -73,7 +75,10 @@ module.exports = class SuggestCommand extends Command {
 
 		// Send the suggestion
 		try {
-			channel.send({ embeds: [embed] });
+			channel.send({
+				content: mention[0] ? `<${mention.join("> <@&")}>` : null,
+				embeds: [embed]
+			});
 
 			interaction.reply({
 				content:
