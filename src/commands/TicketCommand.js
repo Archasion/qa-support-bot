@@ -4,7 +4,6 @@ const Tickets = require("../mongodb/models/tickets");
 const {
 	EmbedBuilder,
 	MessageAttachment,
-	ChannelType,
 	TextInputBuilder,
 	TextInputStyle,
 	ActionRowBuilder,
@@ -12,8 +11,6 @@ const {
 } = require("discord.js");
 
 const { TICKET_LOGS } = process.env;
-
-let amount = 1;
 
 module.exports = class TicketCommand extends Command {
 	constructor(client) {
@@ -87,72 +84,25 @@ module.exports = class TicketCommand extends Command {
 						});
 						return;
 					}
-
-					// Get the ticket count
-					amount = (await Tickets.countDocuments()) + 1;
 				}
 
-				const ticketTopic = interaction.options.getString("topic").format();
-				const ticketParent = interaction.guild.channels.cache.get(config.channels.tickets);
+				const newTextInput = new TextInputBuilder()
+					.setCustomId("topic")
+					.setLabel("Briefly describe your issue/question")
+					.setStyle(TextInputStyle.Paragraph)
+					.setMinLength(8)
+					.setMaxLength(1024)
+					.setRequired(true)
+					.setPlaceholder("Describe your issue/question...")
+					.setValue("");
 
-				// Create the ticket
-				const createTicket = await ticketParent.threads.create({
-					name: `Ticket ${amount}`,
-					autoArchiveDuration: 10080, // 7 Days
-					type: ChannelType.GuildPrivateThread,
-					invitable: false,
-					reason: `New ticket: ${ticketTopic}`
-				});
+				const newActionRow = new ActionRowBuilder().addComponents(newTextInput);
+				const newModal = new ModalBuilder()
+					.setCustomId("create_ticket")
+					.setTitle("Create a Support Ticket")
+					.addComponents(newActionRow);
 
-				// Send the confirmation message
-				interaction.reply({
-					content: `Your ticket has been created: <#${createTicket.id}> (\`${createTicket.name}\`)`,
-					ephemeral: true
-				});
-
-				const embed = new EmbedBuilder()
-
-					.setColor(config.colors.default)
-					.setTitle(`Hello ${interaction.member.displayName}!`)
-					.setDescription(
-						"Thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#928087044671045652> and the <#928088826591719444> channels to see if they answer your question."
-					)
-					.addFields({ name: "Topic", value: ticketTopic });
-
-				// Send the opening message
-				const openingMessage = await createTicket.send({
-					content: `<@&${config.roles.manager}> <@&${config.roles.moderator}> ${interaction.member}`,
-					embeds: [embed]
-				});
-
-				// Store the ticket information in the database
-				await Tickets.create({
-					count: amount,
-					thread: createTicket.id,
-					author: interaction.user.id,
-					topic: ticketTopic,
-					first_message: openingMessage.id,
-					active: true
-				});
-
-				const logCreateTicket = new EmbedBuilder()
-
-					.setColor(config.colors.success)
-					.setAuthor({
-						name: `${interaction.user.tag} (${interaction.member.displayName})`,
-						iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-					})
-					.setDescription(
-						`Created a new ticket: <#${createTicket.id}> (\`${createTicket.name}\`)`
-					)
-					.addFields({ name: "Topic", value: `\`\`\`${ticketTopic}\`\`\`` })
-					.setFooter({ text: `ID: ${interaction.user.id}` })
-					.setTimestamp();
-
-				// Log the action
-				interaction.guild.channels.cache.get(TICKET_LOGS).send({
-					embeds: [logCreateTicket]
-				});
+				interaction.showModal(newModal);
 				break;
 
 			// ANCHOR Close ticket
