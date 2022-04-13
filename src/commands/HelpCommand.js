@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = class HelpCommand extends Command {
 	constructor(client) {
@@ -70,13 +70,13 @@ module.exports = class HelpCommand extends Command {
 		// Respond with the list of commands
 		await interaction.reply({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setColor(config.colors.default)
 					.setTitle("Help")
 					.setDescription(
 						"The commands you have access to are listed below. To create a ticket, type `/new-ticket`."
 					)
-					.addField("Commands", listOfCommands.join("\n"))
+					.addFields({ name: "Commands", value: listOfCommands.join("\n") })
 			],
 			ephemeral: true
 		});

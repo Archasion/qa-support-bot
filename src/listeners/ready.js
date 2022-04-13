@@ -3,7 +3,7 @@ const EventListener = require("../modules/listeners/listener");
 const Reminders = require("../mongodb/models/reminders");
 
 const { TESTING_REQUESTS, ACTIVE_TESTING_REQUESTS } = process.env;
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = class ReadyEventListener extends EventListener {
 	constructor(client) {
@@ -69,13 +69,13 @@ module.exports = class ReadyEventListener extends EventListener {
 				await guild.channels.cache.get(reminder.channel).send({
 					content: `<@${reminder.author}>`,
 					embeds: [
-						new MessageEmbed()
+						new EmbedBuilder()
 							.setColor(config.colors.error)
 							.setTitle("Reminder [LATE]")
 							.setDescription(
 								`You asked me to give you a reminder <t:${reminder.start_time}:R> (<t:${reminder.start_time}:f>)`
 							)
-							.addField("Reminder", reminder.text)
+							.addFields({ name: "Reminder", value: reminder.text })
 							.setFooter({ text: `${now - reminderTime}ms late` })
 					]
 				});
@@ -91,13 +91,13 @@ module.exports = class ReadyEventListener extends EventListener {
 					await guild.channels.cache.get(reminder.channel).send({
 						content: `<@${reminder.author}>`,
 						embeds: [
-							new MessageEmbed()
+							new EmbedBuilder()
 								.setColor(config.colors.default)
 								.setTitle("Reminder")
 								.setDescription(
 									`You asked me to give you a reminder <t:${reminder.start_time}:R> (<t:${reminder.start_time}:f>)`
 								)
-								.addField("Reminder", reminder.text)
+								.addFields({ name: "Reminder", value: reminder.text })
 						]
 					});
 

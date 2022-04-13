@@ -33,7 +33,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 		}
 
 		// Check if the interaction is a slash command
-		if (interaction.isCommand()) {
+		if (interaction.isChatInputCommand()) {
 			this.client.commands.handle(interaction);
 		}
 

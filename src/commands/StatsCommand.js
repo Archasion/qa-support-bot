@@ -1,4 +1,4 @@
-const { MessageEmbed, MessageButton, MessageActionRow } = require("discord.js");
+const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
 const Command = require("../modules/commands/command");
 const Tests = require("../mongodb/models/tests");
 
@@ -86,7 +86,7 @@ module.exports = class StatsCommand extends Command {
 			date: { $gt: timeGreaterThan, $lt: timeLowerThan }
 		});
 
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 
 			.setColor(config.colors.default)
 			.setDescription(
@@ -116,9 +116,11 @@ module.exports = class StatsCommand extends Command {
 
 			embed.description = null;
 			embed.setTitle(`Testing Statistics (${date})`);
-			embed.addField("Public Tests", public_tests.format(), true);
-			embed.addField("NDA Tests", NDATests.format(), true);
-			embed.addField("Accelerator Tests", acceleratorTests.format(), true);
+			embed.addFields(
+				{ name: "Public Tests", value: public_tests.format(), inline: true },
+				{ name: "NDA Tests", value: NDATests.format(), inline: true },
+				{ name: "Accelerator Tests", value: acceleratorTests.format(), inline: true }
+			);
 			embed.setFooter({ text: `Total Tests: ${total.format()}` });
 		}
 
@@ -127,11 +129,11 @@ module.exports = class StatsCommand extends Command {
 		// Add the option to download a .csv file containing all of the information if used by staff
 		if (await utils.isStaff(interaction.member)) {
 			download = [
-				new MessageActionRow().addComponents(
-					new MessageButton()
+				new ActionRowBuilder().addComponents(
+					new ButtonBuilder({})
 						.setCustomId(`download_test_csv_${option}`)
 						.setLabel("Download CSV")
-						.setStyle("DANGER")
+						.setStyle(ButtonStyle.Danger)
 				)
 			];
 		}

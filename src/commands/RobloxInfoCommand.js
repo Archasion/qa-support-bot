@@ -2,7 +2,7 @@
 const Command = require("../modules/commands/command");
 const roblox = require("noblox.js");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -135,7 +135,7 @@ module.exports = class RobloxInfoCommand extends Command {
 					break;
 			}
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setTitle(info.displayName)

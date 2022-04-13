@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = class EvalCommand extends Command {
 	constructor(client) {
@@ -47,7 +47,7 @@ module.exports = class EvalCommand extends Command {
 			});
 		}
 
-		const embed = new MessageEmbed().setColor(config.colors.default);
+		const embed = new EmbedBuilder().setColor(config.colors.default);
 
 		try {
 			// Evaluate the code

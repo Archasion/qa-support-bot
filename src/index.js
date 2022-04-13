@@ -31,7 +31,7 @@ const CommandManager = require("./modules/commands/manager");
 const DiscordUtils = require("./utils/discord");
 const Cryptr = require("cryptr");
 
-const { Client, Intents } = require("discord.js");
+const { Client, GatewayIntentBits, Partials } = require("discord.js");
 
 /**
  * The Discord client
@@ -42,21 +42,21 @@ class Bot extends Client {
 	constructor() {
 		super({
 			intents: [
-				Intents.FLAGS.GUILDS,
-				Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-				Intents.FLAGS.GUILD_MEMBERS,
-				Intents.FLAGS.GUILD_MESSAGES,
-				Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-				Intents.FLAGS.GUILD_VOICE_STATES,
-				Intents.FLAGS.GUILD_SCHEDULED_EVENTS
+				GatewayIntentBits.Guilds,
+				GatewayIntentBits.GuildMessageReactions,
+				GatewayIntentBits.GuildMembers,
+				GatewayIntentBits.GuildMessages,
+				GatewayIntentBits.GuildVoiceStates,
+				GatewayIntentBits.GuildScheduledEvents
 			],
 			partials: [
-				"CHANNEL",
-				"MESSAGE",
-				"REACTION",
-				"VOICE",
-				"GUILD_SCHEDULED_EVENT",
-				"GUILD_MEMBER"
+				Partials.Channel,
+				Partials.Message,
+				Partials.Reaction,
+				Partials.GuildMember,
+				Partials.ThreadMember,
+				Partials.GuildScheduledEvent,
+				Partials.User
 			],
 			presence: DiscordUtils.selectPresence()
 		});

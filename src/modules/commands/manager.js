@@ -1,4 +1,4 @@
-const { Collection, MessageEmbed } = require("discord.js");
+const { Collection, EmbedBuilder, ApplicationCommandPermissionType } = require("discord.js");
 
 const fs = require("fs");
 const { path } = require("../../utils/fs");
@@ -83,7 +83,7 @@ module.exports = class CommandManager {
 				blacklist.push({
 					id: obj.id,
 					permission: false,
-					type: "USER"
+					type: ApplicationCommandPermissionType.User
 				});
 			});
 
@@ -91,7 +91,7 @@ module.exports = class CommandManager {
 				blacklist.push({
 					id: obj.id,
 					permission: false,
-					type: "ROLE"
+					type: ApplicationCommandPermissionType.Role
 				});
 			});
 
@@ -112,7 +112,7 @@ module.exports = class CommandManager {
 					cmd_permissions.push({
 						id: guild.roles.everyone.id,
 						permission: false,
-						type: "ROLE"
+						type: ApplicationCommandPermissionType.Role
 					});
 				}
 
@@ -120,7 +120,7 @@ module.exports = class CommandManager {
 					cmd_permissions.push({
 						id: config.roles.nda_verified,
 						permission: true,
-						type: "ROLE"
+						type: ApplicationCommandPermissionType.Role
 					});
 				}
 
@@ -128,7 +128,7 @@ module.exports = class CommandManager {
 					cmd_permissions.push({
 						id: config.roles.moderator,
 						permission: true,
-						type: "ROLE"
+						type: ApplicationCommandPermissionType.Role
 					});
 				}
 
@@ -136,7 +136,7 @@ module.exports = class CommandManager {
 					cmd_permissions.push({
 						id: config.roles.manager,
 						permission: true,
-						type: "ROLE"
+						type: ApplicationCommandPermissionType.Role
 					});
 				}
 
@@ -145,7 +145,7 @@ module.exports = class CommandManager {
 						cmd_permissions.push({
 							id: user_id,
 							permission: true,
-							type: "USER"
+							type: ApplicationCommandPermissionType.User
 						});
 					});
 				}
@@ -154,7 +154,7 @@ module.exports = class CommandManager {
 					cmd_permissions.push({
 						id: config.roles.public,
 						permission: true,
-						type: "ROLE"
+						type: ApplicationCommandPermissionType.Role
 					});
 				}
 
@@ -162,7 +162,7 @@ module.exports = class CommandManager {
 					cmd_permissions.push({
 						id: config.roles.active_tester,
 						permission: true,
-						type: "ROLE"
+						type: ApplicationCommandPermissionType.Role
 					});
 				}
 
@@ -205,18 +205,18 @@ module.exports = class CommandManager {
 
 		const bot_permissions = interaction.guild.me.permissionsIn(interaction.channel);
 		const required_bot_permissions = [
-			"ATTACH_FILES",
-			"EMBED_LINKS",
-			"MANAGE_CHANNELS",
-			"MANAGE_MESSAGES"
+			"AttachFiles",
+			"EmbedLinks",
+			"ManageChannels",
+			"ManageMessages"
 		];
 
 		if (!bot_permissions.has(required_bot_permissions)) {
 			const perms = required_bot_permissions.map(p => `\`${p}\``).join(", ");
-			if (bot_permissions.has("EMBED_LINKS")) {
+			if (bot_permissions.has("EmbedLinks")) {
 				await interaction.reply({
 					embeds: [
-						new MessageEmbed()
+						new EmbedBuilder()
 							.setColor("ORANGE")
 							.setTitle("⚠️")
 							.setDescription(`QA Support requires the following permissions:\n${perms}`)
@@ -239,7 +239,7 @@ module.exports = class CommandManager {
 			const perms = command.permissions.map(p => `\`${p}\``).join(", ");
 			return interaction.reply({
 				embeds: [
-					new MessageEmbed()
+					new EmbedBuilder()
 						.setColor(config.colors.error)
 						.setTitle("Error")
 						.setDescription(
@@ -320,7 +320,7 @@ module.exports = class CommandManager {
 			log.commands(`Executing "${command.name}" command (invoked by ${interaction.user.tag})`);
 			await command.execute(interaction); // Execute the command
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setAuthor({
@@ -340,8 +340,8 @@ module.exports = class CommandManager {
 			log.error(e);
 			await interaction.reply({
 				embeds: [
-					new MessageEmbed()
-						.setColor("ORANGE")
+					new EmbedBuilder()
+						.setColor(config.colors.error)
 						.setTitle("⚠️")
 						.setDescription(
 							"An unexpected error occurred during command execution.\nPlease ask an administrator to check the console output / logs for details."

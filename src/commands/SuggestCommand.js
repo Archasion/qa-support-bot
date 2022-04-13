@@ -1,7 +1,7 @@
 const Command = require("../modules/commands/command");
 
 const { MODERATION_CHAT, BOT_FEEDBACK } = process.env;
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = class SuggestCommand extends Command {
 	constructor(client) {
@@ -61,7 +61,7 @@ module.exports = class SuggestCommand extends Command {
 				break;
 		}
 
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 
 			.setColor(config.colors.default)
 			.setAuthor({

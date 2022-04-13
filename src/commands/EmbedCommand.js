@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 
-const { MessageActionRow, MessageButton, MessageEmbed } = require("discord.js");
+const { ActionRowBuilder, ButtonBuilder, EmbedBuilder, ButtonStyle } = require("discord.js");
 
 module.exports = class EmbedCommand extends Command {
 	constructor(client) {
@@ -169,7 +169,7 @@ module.exports = class EmbedCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const embed = new MessageEmbed();
+		const embed = new EmbedBuilder();
 
 		// Preset values
 		const customEmbed = {
@@ -290,8 +290,8 @@ module.exports = class EmbedCommand extends Command {
 
 			// Add the button onto the message
 			actionRow.push(
-				new MessageActionRow().addComponents(
-					new MessageButton().setLabel(button).setStyle("LINK").setURL(button_url)
+				new ActionRowBuilder().addComponents(
+					new ButtonBuilder({}).setLabel(button).setStyle(ButtonStyle.Link).setURL(button_url)
 				)
 			);
 		}
@@ -408,15 +408,27 @@ module.exports = class EmbedCommand extends Command {
 		}
 
 		if (field_name_1 && field_value_1) {
-			embed.addField(field_name_1, field_value_1.format(), field_inline_1);
+			embed.addFields({
+				name: field_name_1,
+				value: field_value_1.format(),
+				inline: field_inline_1
+			});
 		}
 
 		if (field_name_2 && field_value_2) {
-			embed.addField(field_name_2, field_value_2.format(), field_inline_2);
+			embed.addFields({
+				name: field_name_2,
+				value: field_value_2.format(),
+				inline: field_inline_2
+			});
 		}
 
 		if (field_name_3 && field_value_3) {
-			embed.addField(field_name_3, field_value_3.format(), field_inline_3);
+			embed.addFields({
+				name: field_name_3,
+				value: field_value_3.format(),
+				inline: field_inline_3
+			});
 		}
 
 		if (footer) {

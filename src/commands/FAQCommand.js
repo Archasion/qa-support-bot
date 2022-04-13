@@ -2,7 +2,7 @@ const Command = require("../modules/commands/command");
 const yaml = require("js-yaml");
 const fs = require("fs");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const { path } = require("../utils/fs");
 
 const fileContents = fs.readFileSync(path("/src/tags.yaml"), "utf8");
@@ -55,7 +55,7 @@ module.exports = class FAQCommand extends Command {
 			interaction.reply({
 				content: publicMessage ? `${target}` : null,
 				embeds: [
-					new MessageEmbed()
+					new EmbedBuilder()
 						.setColor(config.colors.default)
 						.setDescription(tags[keyword])
 						.setFooter({

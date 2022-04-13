@@ -2,7 +2,7 @@
 const Command = require("../modules/commands/command");
 const Tickets = require("../mongodb/models/tickets");
 
-const { MessageEmbed, MessageAttachment } = require("discord.js");
+const { EmbedBuilder, MessageAttachment } = require("discord.js");
 const { TICKET_LOGS } = process.env;
 
 let amount = 1;
@@ -109,14 +109,14 @@ module.exports = class TicketCommand extends Command {
 					ephemeral: true
 				});
 
-				const embed = new MessageEmbed()
+				const embed = new EmbedBuilder()
 
 					.setColor(config.colors.default)
 					.setTitle(`Hello ${interaction.member.displayName}!`)
 					.setDescription(
 						"Thank you for creating a ticket. A member of staff will soon be available to assist you. Please make sure you **read** the <#928087044671045652> and the <#928088826591719444> channels to see if they answer your question."
 					)
-					.addField("Topic", ticketTopic);
+					.addFields({ name: "Topic", value: ticketTopic });
 
 				// Send the opening message
 				const openingMessage = await createTicket.send({
@@ -134,7 +134,7 @@ module.exports = class TicketCommand extends Command {
 					active: true
 				});
 
-				const logCreateTicket = new MessageEmbed()
+				const logCreateTicket = new EmbedBuilder()
 
 					.setColor(config.colors.success)
 					.setAuthor({
@@ -144,7 +144,7 @@ module.exports = class TicketCommand extends Command {
 					.setDescription(
 						`Created a new ticket: <#${createTicket.id}> (\`${createTicket.name}\`)`
 					)
-					.addField("Topic", `\`\`\`${ticketTopic}\`\`\``)
+					.addFields({ name: "Topic", value: `\`\`\`${ticketTopic}\`\`\`` })
 					.setFooter({ text: `ID: ${interaction.user.id}` })
 					.setTimestamp();
 
@@ -195,7 +195,7 @@ module.exports = class TicketCommand extends Command {
 					.get(config.channels.tickets)
 					.threads.cache.get(closeTicket.thread);
 
-				const logCloseTicket = new MessageEmbed()
+				const logCloseTicket = new EmbedBuilder()
 
 					.setColor(0xf55f5f) // Red
 					.setAuthor({
@@ -302,7 +302,7 @@ module.exports = class TicketCommand extends Command {
 				message.embeds[0].fields[0].value = info;
 				message.edit({ content: message.content, embeds: message.embeds });
 
-				const logging_embed = new MessageEmbed()
+				const logging_embed = new EmbedBuilder()
 
 					.setColor(config.colors.change_topic)
 					.setAuthor({
@@ -312,8 +312,10 @@ module.exports = class TicketCommand extends Command {
 					.setDescription(
 						`Changed the topic of a ticket: <#${ticket.thread}> (\`${thread.name}\`)`
 					)
-					.addField("Old Topic", `\`\`\`${oldTopic}\`\`\``)
-					.addField("New Topic", `\`\`\`${info}\`\`\``)
+					.addFields(
+						{ name: "Old Topic", value: `\`\`\`${oldTopic}\`\`\`` },
+						{ name: "New Topic", value: `\`\`\`${info}\`\`\`` }
+					)
 					.setFooter({ text: `ID: ${interaction.user.id}` })
 					.setTimestamp();
 

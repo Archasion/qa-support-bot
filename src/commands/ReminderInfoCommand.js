@@ -1,7 +1,7 @@
 const Reminders = require("../mongodb/models/reminders");
 const Command = require("../modules/commands/command");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = class ReminderInfoCommand extends Command {
 	constructor(client) {
@@ -50,7 +50,7 @@ module.exports = class ReminderInfoCommand extends Command {
 		}
 
 		// Construct the embed with the reminder information
-		const embed = new MessageEmbed()
+		const embed = new EmbedBuilder()
 			.setColor(config.colors.default)
 			.setAuthor({
 				name: interaction.member.displayName,

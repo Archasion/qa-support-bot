@@ -1,7 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
 const roblox = require("noblox.js");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 const { MODERATION_CHAT } = process.env;
 
 module.exports = class GuildMemberUpdateEventListener extends EventListener {
@@ -22,7 +22,7 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 				.get(MODERATION_CHAT)
 				.threads.cache.get("943409502835867668");
 
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setAuthor({

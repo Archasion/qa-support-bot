@@ -1,7 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
 const Tests = require("./../mongodb/models/tests");
 
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 
 const {
 	TESTING_REQUESTS,
@@ -67,14 +67,14 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 		// Alert staff
 		async function notifyStaff(message) {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setAuthor({
 					name: `Reported against ${message.author.tag} (${message.author.id})`,
 					iconURL: message.author.displayAvatarURL({ dynamic: true })
 				})
-				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
+				.addFields({ name: "Message Content", value: `\`\`\`${message.content}\`\`\`` })
 				.setFooter({
 					text: `Reported by ${user.tag} (${user.id})`,
 					iconURL: user.displayAvatarURL({ dynamic: true })
@@ -82,23 +82,26 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				.setTimestamp();
 
 			// Moderation buttons
-			const quickActions = new MessageActionRow().addComponents(
-				new MessageButton()
+			const quickActions = new ActionRowBuilder().addComponents(
+				new ButtonBuilder({})
 					.setCustomId("delete_message")
 					.setLabel("Mark as Resolved")
-					.setStyle("SUCCESS"),
-				new MessageButton()
+					.setStyle(ButtonStyle.Success),
+				new ButtonBuilder({})
 					.setCustomId("10_timeout_mod_alert")
 					.setLabel("Timeout [10m]")
-					.setStyle("DANGER"),
-				new MessageButton()
+					.setStyle(ButtonStyle.Danger),
+				new ButtonBuilder({})
 					.setCustomId("30_timeout_mod_alert")
 					.setLabel("Timeout [30m]")
-					.setStyle("DANGER")
+					.setStyle(ButtonStyle.Danger)
 			);
 
-			const messageURL = new MessageActionRow().addComponents(
-				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
+			const messageURL = new ActionRowBuilder().addComponents(
+				new ButtonBuilder({})
+					.setURL(message.url)
+					.setLabel("Jump to Message")
+					.setStyle(ButtonStyle.Link)
 			);
 
 			// Alert staff

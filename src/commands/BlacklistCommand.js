@@ -1,7 +1,7 @@
 const Command = require("../modules/commands/command");
 
 const { RoleBlacklist, MemberBlacklist } = require("../mongodb/models/blacklist");
-const { MessageEmbed, Role } = require("discord.js");
+const { EmbedBuilder, Role } = require("discord.js");
 
 module.exports = class BlacklistCommand extends Command {
 	constructor(client) {
@@ -72,7 +72,7 @@ module.exports = class BlacklistCommand extends Command {
 				if (type === "member" && (await utils.isStaff(memberOrRole))) {
 					return interaction.reply({
 						embeds: [
-							new MessageEmbed()
+							new EmbedBuilder()
 								.setColor(config.colors.error)
 								.setTitle("You can't blacklist this member")
 								.setDescription(
@@ -118,7 +118,7 @@ module.exports = class BlacklistCommand extends Command {
 				// Send the confirmation message
 				await interaction.reply({
 					embeds: [
-						new MessageEmbed()
+						new EmbedBuilder()
 							.setColor(config.colors.success)
 							.setTitle(`Added ${type} to blacklist`)
 							.setDescription(description.join(""))
@@ -167,7 +167,7 @@ module.exports = class BlacklistCommand extends Command {
 				// Send the confirmation message
 				await interaction.reply({
 					embeds: [
-						new MessageEmbed()
+						new EmbedBuilder()
 							.setColor(config.colors.success)
 							.setTitle(`Removed ${type} from blacklist`)
 							.setDescription(description.join(""))
@@ -183,7 +183,7 @@ module.exports = class BlacklistCommand extends Command {
 				if (blacklist.members.length === 0 && blacklist.roles.length === 0) {
 					return interaction.reply({
 						embeds: [
-							new MessageEmbed()
+							new EmbedBuilder()
 								.setColor(config.colors.default)
 								.setTitle("Blacklisted members and roles")
 								.setDescription(
@@ -200,11 +200,19 @@ module.exports = class BlacklistCommand extends Command {
 				// Respond with the list of blacklisted members and/or roles
 				return interaction.reply({
 					embeds: [
-						new MessageEmbed()
+						new EmbedBuilder()
 							.setColor(config.colors.default)
 							.setTitle("Blacklisted members and roles")
-							.addField("Members", members.join("\n") || "None")
-							.addField("Roles", roles.join("\n") || "None")
+							.addFields(
+								{
+									name: "Members",
+									value: members.join("\n") || "None"
+								},
+								{
+									name: "Roles",
+									value: roles.join("\n") || "None"
+								}
+							)
 					],
 					ephemeral: true
 				});

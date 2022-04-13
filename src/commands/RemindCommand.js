@@ -2,7 +2,7 @@ const Command = require("../modules/commands/command");
 const Reminders = require("../mongodb/models/reminders");
 const ms = require("ms");
 
-const { MessageEmbed } = require("discord.js");
+const { EmbedBuilder } = require("discord.js");
 
 module.exports = class RemindCommand extends Command {
 	constructor(client) {
@@ -84,13 +84,13 @@ module.exports = class RemindCommand extends Command {
 			await interaction.channel.send({
 				content: interaction.member.toString(),
 				embeds: [
-					new MessageEmbed()
+					new EmbedBuilder()
 						.setColor(config.colors.default)
 						.setTitle("Reminder")
 						.setDescription(
 							`You asked me to give you a reminder <t:${start}:R> (<t:${start}:f>)`
 						)
-						.addField("Reminder", message)
+						.addFields({ name: "Reminder", value: message })
 				]
 			});
 
@@ -102,10 +102,10 @@ module.exports = class RemindCommand extends Command {
 		// Send confirmation message
 		await interaction.reply({
 			embeds: [
-				new MessageEmbed()
+				new EmbedBuilder()
 					.setColor(config.colors.default)
 					.setDescription(`Okay! I will remind you <t:${end}:R> (<t:${end}:f>)`)
-					.addField("Reminder", message)
+					.addFields({ name: "Reminder", value: message })
 					.setFooter({ text: `Reminder ID: ${uniqueID}` })
 			],
 			ephemeral: true

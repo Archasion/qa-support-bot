@@ -1,6 +1,6 @@
 const EventListener = require("../modules/listeners/listener");
 
-const { MessageEmbed, MessageActionRow, MessageButton } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
 const { MODERATION_CHAT, NDA_APPLICATIONS, MESSAGE_LOGS } = process.env;
 
 module.exports = class MessageCreateEventListener extends EventListener {
@@ -45,7 +45,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 				const fileExtension = attachment.name.split(".").pop();
 
 				if (!whitelistedFileExtensions.includes(fileExtension)) {
-					const embed = new MessageEmbed()
+					const embed = new EmbedBuilder()
 
 						.setColor(config.colors.default)
 						.setAuthor({
@@ -56,7 +56,10 @@ module.exports = class MessageCreateEventListener extends EventListener {
 						.setDescription(
 							`Message sent by ${message.member} deleted in <#${message.channel.id}>`
 						)
-						.addField("Reason", `File extension not in the whitelist: \`${fileExtension}\``)
+						.addFields({
+							name: "Reason",
+							value: `File extension not in the whitelist: \`${fileExtension}\``
+						})
 						.setFooter({
 							text: `ID: ${message.author.id}`,
 							iconURL: message.author.displayAvatarURL()
@@ -150,7 +153,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		 * @function
 		 */
 		async function potentiallyUnderage() {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setDescription(`${message.author} has been flagged.`)
@@ -158,12 +161,17 @@ module.exports = class MessageCreateEventListener extends EventListener {
 					text: `ID: ${message.author.id}`,
 					iconURL: message.author.displayAvatarURL({ dynamic: true })
 				})
-				.addField("Reason", "Potentially Underage")
-				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
+				.addFields(
+					{ name: "Reason", value: "Potentially Underage" },
+					{ name: "Message Content", value: `\`\`\`${message.content}\`\`\`` }
+				)
 				.setTimestamp();
 
-			const messageURL = new MessageActionRow().addComponents(
-				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
+			const messageURL = new ActionRowBuilder().addComponents(
+				new ButtonBuilder({})
+					.setURL(message.url)
+					.setLabel("Jump to Message")
+					.setStyle(ButtonStyle.Link)
 			);
 
 			// Send the alert
@@ -181,7 +189,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		 * @function
 		 */
 		async function potentiallyUnderageNDA() {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setDescription(`${message.author} has been flagged.`)
@@ -189,12 +197,17 @@ module.exports = class MessageCreateEventListener extends EventListener {
 					text: `ID: ${message.author.id}`,
 					iconURL: message.author.displayAvatarURL({ dynamic: true })
 				})
-				.addField("Reason", "Potentially Underage for NDA")
-				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
+				.addFields(
+					{ name: "Reason", value: "Potentially Underage for NDA" },
+					{ name: "Message Content", value: `\`\`\`${message.content}\`\`\`` }
+				)
 				.setTimestamp();
 
-			const messageURL = new MessageActionRow().addComponents(
-				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
+			const messageURL = new ActionRowBuilder().addComponents(
+				new ButtonBuilder({})
+					.setURL(message.url)
+					.setLabel("Jump to Message")
+					.setStyle(ButtonStyle.Link)
 			);
 
 			// Send the alert
@@ -212,7 +225,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 		 * @function
 		 */
 		async function leakingApplication() {
-			const embed = new MessageEmbed()
+			const embed = new EmbedBuilder()
 
 				.setColor(config.colors.default)
 				.setDescription(`${message.author} has been flagged.`)
@@ -220,12 +233,17 @@ module.exports = class MessageCreateEventListener extends EventListener {
 					text: `ID: ${message.author.id}`,
 					iconURL: message.author.displayAvatarURL({ dynamic: true })
 				})
-				.addField("Reason", "Leaking the NDA application")
-				.addField("Message Content", `\`\`\`${message.content}\`\`\``)
+				.addFields(
+					{ name: "Reason", value: "Leaking the NDA Application" },
+					{ name: "Message Content", value: `\`\`\`${message.content}\`\`\`` }
+				)
 				.setTimestamp();
 
-			const messageURL = new MessageActionRow().addComponents(
-				new MessageButton().setURL(message.url).setLabel("Jump to Message").setStyle("LINK")
+			const messageURL = new ActionRowBuilder().addComponents(
+				new ButtonBuilder({})
+					.setURL(message.url)
+					.setLabel("Jump to Message")
+					.setStyle(ButtonStyle.Link)
 			);
 
 			// Send the alert
