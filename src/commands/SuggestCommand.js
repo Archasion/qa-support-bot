@@ -1,7 +1,6 @@
 const Command = require("../modules/commands/command");
 
-const { MODERATION_CHAT, BOT_FEEDBACK } = process.env;
-const { EmbedBuilder } = require("discord.js");
+const { ModalBuilder, ActionRowBuilder, TextInputBuilder, TextInputStyle } = require("discord.js");
 
 module.exports = class SuggestCommand extends Command {
 	constructor(client) {
@@ -27,12 +26,6 @@ module.exports = class SuggestCommand extends Command {
 							value: "bot"
 						}
 					]
-				},
-				{
-					description: "Your suggestion",
-					name: "suggestion",
-					required: true,
-					type: Command.option_types.STRING
 				}
 			]
 		});
@@ -43,58 +36,30 @@ module.exports = class SuggestCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const suggestion = interaction.options.getString("suggestion");
-		const mention = [];
-
 		let type = interaction.options.getString("type");
-		let channel;
+		let customID;
 
 		// Configuring the properties to meet the suggestion type
 		switch (type) {
 			case "bot":
-				channel = interaction.guild.channels.cache
-					.get(MODERATION_CHAT)
-					.threads.cache.get(BOT_FEEDBACK);
-
-				mention.push(config.roles.bot_developer);
 				type = "QA Utility Bot Feedback";
+				customID = "bot_suggestion";
 				break;
 		}
 
-		const embed = new EmbedBuilder()
+		const textInput = new TextInputBuilder()
+			.setCustomId("suggestion")
+			.setLabel("What is your suggestion?")
+			.setStyle(TextInputStyle.Paragraph)
+			.setMinLength(8)
+			.setMaxLength(1024)
+			.setRequired(true)
+			.setPlaceholder("Enter your suggestion...")
+			.setValue("");
 
-			.setColor(config.colors.default)
-			.setAuthor({
-				name: `${interaction.user.tag} (${interaction.member.displayName})`,
-				iconURL: interaction.member.displayAvatarURL({ dynamic: true })
-			})
-			.setTitle(type)
-			.setDescription(suggestion)
-			.setFooter({ text: `ID: ${interaction.user.id}` })
-			.setTimestamp();
+		const actionRow = new ActionRowBuilder().addComponents(textInput);
+		const modal = new ModalBuilder().setCustomId(customID).setTitle(type).addComponents(actionRow);
 
-		// Send the suggestion
-		try {
-			channel
-				.send({
-					content: mention[0] ? `<@&${mention.join("> <@&")}>` : null,
-					embeds: [embed]
-				})
-				.then(message => {
-					message.react("284099057348247562");
-					message.react("284099017414148096");
-				});
-
-			interaction.reply({
-				content:
-					"We have received your feedback, thank you for trying to help us improve the community!",
-				ephemeral: true
-			});
-		} catch {
-			interaction.reply({
-				content: `An error has occured while the bot was trying to process the suggestion, please contact a <@${config.roles.moderator}> or a <@${config.roles.manager}> if this keeps happening`,
-				ephemeral: true
-			});
-		}
+		interaction.showModal(modal);
 	}
 };

@@ -1,7 +1,8 @@
 const EventListener = require("../modules/listeners/listener");
 const Tests = require("./../mongodb/models/tests");
 
-const { MessageAttachment } = require("discord.js");
+const { MODERATION_CHAT, BOT_FEEDBACK } = process.env;
+const { MessageAttachment, EmbedBuilder } = require("discord.js");
 const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
 
 module.exports = class InteractionCreateEventListener extends EventListener {
@@ -35,6 +36,41 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 		// Check if the interaction is a slash command
 		if (interaction.isChatInputCommand()) {
 			this.client.commands.handle(interaction);
+		} else if (interaction.isModalSubmit()) {
+			switch (interaction.customId) {
+				case "bot_suggestion":
+					const suggestion = interaction.fields.getTextInputValue("suggestion");
+					const thread = interaction.guild.channels.cache
+						.get(MODERATION_CHAT)
+						.threads.cache.get(BOT_FEEDBACK);
+
+					const embed = new EmbedBuilder()
+
+						.setColor(config.colors.default)
+						.setAuthor({
+							name: `${interaction.user.tag} (${interaction.member.displayName})`,
+							iconURL: interaction.member.displayAvatarURL({ dynamic: true })
+						})
+						.setTitle("QA Utility Bot Feedback")
+						.setDescription(suggestion)
+						.setFooter({ text: `ID: ${interaction.user.id}` })
+						.setTimestamp();
+
+					thread
+						.send({
+							content: `<@&${config.roles.bot_developer}>`,
+							embeds: [embed]
+						})
+						.then(message => {
+							message.react("284099057348247562");
+							message.react("284099017414148096");
+						});
+
+					interaction.reply({
+						content: "We have received your suggestion!",
+						ephemeral: true
+					});
+			}
 		}
 
 		// Check if the interaction is a button

@@ -21,6 +21,7 @@ globals:
 rules:
   no-negated-condition: off
   capitalized-comments: off
+  no-case-declarations: off
   no-warning-comments: off
   operator-linebreak: off
   no-useless-return: off
