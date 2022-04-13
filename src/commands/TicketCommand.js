@@ -58,14 +58,7 @@ module.exports = class TicketCommand extends Command {
 					name: "topic",
 					description: "Change the topic of a ticket",
 					type: Command.option_types.SUB_COMMAND,
-					options: [
-						{
-							description: "The new ticket topic",
-							name: "new_topic",
-							required: true,
-							type: Command.option_types.STRING
-						}
-					]
+					options: []
 				}
 			]
 		});
