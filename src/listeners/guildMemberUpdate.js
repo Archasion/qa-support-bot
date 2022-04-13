@@ -36,7 +36,7 @@ module.exports = class GuildMemberUpdateEventListener extends EventListener {
 			try {
 				// Get their Roblox profile (if applicable)
 				const ID = await roblox.getIdFromUsername(newMember.displayName);
-				embed.description += `\nRoblox Account: [${newMember.displayName}](https://roblox.com/users/${ID}/profile)`;
+				embed.data.description += `\nRoblox Account: [${newMember.displayName}](https://roblox.com/users/${ID}/profile)`;
 			} catch {
 				log.error("Couldn't find user");
 			}

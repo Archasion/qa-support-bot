@@ -114,7 +114,7 @@ module.exports = class StatsCommand extends Command {
 				date: { $gt: timeGreaterThan, $lt: timeLowerThan }
 			});
 
-			embed.description = null;
+			embed.data.description = null;
 			embed.setTitle(`Testing Statistics (${date})`);
 			embed.addFields(
 				{ name: "Public Tests", value: public_tests.format(), inline: true },

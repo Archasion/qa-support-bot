@@ -126,10 +126,10 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				const platformRegex = new RegExp(/🖥(.+)/gims);
 
 				const embed = message.embeds[0];
-				const gameTitle = embed.title;
+				const gameTitle = embed.data.title;
 				const type = embed.author.name;
-				const timestamp = timestampRegex.exec(embed.description)[1] * 1000;
-				const platforms = platformRegex.exec(embed.description)[1];
+				const timestamp = timestampRegex.exec(embed.data.description)[1] * 1000;
+				const platforms = platformRegex.exec(embed.data.description)[1];
 				const testType = type.split(" ")[0].toLowerCase();
 
 				// Check if the event exists
@@ -144,7 +144,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				// Respond if the event exists
 				await events.forEach(event => {
 					if (
-						(event.name === type || event.name === embed.title) &&
+						(event.name === type || event.name === embed.data.title) &&
 						event.startTime === timestamp
 					) {
 						discussionThread.send(
@@ -163,11 +163,11 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				let emoji = "";
 
 				// Set the emoji and store the test in the database
-				if (embed.color === 0xe67e22) {
+				if (embed.data.color === 0xe67e22) {
 					await await Tests.create({
 						name: gameTitle,
 						type: "accelerator",
-						url: embed.url,
+						url: embed.data.url,
 						date: new Date(timestamp)
 					});
 
@@ -182,7 +182,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				await Tests.create({
 					name: gameTitle,
 					type: testType,
-					url: embed.url,
+					url: embed.data.url,
 					date: new Date(timestamp)
 				});
 
@@ -209,14 +209,14 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				let member;
 
 				// Fetch the game developer
-				if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
+				if (embed.data.color === 0xe67e22 || embed.data.color === 0xffffff) {
 					const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
-					const userID = userIDRegex.exec(embed.fields[0].value)[1];
+					const userID = userIDRegex.exec(embed.data.fields[0].value)[1];
 
 					member = await message.guild.members.fetch(userID);
 				} else {
 					const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
-					const username = usernameRegex.exec(embed.footer.text)[1];
+					const username = usernameRegex.exec(embed.data.footer.text)[1];
 
 					member = await message.guild.members.search({ query: username });
 					member = await member.first();

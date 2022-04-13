@@ -115,15 +115,15 @@ module.exports = class SessionCommand extends Command {
 		const embed = testingRequest.embeds[0];
 		let announcementChannel = null;
 
-		const startTimestamp = timestampRegex.exec(embed.description)[1] * 1000;
+		const startTimestamp = timestampRegex.exec(embed.data.description)[1] * 1000;
 
-		let announcement = `Testing has concluded on **${embed.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
+		let announcement = `Testing has concluded on **${embed.data.title}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`;
 
 		// Check whether it is too early to post the announcement
 		if (type) {
 			try {
 				// Get the announcement
-				announcement = embed.fields;
+				announcement = embed.data.fields;
 				if (!forceAnnounce) {
 					announcement = announcement
 						.filter(
@@ -159,7 +159,7 @@ module.exports = class SessionCommand extends Command {
 				break;
 		}
 
-		if (embed.color === 0xe67e22) {
+		if (embed.data.color === 0xe67e22) {
 			testingVC = ACCELERATOR_CHAT_VC;
 			announcementChannel = ACCELERATOR_SESSIONS;
 		}
@@ -195,10 +195,10 @@ module.exports = class SessionCommand extends Command {
 			// Check if a thread is requested for the start announcement
 			if (type === "Start Template" && createThread) {
 				await message.startThread({
-					name: embed.title,
+					name: embed.data.title,
 					autoArchiveDuration: 4320, // 3 Days
 					type: ChannelType.GuildPublicThread,
-					reason: `Testing has begun for ${embed.title}`
+					reason: `Testing has begun for ${embed.data.title}`
 				});
 			}
 		});
@@ -208,14 +208,14 @@ module.exports = class SessionCommand extends Command {
 		let roleMessage = "";
 		if (type === "Start Template") {
 			// Fetch the game developer
-			if (embed.color === 0xe67e22 || embed.color === 0xffffff) {
+			if (embed.data.color === 0xe67e22 || embed.data.color === 0xffffff) {
 				const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
-				const userID = userIDRegex.exec(embed.fields[0].value)[1];
+				const userID = userIDRegex.exec(embed.data.fields[0].value)[1];
 
 				member = await testingRequest.guild.members.fetch(userID);
 			} else {
 				const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
-				const username = usernameRegex.exec(embed.footer.text)[1];
+				const username = usernameRegex.exec(embed.data.footer.text)[1];
 
 				member = await testingRequest.guild.members.search({ query: username });
 				member = await member.first();
@@ -230,7 +230,7 @@ module.exports = class SessionCommand extends Command {
 		if (type === "Notice Template") {
 			await interaction.guild.scheduledEvents.cache.forEach(async event => {
 				if (event.scheduledStartTimestamp === startTimestamp && event.channelId === testingVC) {
-					event.setName(embed.title);
+					event.setName(embed.data.title);
 				}
 			});
 		} else if (type === "Start Template") {

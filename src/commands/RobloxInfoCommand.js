@@ -148,20 +148,20 @@ module.exports = class RobloxInfoCommand extends Command {
 						testerInGroups !== 1 ? "s" : ""
 					}`
 				)
-				.setFields([
+				.setFields(
 					{ name: "Friends", value: info.friendCount.format(), inline: true },
 					{ name: "Followers", value: info.followerCount.format(), inline: true },
 					{ name: "Following", value: info.followingCount.format(), inline: true },
 					{ name: "In Groups", value: inGroups.toString(), inline: true },
 					{ name: "Creation Date", value: `<t:${accountCreationTimestamp}:d>`, inline: true },
 					{ name: "Created", value: `<t:${accountCreationTimestamp}:R>`, inline: true }
-				])
+				)
 				.setFooter({ text: `ID: ${ID}` })
 				.setTimestamp();
 
 			// Add the "About Me" description to a field (if applicable)
 			if (info.blurb) {
-				embed.fields.push({
+				embed.data.fields.push({
 					name: "Description",
 					value: `${info.blurb.slice(0, 400)}...`,
 					inline: false
@@ -170,7 +170,7 @@ module.exports = class RobloxInfoCommand extends Command {
 
 			// Add the agknowledgements to a field (if applicable)
 			if (agknowledgements[0]) {
-				embed.fields.push({
+				embed.data.fields.push({
 					name: "Acknowledgements",
 					value: `• ${agknowledgements.join("\n• ")}`,
 					inline: true
@@ -178,7 +178,8 @@ module.exports = class RobloxInfoCommand extends Command {
 			}
 
 			await interaction.editReply({ embeds: [embed] });
-		} catch {
+		} catch (e) {
+			console.log(e);
 			interaction.editReply({
 				content: "The username could not be resolved.",
 				ephemeral: true
