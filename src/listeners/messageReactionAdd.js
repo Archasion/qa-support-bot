@@ -60,7 +60,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				const check = alertThread.messages.cache.filter(
 					alert_message =>
 						(alert_message.embeds[0]
-							? alert_message.embeds[0].footer.text.includes(message.author.id)
+							? alert_message.embeds[0].data.footer.text.includes(message.author.id)
 							: false) &&
 						alert_message.createdTimestamp > Date.now() - 600000 &&
 						alert_message.author.bot

@@ -1,8 +1,16 @@
-/* eslint-disable no-case-declarations */
 const Command = require("../modules/commands/command");
 const Tickets = require("../mongodb/models/tickets");
 
-const { EmbedBuilder, MessageAttachment, ChannelType } = require("discord.js");
+const {
+	EmbedBuilder,
+	MessageAttachment,
+	ChannelType,
+	TextInputBuilder,
+	TextInputStyle,
+	ActionRowBuilder,
+	ModalBuilder
+} = require("discord.js");
+
 const { TICKET_LOGS } = process.env;
 
 let amount = 1;
@@ -254,84 +262,24 @@ module.exports = class TicketCommand extends Command {
 
 			// ANCHOR Change ticket topic
 			case "topic":
-				// Get the ticket
-				const ticket = await Tickets.findOne({
-					author: interaction.user.id,
-					active: true
-				});
+				const textInput = new TextInputBuilder()
+					.setCustomId("new_topic")
+					.setLabel("What is the new topic?")
+					.setStyle(TextInputStyle.Paragraph)
+					.setMinLength(8)
+					.setMaxLength(1024)
+					.setRequired(true)
+					.setPlaceholder("Enter the new topic...")
+					.setValue("");
 
-				// Check if the ticket exists
-				if (!ticket) {
-					interaction.reply({
-						content: "You do not have any active tickets",
-						ephemeral: true
-					});
-					return;
-				}
+				const actionRow = new ActionRowBuilder().addComponents(textInput);
+				const modal = new ModalBuilder()
+					.setCustomId("ticket_topic_change")
+					.setTitle("Change your ticket's topic")
+					.addComponents(actionRow);
 
-				const info = interaction.options.getString("new_topic").format();
-
-				// Check if the topic is the same
-				if (ticket.topic === info) {
-					interaction.reply({
-						content: "The topic is already set to this",
-						ephemeral: true
-					});
-					return;
-				}
-
-				const thread = await interaction.guild.channels.cache
-					.get(config.channels.tickets)
-					.threads.cache.get(ticket.thread);
-
-				// Update first message
-				let message;
-				try {
-					message = await thread.messages.fetch(ticket.first_message);
-				} catch {
-					interaction.reply({
-						content: "The original message with the topic could not be edited",
-						ephemeral: true
-					});
-					return;
-				}
-
-				const oldTopic = message.embeds[0].fields[0].value;
-
-				// Update the message embed
-				message.embeds[0].fields[0].value = info;
-				message.edit({ content: message.content, embeds: message.embeds });
-
-				const logging_embed = new EmbedBuilder()
-
-					.setColor(config.colors.change_topic)
-					.setAuthor({
-						name: `${interaction.user.tag} (${interaction.member.displayName})`,
-						iconURL: interaction.user.displayAvatarURL({ dynamic: true })
-					})
-					.setDescription(
-						`Changed the topic of a ticket: <#${ticket.thread}> (\`${thread.name}\`)`
-					)
-					.addFields(
-						{ name: "Old Topic", value: `\`\`\`${oldTopic}\`\`\`` },
-						{ name: "New Topic", value: `\`\`\`${info}\`\`\`` }
-					)
-					.setFooter({ text: `ID: ${interaction.user.id}` })
-					.setTimestamp();
-
-				// Log the action
-				interaction.guild.channels.cache.get(TICKET_LOGS).send({
-					embeds: [logging_embed]
-				});
-
-				// Update database
-				await Tickets.updateOne({ _id: ticket._id }, { $set: { topic: info } });
-
-				// Send the confirmation message
-				interaction.reply({
-					content: `Set the topic of <#${ticket.thread}> to:\n\`\`\`${info}\`\`\``,
-					ephemeral: true
-				});
+				interaction.showModal(modal);
+				break;
 		}
 	}
 };

@@ -138,7 +138,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 
 		// Application validation [Active Tester]
 		if (message.channel.id === NDA_APPLICATIONS && message.author.bot) {
-			const username = message.embeds[0].author.name;
+			const username = message.embeds[0].data.author.name;
 			try {
 				let member = await message.guild.members.search({ query: username });
 				member = member.first();

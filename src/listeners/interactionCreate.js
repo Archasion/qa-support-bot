@@ -1,8 +1,9 @@
 const EventListener = require("../modules/listeners/listener");
+const Tickets = require("../mongodb/models/tickets");
 const Tests = require("./../mongodb/models/tests");
 
-const { MODERATION_CHAT, BOT_FEEDBACK } = process.env;
 const { MessageAttachment, EmbedBuilder } = require("discord.js");
+const { MODERATION_CHAT, BOT_FEEDBACK, TICKET_LOGS } = process.env;
 const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
 
 module.exports = class InteractionCreateEventListener extends EventListener {
@@ -70,6 +71,89 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 						content: "We have received your suggestion!",
 						ephemeral: true
 					});
+
+					break;
+
+				case "ticket_topic_change":
+					// Get the ticket
+					const ticket = await Tickets.findOne({
+						author: interaction.user.id,
+						active: true
+					});
+
+					// Check if the ticket exists
+					if (!ticket) {
+						interaction.reply({
+							content: "You do not have any active tickets",
+							ephemeral: true
+						});
+						return;
+					}
+
+					const info = interaction.fields.getTextInputValue("new_topic").format();
+
+					// Check if the topic is the same
+					if (ticket.topic === info) {
+						interaction.reply({
+							content: "The topic is already set to this",
+							ephemeral: true
+						});
+						return;
+					}
+
+					const ticketThread = await interaction.guild.channels.cache
+						.get(config.channels.tickets)
+						.threads.cache.get(ticket.thread);
+
+					// Update first message
+					let message;
+					try {
+						message = await ticketThread.messages.fetch(ticket.first_message);
+					} catch {
+						interaction.reply({
+							content: "The original message with the topic could not be edited",
+							ephemeral: true
+						});
+						return;
+					}
+
+					const oldTopic = message.embeds[0].data.fields[0].value;
+
+					// Update the message embed
+					message.embeds[0].data.fields[0].value = info;
+					message.edit({ content: message.content, embeds: message.embeds });
+
+					const logging_embed = new EmbedBuilder()
+
+						.setColor(config.colors.change_topic)
+						.setAuthor({
+							name: `${interaction.user.tag} (${interaction.member.displayName})`,
+							iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+						})
+						.setDescription(
+							`Changed the topic of a ticket: <#${ticket.thread}> (\`${ticketThread.name}\`)`
+						)
+						.addFields(
+							{ name: "Old Topic", value: `\`\`\`${oldTopic}\`\`\`` },
+							{ name: "New Topic", value: `\`\`\`${info}\`\`\`` }
+						)
+						.setFooter({ text: `ID: ${interaction.user.id}` })
+						.setTimestamp();
+
+					// Log the action
+					interaction.guild.channels.cache.get(TICKET_LOGS).send({
+						embeds: [logging_embed]
+					});
+
+					// Update database
+					await Tickets.updateOne({ _id: ticket._id }, { $set: { topic: info } });
+
+					// Send the confirmation message
+					interaction.reply({
+						content: `Set the topic of <#${ticket.thread}> to:\n\`\`\`${info}\`\`\``,
+						ephemeral: true
+					});
+					break;
 			}
 		}
 
@@ -101,7 +185,9 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				// Get the member ID from the embed footer
-				const memberID = interaction.message.embeds[0].author.name.slice(0, -1).split("(")[1];
+				const memberID = interaction.message.embeds[0].data.author.name
+					.slice(0, -1)
+					.split("(")[1];
 
 				// Fetch the member in the guild
 				let member;
@@ -136,7 +222,10 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				const duration = parseInt(customID.slice(0, 2));
 				const reason = `(By ${interaction.user.tag} (${
 					interaction.user.id
-				})) Reason: "${interaction.message.embeds[0].fields[0].value.replaceAll("```", "")}"`;
+				})) Reason: "${interaction.message.embeds[0].data.fields[0].value.replaceAll(
+					"```",
+					""
+				)}"`;
 
 				try {
 					// Timeout the member
