@@ -33,14 +33,14 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		// No-mic for public VC
 		if (oldState === publicVC || oldState === publicTestingVC) {
 			await publicNoMic.permissionOverwrites.create(user, {
-				SEND_MESSAGES: true
+				SendMessages: true
 			});
 		} else hideChannel(publicNoMic);
 
 		// No-mic for NDA VC
 		if (oldState === NDA_CHAT_VC || oldState === NDA_TESTING_VC || oldState === VERIFIED_STAGE) {
 			await NDANoMic.permissionOverwrites.create(user, {
-				SEND_MESSAGES: true
+				SendMessages: true
 			});
 		} else hideChannel(NDANoMic);
 	}

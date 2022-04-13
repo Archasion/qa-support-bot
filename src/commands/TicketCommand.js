@@ -2,7 +2,7 @@
 const Command = require("../modules/commands/command");
 const Tickets = require("../mongodb/models/tickets");
 
-const { EmbedBuilder, MessageAttachment, ThreadChannelTypes } = require("discord.js");
+const { EmbedBuilder, MessageAttachment, ChannelType } = require("discord.js");
 const { TICKET_LOGS } = process.env;
 
 let amount = 1;
@@ -98,7 +98,7 @@ module.exports = class TicketCommand extends Command {
 				const createTicket = await ticketParent.threads.create({
 					name: `Ticket ${amount}`,
 					autoArchiveDuration: 10080, // 7 Days
-					type: ThreadChannelTypes.GuildPrivateThread,
+					type: ChannelType.GuildPrivateThread,
 					invitable: false,
 					reason: `New ticket: ${ticketTopic}`
 				});

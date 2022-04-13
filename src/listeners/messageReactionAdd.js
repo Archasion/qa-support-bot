@@ -1,7 +1,14 @@
 const EventListener = require("../modules/listeners/listener");
 const Tests = require("./../mongodb/models/tests");
 
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, GuildScheduledEventEntityType, PrivacyLevel, ThreadChannelTypes } = require("discord.js");
+const {
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType,
+	GuildScheduledEventPrivacyLevel
+} = require("discord.js");
 
 const {
 	TESTING_REQUESTS,
@@ -181,8 +188,8 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				// Create the event
 				const testing_session = await message.guild.scheduledEvents.create({
-					privacyLevel: PrivacyLevel.GuildOnly,
-					entityType: GuildScheduledEventEntityType.Voice,
+					privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
+					entityType: ChannelType.GuildVoice,
 					name: type,
 					channel: message.guild.channels.cache.get(channel),
 					scheduledStartTime: new Date(timestamp).toISOString(),
@@ -242,7 +249,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						.create({
 							name: gameTitle,
 							autoArchiveDuration: 1440, // 1 Day
-							type: ThreadChannelTypes.GuildPrivateThread,
+							type: ChannelType.GuildPrivateThread,
 							invitable: false,
 							reason: "Unable to message author regarding a testing request."
 						})

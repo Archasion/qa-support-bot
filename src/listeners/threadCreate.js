@@ -1,4 +1,5 @@
 const EventListener = require("../modules/listeners/listener");
+const { ChannelType } = require("discord.js");
 
 module.exports = class ThreadCreateEventListener extends EventListener {
 	constructor(client) {
@@ -7,7 +8,10 @@ module.exports = class ThreadCreateEventListener extends EventListener {
 
 	async execute(thread) {
 		// Check if the public thread is created in session announcements
-		if (thread.parent.id === config.channels.sessions && thread.type === "GUILD_PUBLIC_THREAD") {
+		if (
+			thread.parent.id === config.channels.sessions &&
+			thread.type === ChannelType.GuildPublicThread
+		) {
 			// Change the cooldown and send the opening message
 			setTimeout(() => {
 				thread.setRateLimitPerUser(60); // 1 minute

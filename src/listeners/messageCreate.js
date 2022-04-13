@@ -1,6 +1,12 @@
 const EventListener = require("../modules/listeners/listener");
 
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require("discord.js");
+const {
+	EmbedBuilder,
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	ChannelType
+} = require("discord.js");
 const { MODERATION_CHAT, NDA_APPLICATIONS, MESSAGE_LOGS } = process.env;
 
 module.exports = class MessageCreateEventListener extends EventListener {
@@ -74,7 +80,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			});
 		}
 
-		if (message.channel.type === "GUILD_PUBLIC_THREAD") {
+		if (message.channel.type === ChannelType.GuildPublicThread) {
 			// ANCHOR Automatic deletion
 			if (message.channel.parent.id === config.channels.sessions) {
 				// Sentence includes word(s)

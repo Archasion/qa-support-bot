@@ -2,7 +2,7 @@ const Command = require("../modules/commands/command");
 
 const { NDA_SESSIONS, TESTING_REQUESTS, NDA_TESTING_VC, ACCELERATOR_CHAT_VC, ACCELERATOR_SESSIONS } =
 	process.env;
-const { ThreadChannelTypes } = require("discord.js");
+const { ChannelType } = require("discord.js");
 
 module.exports = class SessionCommand extends Command {
 	constructor(client) {
@@ -197,7 +197,7 @@ module.exports = class SessionCommand extends Command {
 				await message.startThread({
 					name: embed.title,
 					autoArchiveDuration: 4320, // 3 Days
-					type: ThreadChannelTypes.GuildPublicThread,
+					type: ChannelType.GuildPublicThread,
 					reason: `Testing has begun for ${embed.title}`
 				});
 			}
