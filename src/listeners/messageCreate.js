@@ -50,7 +50,7 @@ module.exports = class MessageCreateEventListener extends EventListener {
 			message.attachments.forEach(attachment => {
 				const fileExtension = attachment.name.split(".").pop();
 
-				if (!whitelistedFileExtensions.includes(fileExtension)) {
+				if (!whitelistedFileExtensions.includes(fileExtension.toLowerCase())) {
 					const embed = new EmbedBuilder()
 
 						.setColor(config.colors.default)
