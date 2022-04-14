@@ -1,6 +1,6 @@
 const Command = require("../modules/commands/command");
 
-const { NDA_SESSIONS, TESTING_REQUESTS, NDA_TESTING_VC, ACCELERATOR_CHAT_VC, ACCELERATOR_SESSIONS } =
+const { NDA_SESSIONS, TESTING_REQUESTS, NDA_TESTING_VC, ACCELERATOR_TESTING_VC, ACCELERATOR_SESSIONS } =
 	process.env;
 const { ChannelType } = require("discord.js");
 
@@ -160,7 +160,7 @@ module.exports = class SessionCommand extends Command {
 		}
 
 		if (embed.data.color === 0xe67e22) {
-			testingVC = ACCELERATOR_CHAT_VC;
+			testingVC = ACCELERATOR_TESTING_VC;
 			announcementChannel = ACCELERATOR_SESSIONS;
 		}
 

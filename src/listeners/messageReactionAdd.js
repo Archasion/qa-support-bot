@@ -15,7 +15,7 @@ const {
 	MODERATION_CHAT,
 	ACTIVE_TESTING_REQUESTS,
 	NDA_TESTING_VC,
-	ACCELERATOR_CHAT_VC,
+	ACCELERATOR_TESTING_VC,
 	MODERATION_ALERTS,
 	REQUEST_DISCUSSION_THREAD
 } = process.env;
@@ -171,7 +171,7 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 						date: new Date(timestamp)
 					});
 
-					channel = ACCELERATOR_CHAT_VC;
+					channel = ACCELERATOR_TESTING_VC;
 					emoji = "<:accelerator:941804781830283396> ";
 				} else if (type === "NDA Verified Test") {
 					channel = NDA_TESTING_VC;
