@@ -3,8 +3,17 @@ const Tickets = require("../mongodb/models/tickets");
 const Tests = require("./../mongodb/models/tests");
 
 const { MODERATION_CHAT, BOT_FEEDBACK, TICKET_LOGS } = process.env;
-const { MessageAttachment, EmbedBuilder, ChannelType } = require("discord.js");
 const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
+
+const {
+	MessageAttachment,
+	EmbedBuilder,
+	ChannelType,
+	TextInputBuilder,
+	ActionRowBuilder,
+	ModalBuilder,
+	TextInputStyle
+} = require("discord.js");
 
 module.exports = class InteractionCreateEventListener extends EventListener {
 	constructor(client) {
@@ -236,6 +245,43 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 				}
 
 				await interaction.message.delete();
+			}
+
+			// Prompt the ticket creation modal
+			else if (customID === "prompt_ticket_create") {
+				if ((await Tickets.countDocuments()) !== 0) {
+					const checkLimit = await Tickets.findOne({
+						author: interaction.user.id,
+						active: true
+					});
+
+					// Check if the user has an active ticket
+					if (checkLimit) {
+						interaction.reply({
+							content: `You already have an active ticket: <#${checkLimit.thread}>`,
+							ephemeral: true
+						});
+						return;
+					}
+				}
+
+				const newTextInput = new TextInputBuilder()
+					.setCustomId("topic")
+					.setLabel("Briefly describe your issue/question")
+					.setStyle(TextInputStyle.Paragraph)
+					.setMinLength(8)
+					.setMaxLength(1024)
+					.setRequired(true)
+					.setPlaceholder("Describe your issue/question...")
+					.setValue("");
+
+				const newActionRow = new ActionRowBuilder().addComponents(newTextInput);
+				const newModal = new ModalBuilder()
+					.setCustomId("create_ticket")
+					.setTitle("Create a Support Ticket")
+					.addComponents(newActionRow);
+
+				interaction.showModal(newModal);
 			}
 
 			// Timeout the user (if used by staff)
