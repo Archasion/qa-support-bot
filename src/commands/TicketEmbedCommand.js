@@ -55,7 +55,7 @@ module.exports = class TicketEmbedCommand extends Command {
 
 			.setCustomId("prompt_ticket_create")
 			.setLabel("Create a Ticket")
-			.setStyle(ButtonStyle.Secondary);
+			.setStyle(ButtonStyle.Primary);
 
 		const actionRow = new ActionRowBuilder().addComponents(button);
 
