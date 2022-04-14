@@ -47,7 +47,7 @@ module.exports = class TicketEmbedCommand extends Command {
 				},
 				{
 					name: "Still need support?",
-					value: "If you have read everything above and you still need support, you can create a new ticket by clicking the button below or using the following command:\n\n`/ticket create (a brief description of your issue)`"
+					value: "If you have read everything above and you still need support, you can create a new ticket by clicking the button below or using the following command:\n\n`/ticket create`"
 				}
 			);
 
