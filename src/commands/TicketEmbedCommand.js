@@ -1,7 +1,7 @@
 const Command = require("../modules/commands/command");
 const { EmbedBuilder, ButtonBuilder, ActionRowBuilder, ButtonStyle } = require("discord.js");
 
-module.exports = class FAQCommand extends Command {
+module.exports = class TicketEmbedCommand extends Command {
 	constructor(client) {
 		super(client, {
 			name: "ticket-embed",
