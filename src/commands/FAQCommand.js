@@ -44,32 +44,25 @@ module.exports = class FAQCommand extends Command {
 	 * @returns {Promise<void|any>}
 	 */
 	async execute(interaction) {
-		const keyword = interaction.options.getString("keyword").toLowerCase();
 		const target = interaction.options.getUser("targeted_user");
+		const keyword = interaction.options.getString("keyword");
 		const publicMessage =
 			((await utils.isActive(interaction.member)) || (await utils.isNDA(interaction.member))) &&
 			target;
 
-		try {
-			// Send the FAQ message (content from tags.yaml)
-			interaction.reply({
-				content: publicMessage ? `${target}` : null,
-				embeds: [
-					new EmbedBuilder()
-						.setColor(config.colors.default)
-						.setDescription(tags[keyword])
-						.setFooter({
-							text: `Invoked by ${interaction.member.displayName}`,
-							iconURL: interaction.user.avatarURL()
-						})
-				],
-				ephemeral: !publicMessage
-			});
-		} catch {
-			interaction.reply({
-				content: `Invalid keyword: \`${keyword}\``,
-				ephemeral: true
-			});
-		}
+		// Send the FAQ message (content from tags.yaml)
+		interaction.reply({
+			content: publicMessage ? `${target}` : null,
+			embeds: [
+				new EmbedBuilder()
+					.setColor(config.colors.default)
+					.setDescription(tags[keyword])
+					.setFooter({
+						text: `Invoked by ${interaction.member.displayName}`,
+						iconURL: interaction.user.avatarURL()
+					})
+			],
+			ephemeral: !publicMessage
+		});
 	}
 };
