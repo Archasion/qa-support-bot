@@ -1,6 +1,7 @@
 const EventListener = require("../modules/listeners/listener");
 const Tickets = require("../mongodb/models/tickets");
 const Tests = require("./../mongodb/models/tests");
+const tags = require("../tags.json");
 
 const { MODERATION_CHAT, BOT_FEEDBACK, TICKET_LOGS } = process.env;
 const { MemberBlacklist, RoleBlacklist } = require("./../mongodb/models/blacklist");
@@ -228,6 +229,26 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 						ephemeral: true
 					});
 					break;
+			}
+		}
+
+		// Check if the interaction is a select menu
+		else if (interaction.isSelectMenu()) {
+			if (customID === "faq") {
+				const option = interaction.values[0];
+				const embed = new EmbedBuilder()
+
+					.setColor(config.colors.default)
+					.setDescription(tags[option])
+					.setFooter({
+						text: `Invoked by ${interaction.user.tag}`,
+						iconURL: interaction.user.displayAvatarURL({ dynamic: true })
+					});
+
+				interaction.reply({
+					embeds: [embed],
+					ephemeral: true
+				});
 			}
 		}
 

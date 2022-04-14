@@ -28,6 +28,7 @@ rules:
   no-await-in-loop: off
   comma-dangle: off
   default-case: off
+  dot-notation: off
   brace-style: off
   complexity: off
   camelcase: off

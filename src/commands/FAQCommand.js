@@ -1,12 +1,7 @@
 const Command = require("../modules/commands/command");
-const yaml = require("js-yaml");
-const fs = require("fs");
+const tags = require("../tags.json");
 
-const { EmbedBuilder } = require("discord.js");
-const { path } = require("../utils/fs");
-
-const fileContents = fs.readFileSync(path("/src/tags.yaml"), "utf8");
-const tags = yaml.load(fileContents);
+const { EmbedBuilder, SelectMenuBuilder, ActionRowBuilder } = require("discord.js");
 
 module.exports = class FAQCommand extends Command {
 	constructor(client) {
@@ -50,18 +45,37 @@ module.exports = class FAQCommand extends Command {
 			((await utils.isActive(interaction.member)) || (await utils.isNDA(interaction.member))) &&
 			target;
 
+		const embed = new EmbedBuilder()
+
+			.setColor(config.colors.default)
+			.setDescription(tags[keyword])
+			.setFooter({
+				text: `Invoked by ${interaction.member.displayName}`,
+				iconURL: interaction.user.avatarURL()
+			});
+
+		const options = [];
+
+		tags.choices.forEach(option => {
+			options.push({
+				label: option["name"],
+				value: option["value"]
+			});
+		});
+
+		const selectMenu = new SelectMenuBuilder({ options: [] })
+
+			.setCustomId("faq")
+			.setPlaceholder("Get a response to another question...")
+			.setOptions(...options);
+
+		const actionRow = new ActionRowBuilder().addComponents(selectMenu);
+
 		// Send the FAQ message (content from tags.yaml)
 		interaction.reply({
 			content: publicMessage ? `${target}` : null,
-			embeds: [
-				new EmbedBuilder()
-					.setColor(config.colors.default)
-					.setDescription(tags[keyword])
-					.setFooter({
-						text: `Invoked by ${interaction.member.displayName}`,
-						iconURL: interaction.user.avatarURL()
-					})
-			],
+			embeds: [embed],
+			components: [actionRow],
 			ephemeral: !publicMessage
 		});
 	}

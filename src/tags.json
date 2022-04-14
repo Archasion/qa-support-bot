@@ -1,0 +1,49 @@
+{
+  "choices": [
+    {
+      "name": "Valiant Testing Awards",
+      "value": "valiant_awards"
+    },
+    {
+      "name": "Roblox QA Group",
+      "value": "qa_group"
+    },
+    {
+      "name": "Requesting a Testing Session",
+      "value": "session_request"
+    },
+    {
+      "name": "How to Report Bugs",
+      "value": "report_bug"
+    },
+    {
+      "name": "How to Become a Tester",
+      "value": "become_tester"
+    },
+    {
+      "name": "How to Become an NDA Tester",
+      "value": "become_nda_tester"
+    },
+    {
+      "name": "Thoroughly-Tested Hat of QA",
+      "value": "old_qa_hat"
+    },
+    {
+      "name": "Image Perms",
+      "value": "image_perms"
+    },
+    {
+      "name": "Roblox Admins",
+      "value": "roblox_admins"
+    }
+  ],
+  "valiant_awards": "Testers can earn two items from this group: The [Valiant Top Hat of Testing](https://www.roblox.com/catalog/8199693419/) and the [Valiant Valkyrie of Testing](https://www.roblox.com/catalog/7781687598/).\n \nThe [Valiant Top Hat of Testing](https://www.roblox.com/catalog/8199693419/)  is awarded to testers that show an extreme amount of dedication and effort into the group by attending testing sessions and reporting quality feedback.\n \nThe [Valiant Valkyrie of Testing](https://www.roblox.com/catalog/7781687598/) is awarded to testers that show an even more extreme amount of dedication and effort into the group by going above and beyond what is expected of a tester.\n \nThese items are **not** awarded to testers for becoming <@&281859085928759296>. While these items do not require the <@&281859085928759296> role, these items are notably difficult to obtain.",
+  "qa_group": "The [Roblox Community QA Team](https://www.roblox.com/groups/3055661/QA-Team) is a group on Roblox that is limited to <@&281859085928759296> testers. This group is closed to everyone else.",
+  "session_request": "You may request your experience to be tested by either our <@&331612485700550657> testers or our <@&281859085928759296> team through the form provided in <#928093660384493638>.\n\nPlease make sure you **read the requirements** before requesting a testing session!",
+  "report_bug": "You are able to report bugs during an active test. \n \nScheduled tests can be seen in the Events tab, located above the channel list. If you do not see it, then there are no scheduled events.\n \nTesting sessions are announced in <#329688019101548545>. When the session begins, a thread will be created in the announcement message and a link to the experience to test will be provided. Please post your bugs/feedback into the thread. \n \n<#329718580260110346> is a voice channel to use during testing sessions. Here, the developer can give you more instructions. Only <@&902626244468822106> and <@&281859085928759296> can speak in this voice channel. *You are not required to join the voice channel unless instructed otherwise.*",
+  "become_tester": "You are already a **QA Tester** by being in this server so feel free to attend our testing sessions! However, if you would like to become an **<@&281859085928759296> Tester**, you will need to prove to be active through continuous activity. Once you are active enough and have shown that you understand how the server works, you will be granted access to the application channel, as well as the ability to speak in <#329718580260110346>.",
+  "become_nda_tester": "If you prove to be active enough during testing sessions, you will be granted the <@&902626244468822106> role which will allow you to view the application channel and give you the opportunity to apply to join the <@&281859085928759296> team.\n \nBefore applying, you **must** meet the following guidelines:\n• You must have a good standing in the community. \n• Prior participation in public tests. \n• Ability to keep secrets and sign a law binding Non-Disclosure Agreement. \n• You must be 15 years or older. \n• You must be able to follow instructions and maintain a professional stance at all times. \n• You must have a [Developer Forum](https://developer.roblox.com/) account, but you do not need to be ranked Member.",
+  "old_qa_hat": "As of December 2021, the [Thoroughly-Tested Hat of QA](https://www.roblox.com/catalog/1470025165/) and the [Bug-Free Uniform of Testing](https://www.roblox.com/catalog/1451301802/Bug-Free-Uniform-of-Testing) are unobtainable due to the release of the [Valiant Top Hat of Testing](https://www.roblox.com/catalog/8199693419/) and the [Valiant Valkyrie of Testing](https://www.roblox.com/catalog/7781687598/), resulting in the original awards being discontinued.",
+  "image_perms": "The <@&904990345387986955> role allows testers to embed images and videos into chat messages. It is given by managers to people who have a valid use case for image perms and are deemed trustworthy. \n \nPlease note that you may still post images in the form of links in <#329687938009006080>. You can still send attachments for bugs/feedback in <#329688019101548545>.",
+  "roblox_admins": "This program is ran by the Roblox *community*. <@&271338380317556749> and <@&888937447793250325> are **not** Roblox staff members, and they can **not** ban/unban a user on Roblox.\n \nUsers with the <@&271752505875103755> are staff members of Roblox that are here for QA-related purposes. **Do not tag or DM users with this role.**"
+}
