@@ -56,12 +56,12 @@ module.exports = class ReminderInfoCommand extends Command {
 				name: interaction.member.displayName,
 				iconURL: interaction.user.displayAvatarURL({ dynamic: true })
 			})
-			.setFields([
+			.addFields(
 				{ name: "Channel", value: `<#${reminder.channel}>`, inline: true },
 				{ name: "Set On", value: `<t:${reminder.start_time}:f>`, inline: true },
 				{ name: "Alert On", value: `<t:${reminder.end_time}:f>`, inline: true },
 				{ name: "Reminder", value: reminder.text, inline: false }
-			])
+			)
 			.setFooter({ text: `Reminder ID: ${reminder.id}` });
 
 		// Send the information

@@ -36,7 +36,7 @@ module.exports = class TicketEmbedCommand extends Command {
 			.setColor(config.colors.default)
 			.setDescription("Please read the following before creating a ticket")
 			.setThumbnail(this.client.user.displayAvatarURL({ dynamic: true }))
-			.setFields(
+			.addFields(
 				{
 					name: "We're not Roblox Support",
 					value: "We cannot help you with any issues or reports related to Roblox, please contact Roblox Support instead"

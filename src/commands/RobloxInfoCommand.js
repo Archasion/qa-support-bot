@@ -148,7 +148,7 @@ module.exports = class RobloxInfoCommand extends Command {
 						testerInGroups !== 1 ? "s" : ""
 					}`
 				)
-				.setFields(
+				.addFields(
 					{ name: "Friends", value: info.friendCount.format(), inline: true },
 					{ name: "Followers", value: info.followerCount.format(), inline: true },
 					{ name: "Following", value: info.followingCount.format(), inline: true },

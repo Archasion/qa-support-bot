@@ -7,7 +7,8 @@ const {
 	ButtonBuilder,
 	ButtonStyle,
 	ChannelType,
-	GuildScheduledEventPrivacyLevel
+	GuildScheduledEventPrivacyLevel,
+	GuildScheduledEventStatus
 } = require("discord.js");
 
 const {
@@ -17,7 +18,9 @@ const {
 	NDA_TESTING_VC,
 	ACCELERATOR_TESTING_VC,
 	MODERATION_ALERTS,
-	REQUEST_DISCUSSION_THREAD
+	REQUEST_DISCUSSION_THREAD,
+	ACCELERATOR_SESSIONS,
+	NDA_SESSIONS
 } = process.env;
 
 module.exports = class MessageReactionAddEventListener extends EventListener {
@@ -31,11 +34,12 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 		const moderationChat = message.guild.channels.cache.get(MODERATION_CHAT);
 		const testingRequests = message.guild.channels.cache.get(TESTING_REQUESTS);
+		const alertThread = await moderationChat.threads.fetch(MODERATION_ALERTS);
+		const guildMember = await message.guild.members.fetch(user.id);
+
 		const discussionThread = message.guild.channels.cache
 			.get(TESTING_REQUESTS)
 			.threads.cache.get(REQUEST_DISCUSSION_THREAD);
-		const alertThread = await moderationChat.threads.fetch(MODERATION_ALERTS);
-		const guildMember = await message.guild.members.fetch(user.id);
 
 		switch (emoji.name) {
 			case "📅": // Create event and message developer
@@ -56,7 +60,6 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 				if (message.author.bot) return; // Not used on a bot
 				if (guildMember.bot) return; // Not used by a bot
 
-				// eslint-disable-next-line no-case-declarations
 				const check = alertThread.messages.cache.filter(
 					alert_message =>
 						(alert_message.embeds[0]
@@ -122,15 +125,20 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 		// Create event for the testing request
 		async function createEvent(message) {
 			try {
+				const embed = message.embeds[0].data;
+
 				const timestampRegex = new RegExp(/⏰ <t:(\d+):F>/gims);
 				const platformRegex = new RegExp(/🖥(.+)/gims);
 
-				const embed = message.embeds[0];
-				const gameTitle = embed.data.title;
-				const type = embed.author.name;
-				const timestamp = timestampRegex.exec(embed.data.description)[1] * 1000;
-				const platforms = platformRegex.exec(embed.data.description)[1];
-				const testType = type.split(" ")[0].toLowerCase();
+				const test = {
+					name: embed.title,
+					type: embed.author.name,
+					prefix: embed.author.name.split(" ")[0].toLowerCase(),
+					timestamp: timestampRegex.exec(embed.description)[1] * 1000,
+					platforms: platformRegex.exec(embed.description)[1]
+				};
+
+				if (embed.color === 0xe67e22 || embed.color === 0xffffff) test.prefix = "accelerator";
 
 				// Check if the event exists
 				const events = message.guild.scheduledEvents.cache.map(event => ({
@@ -141,17 +149,11 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				let check = false;
 
+				// prettier-ignore
 				// Respond if the event exists
 				await events.forEach(event => {
-					if (
-						(event.name === type || event.name === embed.data.title) &&
-						event.startTime === timestamp
-					) {
-						discussionThread.send(
-							`${user} Test already scheduled for <t:${
-								timestamp / 1000
-							}:F>\nhttps://discord.com/events/${message.guild.id}/${event.id}`
-						);
+					if ((event.name === test.type || event.name === test.name) && event.startTime === test.timestamp) {
+						discussionThread.send(`${user} Test already scheduled for <t:${test.timestamp / 1000}:F>\nhttps://discord.com/events/${message.guild.id}/${event.id}`);
 						reaction.remove();
 						check = true;
 					}
@@ -159,116 +161,181 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				if (check) return;
 
-				let channel = config.vcs.testing;
-				let emoji = "";
+				let testingVoiceChat = config.vcs.testing;
+				let cosmeticEmoji = "";
 
 				// Set the emoji and store the test in the database
-				if (embed.data.color === 0xe67e22) {
-					await await Tests.create({
-						name: gameTitle,
-						type: "accelerator",
-						url: embed.data.url,
-						date: new Date(timestamp)
+				if (test.prefix === "accelerator") {
+					await Tests.create({
+						name: test.name,
+						type: test.prefix,
+						url: embed.url,
+						date: new Date(test.timestamp)
 					});
 
-					channel = ACCELERATOR_TESTING_VC;
-					emoji = "<:accelerator:941804781830283396> ";
-				} else if (type === "NDA Verified Test") {
-					channel = NDA_TESTING_VC;
-					emoji = "<:nda:905799212350992475> ";
+					testingVoiceChat = ACCELERATOR_TESTING_VC;
+					cosmeticEmoji = "<:accelerator:941804781830283396> ";
+				} else if (test.prefix === "nda") {
+					testingVoiceChat = NDA_TESTING_VC;
+					cosmeticEmoji = "<:nda:905799212350992475> ";
 				}
 
 				// Store the test in the database
 				await Tests.create({
-					name: gameTitle,
-					type: testType,
-					url: embed.data.url,
-					date: new Date(timestamp)
+					name: test.name,
+					type: test.prefix,
+					url: embed.url,
+					date: new Date(test.timestamp)
 				});
 
 				// Create the event
-				const testing_session = await message.guild.scheduledEvents.create({
+				const testingSession = await message.guild.scheduledEvents.create({
 					privacyLevel: GuildScheduledEventPrivacyLevel.GuildOnly,
 					entityType: ChannelType.GuildVoice,
-					name: type,
-					channel: message.guild.channels.cache.get(channel),
-					scheduledStartTime: new Date(timestamp).toISOString(),
-					scheduledEndTime: new Date(timestamp + 3600000).toISOString(),
-					description: `🖥 Platforms:**${platforms}**\n\n*Subject to change*`
+					name: test.type,
+					channel: message.guild.channels.cache.get(testingVoiceChat),
+					scheduledStartTime: new Date(test.timestamp).toISOString(),
+					scheduledEndTime: new Date(test.timestamp + 3600000).toISOString(),
+					description: `🖥 Platforms:**${test.platforms}**\n\n*Subject to change*`
 				});
 
-				const pinned_message = await testingRequests.messages.fetch(ACTIVE_TESTING_REQUESTS);
+				const pinnedMessage = await testingRequests.messages.fetch(ACTIVE_TESTING_REQUESTS);
 
+				// prettier-ignore
 				// Update the pinned message with the tests
-				pinned_message.edit({
-					content: `${pinned_message.content}\n\n> ${emoji}**${gameTitle}** <t:${
-						timestamp / 1000
-					}:F>\n> ${message.url}`
+				pinnedMessage.edit({
+					content: `${pinnedMessage.content}\n\n> ${cosmeticEmoji}**${test.name}** <t:${test.timestamp / 1000}:F>\n> ${message.url}`
 				});
 
 				let member;
 
 				// Fetch the game developer
-				if (embed.data.color === 0xe67e22 || embed.data.color === 0xffffff) {
-					const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
-					const userID = userIDRegex.exec(embed.data.fields[0].value)[1];
+				if (test.prefix === "accelerator") {
+					const userIdRegex = new RegExp(/<@!?(\d{17,19})>/gims);
+					const userId = userIdRegex.exec(embed.fields[0].value)[1];
 
-					member = await message.guild.members.fetch(userID);
+					member = await message.guild.members.fetch(userId);
 				} else {
 					const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
-					const username = usernameRegex.exec(embed.data.footer.text)[1];
+					const username = usernameRegex.exec(embed.footer.text)[1];
 
 					member = await message.guild.members.search({ query: username });
 					member = await member.first();
 				}
 
+				// No member found
 				if (!member) {
 					message.react("912837490585513994");
 					return;
 				}
 
-				const notification = `Hey there ${member}, we've reviewed your request for **${gameTitle}** to be tested by our **${
-					type.split(" ")[0]
-				} team** on <t:${
-					timestamp / 1000
+				const directMessage = `Hey there ${member}, we've reviewed your request for **${
+					test.name
+				}** to be tested by our **${test.type.split(" ")[0]} team** on <t:${
+					test.timestamp / 1000
 				}:F> (Local Time) and have decided to approve the request, feel free to **contact** a staff member if you have any questions regarding your testing session.\n\nEvent URL:\nhttps://discord.com/events/${
 					message.guild.id
-				}/${testing_session.id}`;
+				}/${testingSession.id}`;
 
+				// prettier-ignore
 				// Try to message the developer
 				try {
-					member.send(notification);
-					discussionThread.send(
-						`${user} The \`${type}\` for **${gameTitle}** has been scheduled for <t:${
-							timestamp / 1000
-						}:F>\nhttps://discord.com/events/${message.guild.id}/${testing_session.id}`
-					);
+					member.send(directMessage);
+					discussionThread.send(`${user} The \`${test.type}\` for **${test.name}** has been scheduled for <t:${test.timestamp / 1000}:F>\nhttps://discord.com/events/${message.guild.id}/${testingSession.id}`);
 				} catch {
 					const channel = message.guild.channels.cache.get(config.channels.request);
+
 					channel.threads
 						.create({
-							name: gameTitle,
+							name: test.name,
 							autoArchiveDuration: 1440, // 1 Day
 							type: ChannelType.GuildPrivateThread,
 							invitable: false,
 							reason: "Unable to message author regarding a testing request."
 						})
 						.then(thread => {
-							thread.send(notification);
+							thread.send(directMessage);
 
 							discussionThread.send(
-								`${user} The \`${type}\` for **${gameTitle}** has been scheduled for <t:${
-									timestamp / 1000
+								`${user} The \`${test.type}\` for **${
+									test.name
+								}** has been scheduled for <t:${
+									test.timestamp / 1000
 								}:F> (messaged the user through a private thread: <#${
 									thread.id
-								}>)\nhttps://discord.com/events/${message.guild.id}/${
-									testing_session.id
-								}`
+								}>)\nhttps://discord.com/events/${message.guild.id}/${testingSession.id}`
 							);
 						});
 				}
 
+				// // Success
 				message.react("912042941181227078");
+
+				// Automatically send announcements
+				let announcementChannel;
+
+				switch (test.type) {
+					case "Public Test":
+						announcementChannel = config.channels.sessions;
+						break;
+					case "NDA Verified Test":
+						announcementChannel = NDA_SESSIONS;
+						break;
+				}
+
+				if (test.prefix === "accelerator") {
+					announcementChannel = ACCELERATOR_SESSIONS;
+				}
+
+				announcementChannel = message.guild.channels.cache.get(announcementChannel);
+
+				// prettier-ignore
+				// NOTICE
+				global[`session_notice_${message.id}`] = setTimeout(() => {
+					testingSession.setName(test.name);
+
+					announcementChannel.send(embed.fields
+						.filter(field => field.name.includes("Notice Template"))[0]
+						.value.split("```")[1]);
+
+					delete global[`session_notice_${message.id}`];
+				}, test.timestamp - Date.now() - 3600000 > 0 ? test.timestamp - Date.now() - 3600000 : 2000); // An hour before the start
+
+				// prettier-ignore
+				// START
+				global[`session_start_${message.id}`] = setTimeout(() => {
+					testingSession.setStatus(GuildScheduledEventStatus.Active);
+
+					announcementChannel.send(embed.fields
+						.filter(field => field.name.includes("Start Template"))[0]
+						.value.split("```")[1]
+					)
+						.then(async msg => {
+							// msg.react("284099057348247562"); // Thumbs up
+							await msg.startThread({
+								name: test.name,
+								autoArchiveDuration: 4320, // 3 Days
+								type: ChannelType.GuildPublicThread,
+								reason: `Testing has begun for ${test.name}`
+							});
+						});
+
+					delete global[`session_start_${message.id}`];
+				}, test.timestamp - Date.now());
+
+				// prettier-ignore
+				// CONCLUDE
+				global[`session_conclude_${message.id}`] = setTimeout(() => {
+					testingSession.setStatus(GuildScheduledEventStatus.Completed);
+
+					announcementChannel.send(
+						`Testing has concluded on **${test.name}**. Thank you all for attending!\n\nThe thread will remain open for all reports and feedback for the next hour from this message. Please get everything sent in by then!`
+					);
+
+					delete global[`session_conclude_${message.id}`];
+				}, test.timestamp - Date.now() + 3600000);
+
+				//
 			} catch (error) {
 				console.log(error);
 				message.react("912837490585513994");

@@ -2,6 +2,7 @@
 const EventListener = require("../modules/listeners/listener");
 
 const { MODERATION_CHAT, ACTIVE_TESTING_REQUESTS } = process.env;
+const { GuildScheduledEventStatus } = require("discord.js");
 
 module.exports = class GuildScheduledEventUpdateEventListener extends EventListener {
 	constructor(client) {
@@ -9,7 +10,10 @@ module.exports = class GuildScheduledEventUpdateEventListener extends EventListe
 	}
 
 	async execute(oldEvent, newEvent) {
-		if (newEvent.status.match("ACTIVE|COMPLETED")) {
+		if (
+			newEvent.status === GuildScheduledEventStatus.Active ||
+			newEvent.status === GuildScheduledEventStatus.Completed
+		) {
 			// prettier-ignore
 			newEvent.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
 				.then(async message => {

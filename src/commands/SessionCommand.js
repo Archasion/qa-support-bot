@@ -2,7 +2,7 @@ const Command = require("../modules/commands/command");
 
 const { NDA_SESSIONS, TESTING_REQUESTS, NDA_TESTING_VC, ACCELERATOR_TESTING_VC, ACCELERATOR_SESSIONS } =
 	process.env;
-const { ChannelType } = require("discord.js");
+const { ChannelType, GuildScheduledEventStatus } = require("discord.js");
 
 module.exports = class SessionCommand extends Command {
 	constructor(client) {
@@ -236,13 +236,13 @@ module.exports = class SessionCommand extends Command {
 		} else if (type === "Start Template") {
 			await interaction.guild.scheduledEvents.cache.forEach(async event => {
 				if (event.scheduledStartTimestamp === startTimestamp && event.channelId === testingVC) {
-					event.setStatus("ACTIVE");
+					event.setStatus(GuildScheduledEventStatus.Active);
 				}
 			});
 		} else {
 			await interaction.guild.scheduledEvents.cache.forEach(async event => {
 				if (event.scheduledStartTimestamp === startTimestamp && event.channelId === testingVC) {
-					event.setStatus("COMPLETED");
+					event.setStatus(GuildScheduledEventStatus.Completed);
 				}
 			});
 		}
