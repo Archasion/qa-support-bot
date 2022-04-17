@@ -65,18 +65,18 @@ module.exports = class BlacklistCommand extends Command {
 		switch (interaction.options.getSubcommand()) {
 			// Add the member or role to the blacklist
 			case "add": {
-				const memberOrRole = interaction.options.getMentionable("member_or_role");
-				const type = memberOrRole instanceof Role ? "role" : "member";
+				const mention = interaction.options.getMentionable("member_or_role");
+				const type = mention instanceof Role ? "role" : "member";
 
 				// Check if the member is a staff member
-				if (type === "member" && (await utils.isStaff(memberOrRole))) {
+				if (type === "member" && (await utils.isStaff(mention))) {
 					return interaction.reply({
 						embeds: [
 							new EmbedBuilder()
 								.setColor(config.colors.error)
 								.setTitle("You can't blacklist this member")
 								.setDescription(
-									`${memberOrRole.toString()} is a staff member and cannot be blacklisted.`
+									`${mention.toString()} is a staff member and cannot be blacklisted.`
 								)
 						],
 						ephemeral: true
@@ -86,16 +86,16 @@ module.exports = class BlacklistCommand extends Command {
 				// Add the member to the database
 				if (type === "member") {
 					MemberBlacklist.create({
-						name: memberOrRole.user.tag,
-						id: memberOrRole.id
+						name: mention.user.tag,
+						id: mention.id
 					});
 				}
 
 				// Add the role to the database
 				else {
 					RoleBlacklist.create({
-						name: memberOrRole.name,
-						id: memberOrRole.id
+						name: mention.name,
+						id: mention.id
 					});
 				}
 
@@ -103,7 +103,7 @@ module.exports = class BlacklistCommand extends Command {
 				const description = [];
 
 				description.push(type === "member" ? "<@" : "<@&");
-				description.push(memberOrRole.id);
+				description.push(mention.id);
 				description.push("> has been added to the blacklist. ");
 
 				// Update description based on input
@@ -131,20 +131,20 @@ module.exports = class BlacklistCommand extends Command {
 
 			// Remove the member or role from the blacklist
 			case "remove": {
-				const memberOrRole = interaction.options.getMentionable("member_or_role");
-				const type = memberOrRole instanceof Role ? "role" : "member";
+				const mention = interaction.options.getMentionable("member_or_role");
+				const type = mention instanceof Role ? "role" : "member";
 
 				// Try to remove the member or role from the database
 				try {
 					if (type === "member") {
-						await MemberBlacklist.deleteMany({ id: memberOrRole.id });
+						await MemberBlacklist.deleteMany({ id: mention.id });
 					} else {
-						await RoleBlacklist.deleteMany({ id: memberOrRole.id });
+						await RoleBlacklist.deleteMany({ id: mention.id });
 					}
 				} catch {
 					return interaction.reply({
 						content: `Could not remove <@${type === "member" ? "" : "&"}${
-							memberOrRole.id
+							mention.id
 						}> from the blacklist`,
 						ephemeral: true
 					});
@@ -154,7 +154,7 @@ module.exports = class BlacklistCommand extends Command {
 				const description = [];
 
 				description.push(type === "member" ? "<@" : "<@&");
-				description.push(memberOrRole.id);
+				description.push(mention.id);
 				description.push("> has been removed from the blacklist. ");
 
 				// Update description based on input
