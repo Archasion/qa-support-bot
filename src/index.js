@@ -73,7 +73,7 @@ class Bot extends Client {
 			const listeners = new ListenerLoader(this);
 			listeners.load();
 
-			this.setMaxListeners(config.max_listeners);
+			this.setMaxListeners(config.maxListeners);
 			this.login();
 		})();
 	}

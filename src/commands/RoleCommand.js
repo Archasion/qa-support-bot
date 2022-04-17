@@ -46,7 +46,7 @@ module.exports = class RoleCommand extends Command {
 						},
 						{
 							name: "Image Perms",
-							value: config.roles.image_perms
+							value: config.roles.imagePerms
 						}
 					]
 				},
@@ -70,7 +70,7 @@ module.exports = class RoleCommand extends Command {
 		const action = interaction.options.getString("action");
 		let users = interaction.options.getString("users");
 
-		if (action === "view" && selectedRole === config.roles.image_perms) {
+		if (action === "view" && selectedRole === config.roles.imagePerms) {
 			interaction.reply({
 				content: "You cannot view the members of this role",
 				ephemeral: true
@@ -81,7 +81,7 @@ module.exports = class RoleCommand extends Command {
 		if (
 			action === "Removed" &&
 			users.match(/^all|everyone|\*$/gi) &&
-			selectedRole === config.roles.image_perms
+			selectedRole === config.roles.imagePerms
 		) {
 			interaction.reply({
 				content: "This role cannot be removed from everyone",

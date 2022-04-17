@@ -12,15 +12,13 @@ module.exports = class ThreadCreateEventListener extends EventListener {
 			thread.parent.id === config.channels.sessions &&
 			thread.type === ChannelType.GuildPublicThread
 		) {
+			// prettier-ignore
 			// Change the cooldown and send the opening message
 			setTimeout(() => {
 				thread.setRateLimitPerUser(60); // 1 minute
-				thread
-					.send(
-						"Please do not talk in this thread unless you're reporting bugs or providing feedback/suggestions."
-					)
+				thread.send("Please do not talk in this thread unless you're reporting bugs or providing feedback/suggestions.")
 					.then(message => message.pin());
-			}, 1000);
+			}, 1000); // 1 second
 		}
 	}
 };

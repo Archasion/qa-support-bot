@@ -22,7 +22,7 @@ module.exports = class DiscordUtils {
 	 * @returns {boolean}
 	 */
 	async isNDA(member) {
-		return member.roles.cache.some(role => role.id === config.roles.nda_verified);
+		return member.roles.cache.some(role => role.id === config.roles.ndaVerified);
 	}
 
 	/**
@@ -31,7 +31,7 @@ module.exports = class DiscordUtils {
 	 * @returns {boolean}
 	 */
 	async isActive(member) {
-		return member.roles.cache.some(role => role.id === config.roles.active_tester);
+		return member.roles.cache.some(role => role.id === config.roles.activeTester);
 	}
 
 	/**

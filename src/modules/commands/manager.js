@@ -118,7 +118,7 @@ module.exports = class CommandManager {
 
 				if (command.nda_only) {
 					cmd_permissions.push({
-						id: config.roles.nda_verified,
+						id: config.roles.ndaVerified,
 						permission: true,
 						type: ApplicationCommandPermissionType.Role
 					});
@@ -160,7 +160,7 @@ module.exports = class CommandManager {
 
 				if (command.active_only) {
 					cmd_permissions.push({
-						id: config.roles.active_tester,
+						id: config.roles.activeTester,
 						permission: true,
 						type: ApplicationCommandPermissionType.Role
 					});

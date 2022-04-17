@@ -14,11 +14,11 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 			oldState = oldMember.channelId;
 		}
 
-		const publicNoMic = this.client.channels.cache.get(config.channels.no_mic);
-		const NDANoMic = this.client.channels.cache.get(NDA_NO_MIC);
+		const publicNoMic = this.client.channels.cache.get(config.channels.noMic);
+		const ndaNoMic = this.client.channels.cache.get(NDA_NO_MIC);
 
-		const publicVC = config.vcs.chat;
-		const publicTestingVC = config.vcs.testing;
+		const publicVoiceChat = config.vcs.chat;
+		const publicTestingVoiceChat = config.vcs.testing;
 
 		const user = await this.client.users.fetch(newMember.id);
 
@@ -31,7 +31,7 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 		}
 
 		// No-mic for public VC
-		if (oldState === publicVC || oldState === publicTestingVC) {
+		if (oldState === publicVoiceChat || oldState === publicTestingVoiceChat) {
 			await publicNoMic.permissionOverwrites.create(user, {
 				SendMessages: true
 			});
@@ -44,9 +44,9 @@ module.exports = class VoiceStateUpdateEventListener extends EventListener {
 			oldState === VERIFIED_STAGE ||
 			oldState === NDA_CHAT_VC_2
 		) {
-			await NDANoMic.permissionOverwrites.create(user, {
+			await ndaNoMic.permissionOverwrites.create(user, {
 				SendMessages: true
 			});
-		} else hideChannel(NDANoMic);
+		} else hideChannel(ndaNoMic);
 	}
 };

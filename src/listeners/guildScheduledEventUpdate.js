@@ -17,12 +17,12 @@ module.exports = class GuildScheduledEventUpdateEventListener extends EventListe
 			// prettier-ignore
 			newEvent.guild.channels.cache.get(MODERATION_CHAT).messages.fetch(ACTIVE_TESTING_REQUESTS)
 				.then(async message => {
-					// Get the test in the message
 					// prettier-ignore
-					const replaceRegex = new RegExp(`\\n\\n>\\s[^\\n]+<t:${newEvent.scheduledStartTimestamp / 1000}:F>\\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`, "gmis");
+					// Get the session in the message
+					const removeSessionRegex = new RegExp(`\\n\\n>\\s[^\\n]+<t:${newEvent.scheduledStartTimestamp / 1000}:F>\\n>\\shttps:\/\/discord\.com\/channels(?:\/\\d{17,19}){3}`, "gmis");
 
-					// Remove the test from the message
-					message.edit({ content: message.content.replace(replaceRegex, "") });
+					// Remove the session from the message
+					message.edit({ content: message.content.replace(removeSessionRegex, "") });
 				});
 		}
 	}

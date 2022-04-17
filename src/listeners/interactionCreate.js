@@ -69,7 +69,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 					thread
 						.send({
-							content: `<@&${config.roles.bot_developer}>`,
+							content: `<@&${config.roles.botDeveloper}>`,
 							embeds: [embed]
 						})
 						.then(message => {
@@ -200,7 +200,7 @@ module.exports = class InteractionCreateEventListener extends EventListener {
 
 					const logging_embed = new EmbedBuilder()
 
-						.setColor(config.colors.change_topic)
+						.setColor(config.colors.changeTopic)
 						.setAuthor({
 							name: `${interaction.user.tag} (${interaction.member.displayName})`,
 							iconURL: interaction.user.displayAvatarURL({ dynamic: true })
