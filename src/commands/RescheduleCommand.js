@@ -141,7 +141,7 @@ module.exports = class RescheduleCommand extends Command {
 					delete global[`session_notice_${messageId}`];
 				}
 
-				noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
+				// noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
 				break;
 
 			case "start":
@@ -163,10 +163,10 @@ module.exports = class RescheduleCommand extends Command {
 				break;
 
 			default:
-				if (global[`session_notice_${messageId}`]) {
-					clearTimeout(global[`session_notice_${messageId}`]);
-					delete global[`session_notice_${messageId}`];
-				}
+				// if (global[`session_notice_${messageId}`]) {
+				// 	clearTimeout(global[`session_notice_${messageId}`]);
+				// 	delete global[`session_notice_${messageId}`];
+				// }
 
 				if (global[`session_start_${messageId}`]) {
 					clearTimeout(global[`session_start_${messageId}`]);
@@ -178,7 +178,7 @@ module.exports = class RescheduleCommand extends Command {
 					delete global[`session_conclude_${messageId}`];
 				}
 
-				noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
+				// noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
 				startAnnouncement(testingSession, test, messageId, announcementChannel, embed);
 				concludeAnnouncement(testingSession, test, messageId, announcementChannel);
 
@@ -200,22 +200,22 @@ module.exports = class RescheduleCommand extends Command {
 //
 
 // eslint-disable-next-line max-params
-function noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed) {
-	global[`session_notice_${messageId}`] = setTimeout(
-		() => {
-			testingSession.setName(test.name);
+// function noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed) {
+// 	global[`session_notice_${messageId}`] = setTimeout(
+// 		() => {
+// 			testingSession.setName(test.name);
 
-			announcementChannel.send(
-				embed.fields
-					.filter(field => field.name.includes("Notice Template"))[0]
-					.value.split("```")[1]
-			);
+// 			announcementChannel.send(
+// 				embed.fields
+// 					.filter(field => field.name.includes("Notice Template"))[0]
+// 					.value.split("```")[1]
+// 			);
 
-			delete global[`session_notice_${messageId}`];
-		},
-		test.timestamp - Date.now() - 3600000 > 0 ? test.timestamp - Date.now() - 3600000 : 2000
-	); // An hour before the start
-}
+// 			delete global[`session_notice_${messageId}`];
+// 		},
+// 		test.timestamp - Date.now() - 3600000 > 0 ? test.timestamp - Date.now() - 3600000 : 2000
+// 	); // An hour before the start
+// }
 
 // eslint-disable-next-line max-params
 function startAnnouncement(testingSession, test, messageId, announcementChannel, embed) {
