@@ -136,29 +136,47 @@ module.exports = class RescheduleCommand extends Command {
 		// Reschedule the chosen announcement(s)
 		switch (type) {
 			case "notice":
-				if (global[`session_notice_${messageId}`]) delete global[`session_notice_${messageId}`];
+				if (global[`session_notice_${messageId}`]) {
+					clearTimeout(global[`session_notice_${messageId}`]);
+					delete global[`session_notice_${messageId}`];
+				}
 
 				noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
 				break;
 
 			case "start":
-				if (global[`session_start_${messageId}`]) delete global[`session_start_${messageId}`];
+				if (global[`session_start_${messageId}`]) {
+					clearTimeout(global[`session_start_${messageId}`]);
+					delete global[`session_start_${messageId}`];
+				}
 
 				startAnnouncement(testingSession, test, messageId, announcementChannel, embed);
 				break;
 
 			case "conclude":
-				if (global[`session_conclude_${messageId}`])
+				if (global[`session_conclude_${messageId}`]) {
+					clearTimeout(global[`session_conclude_${messageId}`]);
 					delete global[`session_conclude_${messageId}`];
+				}
 
 				concludeAnnouncement(testingSession, test, messageId, announcementChannel);
 				break;
 
 			default:
-				if (global[`session_notice_${messageId}`]) delete global[`session_notice_${messageId}`];
-				if (global[`session_start_${messageId}`]) delete global[`session_start_${messageId}`];
-				if (global[`session_conclude_${messageId}`])
+				if (global[`session_notice_${messageId}`]) {
+					clearTimeout(global[`session_notice_${messageId}`]);
+					delete global[`session_notice_${messageId}`];
+				}
+
+				if (global[`session_start_${messageId}`]) {
+					clearTimeout(global[`session_start_${messageId}`]);
+					delete global[`session_start_${messageId}`];
+				}
+
+				if (global[`session_conclude_${messageId}`]) {
+					clearTimeout(global[`session_conclude_${messageId}`]);
 					delete global[`session_conclude_${messageId}`];
+				}
 
 				noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
 				startAnnouncement(testingSession, test, messageId, announcementChannel, embed);
