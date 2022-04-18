@@ -12,7 +12,11 @@ module.exports = class DiscordUtils {
 	 */
 	async isStaff(member) {
 		return member.roles.cache.some(
-			role => role.id === config.roles.moderator || role.id === config.roles.manager
+			role =>
+				role.id === config.roles.moderator ||
+				role.id === config.roles.manager ||
+				role.id === config.roles.serverModerator ||
+				role.id === config.roles.serverAdministrator
 		);
 	}
 
