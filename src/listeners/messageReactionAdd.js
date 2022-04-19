@@ -342,13 +342,14 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 
 				// prettier-ignore
 				// Schedule the starting announcement
-				global[`session_start_${message.id}`] = setTimeout(() => {
+				global[`session_start_${message.id}`] = setTimeout(async () => {
 					sessionEvent.setStatus(GuildScheduledEventStatus.Active);
 
-					announcementChannel.send(request.fields
-						.filter(field => field.name.includes("Start Template"))[0]
-						.value.split("```")[1])
-
+					announcementChannel
+						.send(request.fields
+							.filter(field => field.name.includes("Start Template"))[0]
+							.value.split("```")[1]
+						)
 						.then(async msg => {
 							msg.react("284099057348247562"); // Thumbs up
 
@@ -359,6 +360,23 @@ module.exports = class MessageReactionAddEventListener extends EventListener {
 								reason: `Testing has begun for ${session.name}`
 							});
 						});
+
+					let member;
+					// Fetch and role the game developer
+					if (request.color === 0xe67e22 || request.color === 0xffffff) {
+						const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
+						const userID = userIDRegex.exec(request.fields[0].value)[1];
+
+						member = await message.guild.members.fetch(userID);
+					} else {
+						const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
+						const username = usernameRegex.exec(request.footer.text)[1];
+
+						member = await message.guild.members.search({ query: username });
+						member = await member.first();
+					}
+
+					if (member) member.roles.add(config.roles.developer);
 
 					delete global[`session_start_${message.id}`];
 				}, session.timestamp - Date.now());

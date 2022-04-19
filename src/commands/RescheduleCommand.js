@@ -75,18 +75,18 @@ module.exports = class RescheduleCommand extends Command {
 		}
 
 		const timestampRegex = new RegExp(/⏰ <t:(\d+):F>/gims);
-		const embed = testingRequest.embeds[0].data;
+		const request = testingRequest.embeds[0].data;
 
 		// Information regarding the test
 		const test = {
-			name: embed.title,
-			type: embed.author.name,
-			prefix: embed.author.name.split(" ")[0].toLowerCase(),
-			timestamp: timestampRegex.exec(embed.description)[1] * 1000
+			name: request.title,
+			type: request.author.name,
+			prefix: request.author.name.split(" ")[0].toLowerCase(),
+			timestamp: timestampRegex.exec(request.description)[1] * 1000
 		};
 
 		// Check whether the test is for accelerators
-		if (embed.color === 0xe67e22 || embed.color === 0xffffff) test.prefix = "accelerator";
+		if (request.color === 0xe67e22 || request.color === 0xffffff) test.prefix = "accelerator";
 
 		// Get the event from already-scheduled eventss
 		let testingSession;
@@ -141,7 +141,7 @@ module.exports = class RescheduleCommand extends Command {
 					delete global[`session_notice_${messageId}`];
 				}
 
-				noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
+				noticeAnnouncement(testingSession, test, messageId, announcementChannel, request);
 				break;
 
 			case "start":
@@ -150,7 +150,7 @@ module.exports = class RescheduleCommand extends Command {
 					delete global[`session_start_${messageId}`];
 				}
 
-				startAnnouncement(testingSession, test, messageId, announcementChannel, embed);
+				startAnnouncement(testingSession, test, messageId, announcementChannel, request);
 				break;
 
 			case "conclude":
@@ -178,8 +178,8 @@ module.exports = class RescheduleCommand extends Command {
 					delete global[`session_conclude_${messageId}`];
 				}
 
-				noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed);
-				startAnnouncement(testingSession, test, messageId, announcementChannel, embed);
+				noticeAnnouncement(testingSession, test, messageId, announcementChannel, request);
+				startAnnouncement(testingSession, test, messageId, announcementChannel, request);
 				concludeAnnouncement(testingSession, test, messageId, announcementChannel);
 
 				interaction.reply({
@@ -200,13 +200,13 @@ module.exports = class RescheduleCommand extends Command {
 //
 
 // eslint-disable-next-line max-params
-function noticeAnnouncement(testingSession, test, messageId, announcementChannel, embed) {
+function noticeAnnouncement(testingSession, test, messageId, announcementChannel, request) {
 	global[`session_notice_${messageId}`] = setTimeout(
 		() => {
 			testingSession.setName(test.name);
 
 			announcementChannel.send(
-				embed.fields
+				request.fields
 					.filter(field => field.name.includes("Notice Template"))[0]
 					.value.split("```")[1]
 			);
@@ -218,13 +218,13 @@ function noticeAnnouncement(testingSession, test, messageId, announcementChannel
 }
 
 // eslint-disable-next-line max-params
-function startAnnouncement(testingSession, test, messageId, announcementChannel, embed) {
-	global[`session_start_${messageId}`] = setTimeout(() => {
+function startAnnouncement(testingSession, test, messageId, announcementChannel, request) {
+	global[`session_start_${messageId}`] = setTimeout(async () => {
 		testingSession.setStatus(GuildScheduledEventStatus.Active);
 
 		announcementChannel
 			.send(
-				embed.fields
+				request.fields
 					.filter(field => field.name.includes("Start Template"))[0]
 					.value.split("```")[1]
 			)
@@ -237,6 +237,23 @@ function startAnnouncement(testingSession, test, messageId, announcementChannel,
 					reason: `Testing has begun for ${test.name}`
 				});
 			});
+
+		let member;
+		// Fetch and role the game developer
+		if (request.color === 0xe67e22 || request.color === 0xffffff) {
+			const userIDRegex = new RegExp(/<@!?(\d{17,19})>/gims);
+			const userID = userIDRegex.exec(request.fields[0].value)[1];
+
+			member = await request.guild.members.fetch(userID);
+		} else {
+			const usernameRegex = new RegExp(/Username:\s@?([\w\d_]+),/gims);
+			const username = usernameRegex.exec(request.footer.text)[1];
+
+			member = await request.guild.members.search({ query: username });
+			member = await member.first();
+		}
+
+		if (member) member.roles.add(config.roles.developer);
 
 		delete global[`session_start_${messageId}`];
 	}, test.timestamp - Date.now());
